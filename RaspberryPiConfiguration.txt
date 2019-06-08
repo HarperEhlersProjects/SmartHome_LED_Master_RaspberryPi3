@@ -1,0 +1,20 @@
+/dev/config.txt:
+
+enable_uart=1
+dtoverlay=pi3-miniuart-bt
+
+init_uart_baud=2000000
+init_uart_clock=32000000
+
+sudo usermod -a -G dialout user
+
+sudo nano /boot/cmdline.txt -> Remove: console=serial0,115200
+
+sudo raspi-config -> interface options -> serial -> No -> Finish
+reboot
+
+
+sudo apt-get python
+sudo apt-get python-pip
+
+pip install pyserial
