@@ -1,0 +1,16 @@
+#ifndef MAKROS_H
+#define MAKROS_H
+
+
+#define LED_BIT_COUNT 24
+#define SLA_LENGTH_MAX 255
+#define LED_SERIAL_DATA_SIZE SLA_LENGTH_MAX*LED_BIT_COUNT
+#define SLA_NUMBER 8
+#define MODE_PARAMETER_NUMBER 10
+#define MODE_ACTOR_NUMBER 10
+
+#define SLA_ACTIVE 1
+#define SLA_DEACTIVE 0
+
+
+#endif /* MAKROS_H */
