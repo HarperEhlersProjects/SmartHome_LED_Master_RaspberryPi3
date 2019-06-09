@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <termios.h>
 
+#incude "graphics.h"
 #include "led_serial.h"
 
 int iPort;
@@ -28,11 +29,6 @@ void vLEDSerialTransmitterInit(void)
     tcsetattr(iUART0_filestream, TCSANOW, &options);
 
     iPort = iUART0_filestream;
-	
-	for(uiCount=0;uiCount < LED_SERIAL_DATA_SIZE;uiCount++)
-	{
-		puiLEDSerialData[uiCount] = 0;
-	}
 	
 	return;
 }
@@ -64,7 +60,7 @@ void vLEDSerialTransmit()
                 iCount = 0;
                 while(iCount < LED_SERIAL_DATA_SIZE)
                 {   
-                    iRet = write(iPort, &(puiLEDSerialData[iCount]), LED_SERIAL_DATA_SIZE-iCount);
+                    iRet = write(iPort, &(puiGraphicsData[iCount]), GRAPHICS_DATA_SIZE-iCount);
                     if(iRet != -1)
                     {
                         iCount += iRet;

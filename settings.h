@@ -4,6 +4,8 @@
 
 #include "makros.h"
 
+long uiSettingsSLALengthMAX;
+
 char uiSettingsSLALength[SLA_NUMBER];
 char uiSettingsSLAState[SLA_NUMBER];
 char uiSettingsModeActive[SLA_NUMBER];

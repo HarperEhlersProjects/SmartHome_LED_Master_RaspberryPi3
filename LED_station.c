@@ -2,10 +2,11 @@
 #include "led_serial.h"
 #include "graphics.h"
 #include "ui.h"
+#include "modes.h"
 
 #include <time.h>
 
-#include "media_station.h"
+#include "LED_station.h"
 
 
 void main(int argc, char **argv)
@@ -14,6 +15,7 @@ void main(int argc, char **argv)
 
 	vSettingsInit();
 	vGraphicsInit();
+	vModesInit();
 	vLEDSerialTransmitterInit();
 
 	/*
@@ -31,7 +33,7 @@ void main(int argc, char **argv)
 
     while(1)
     {       
-		vGraphicsFrameCalculate();
+		vModesFrameCalculate();
 		//while(15ms);
         vLEDSerialTransmit();
 
