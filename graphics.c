@@ -36,12 +36,12 @@ void vGraphicsInit(void)
 }
 
 
-void vGraphicsSetPixel(char uiSLAMask,long uiLED,char* puiColor)    
+void vGraphicsSetPixel(char uiSLAMask,long uiLED,tsGraphicsRGB tsColorRGB)    
 {
     long i;
     for(i=0;i<8;i++)
     {
-        if((puiColor[0] & (0x80 >> i)) > 0)
+        if((tsColorRGB.uiRed & (0x80 >> i)) > 0)
         {
             puiGraphicsData[uiLED * 24 + i] |= uiSLAMask;
         }
@@ -50,7 +50,7 @@ void vGraphicsSetPixel(char uiSLAMask,long uiLED,char* puiColor)
             puiGraphicsData[uiLED * 24 + i] &= ~uiSLAMask;        
         }
 
-        if((puiColor[1] & (0x80 >> i)) > 0)
+        if((tsColorRGB.uiGreen & (0x80 >> i)) > 0)
         {
             puiGraphicsData[uiLED * 24 + 8 + i] |= uiSLAMask;
         }
@@ -59,7 +59,7 @@ void vGraphicsSetPixel(char uiSLAMask,long uiLED,char* puiColor)
             puiGraphicsData[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
         }
 
-        if((puiColor[2] & (0x80 >> i)) > 0)
+        if((tsColorRGB.uiBlue & (0x80 >> i)) > 0)
         {
             puiGraphicsData[uiLED * 24 + 16 + i] |= uiSLAMask;
         }
@@ -70,30 +70,67 @@ void vGraphicsSetPixel(char uiSLAMask,long uiLED,char* puiColor)
     }
 }
 
-void vGraphicsSetPixelFromTo(char uiSLAMask,long uiLEDmin,long uiLEDmax,char* puiColor)
+void vGraphicsSetPixelFromTo(char uiSLAMask,long uiLEDmin,long uiLEDmax,tsGraphicsRGB tsColorRGB)
 {
     long i;
     for(i=uiLEDmin;i<=uiLEDmax;i++)
     {
-        vGraphicsSetPixel(uiSLAMask, i, puiColor);
+        vGraphicsSetPixel(uiSLAMask, i, tsColorRGB);
     }
 }
 
-void vGraphicsGamma8Correction(char* puiColor)
+tsGraphicsRGB tsGraphicsGamma8Correction(tsGraphicsRGB tsColorRGB)
 {
-	puiColor[0] = puiGraphicsGamma8Correction[puiColor[0]];
-	puiColor[1] = puiGraphicsGamma8Correction[puiColor[1]];
-	puiColor[2] = puiGraphicsGamma8Correction[puiColor[2]];
+	tsGraphicsRGB tsTempColorRGB; 
+	tsTempColorRGB.uiRed = puiGraphicsGamma8Correction[tsColorRGB.uiRed];
+	tsTempColorRGB.uiGreen = puiGraphicsGamma8Correction[tsColorRGB.uiGreen];
+	tsTempColorRGB.uiBlue = puiGraphicsGamma8Correction[tsColorRGB.uiBlue];
+	
+	return tsTempColorRGB;
 }
 
 void vGraphicsPixelResetAll(void)
 {
-    char puiColor[3];
-    puiColor[0] = 0;
-    puiColor[1] = 0;
-    puiColor[2] = 0;
+    tsGraphicsRGB tsTempColorRGB; 
+	
+    tsTempColorRGB.uiRed = 0;
+    tsTempColorRGB.uiGreen = 0;
+    tsTempColorRGB.uiBlue = 0;
 
-    vGraphicsSetPixelFromTo(0xFF,0,SLA_LENGTH_MAX-1,puiColor);
+    vGraphicsSetPixelFromTo(0xFF,0,SLA_LENGTH_MAX-1,tsTempColorRGB);
 }
 
-
+//using formular from wikipedia "HSV-Farbraum"
+tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV tsColorHSV)
+{
+	tsGraphicsRGB tsColorTempRGB;
+	
+	char h;
+	double f,p,q,t; 
+	
+	h = (char) tsColorHSV.uiHuel/60
+	f = tsColorHSV.uiHuel/60-h;
+	
+	p = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation)
+	q = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation)
+	t = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation * (1 - f))
+	
+	switch(&h)
+	{
+		case 0: tsColorTempRGB = {(char) tsColorHSV.udBrightness * 255,(char) t * 255,(char) p * 255};
+		break;
+		case 1: tsColorTempRGB = {(char) q * 255,(char) tsColorHSV.udBrightness * 255,(char) p * 255};
+		break;
+		case 2: tsColorTempRGB = {(char) p * 255,(char) tsColorHSV.udBrightness * 255,(char) t * 255};
+		break;
+		case 3: tsColorTempRGB = {(char) p * 255,(char) q * 255,(char) tsColorHSV.udBrightness * 255};
+		break;
+		case 4: tsColorTempRGB = {(char) t * 255,(char) p * 255,(char) tsColorHSV.udBrightness * 255};
+		break;
+		case 5: tsColorTempRGB = {(char) tsColorHSV.udBrightness * 255,(char) p * 255,(char) q * 255};
+		break;
+		case 6: tsColorTempRGB = {(char) tsColorHSV.udBrightness * 255,(char) t * 255,(char) p * 255};
+	}
+	
+	return tsColorTempRGB;
+}

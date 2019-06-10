@@ -53,23 +53,22 @@ parameter 3: GammaorrectionEnable: boolean
 */
 void vMode1(char uiSLA)
 {
-
-    char puiColor[3];
+	tsGraphicsRGB tsColorRGB;
     long uiCounter;
 	
-	puiColor[0] = uiSettingsModeParameter[uiSLA][0];
-	puiColor[1] = uiSettingsModeParameter[uiSLA][1];
-	puiColor[2] = uiSettingsModeParameter[uiSLA][2];
+	tsColorRGB.uiRed = uiSettingsModeParameter[uiSLA][0];
+	tsColorRGB.uiGreen = uiSettingsModeParameter[uiSLA][1];
+	tsColorRGB.uiBlue = uiSettingsModeParameter[uiSLA][2];
 	
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
 	{
-		vGraphicsGamma8Correction(puiColor);
+		tsColorRGB = tsGraphicsGamma8Correction(tsColorRGB);
 	}
 	
     for(uiCounter=0;uiCounter<uiSettingsSLALength[uiSLA];uiCounter++)
     {
-        vGraphicsSetPixel(1<<uiSLA,uiCounter,puiColor);
+        vGraphicsSetPixel(1<<uiSLA,uiCounter,tsColorRGB);
     }
 }
 
@@ -81,19 +80,19 @@ parameter 5: snake veloity: 0-255
 */
 void vMode2(char uiSLA)
 {
-    char puiColor[3];
+    tsGraphicsRGB tsColorRGB;
     long uiCounter;
     long uiTopBoundary,uiBottomBoundary;
 
 
-	puiColor[0] = uiSettingsModeParameter[uiSLA][0];
-	puiColor[1] = uiSettingsModeParameter[uiSLA][1];
-	puiColor[2] = uiSettingsModeParameter[uiSLA][2];
+	tsColorRGB.uiRed = uiSettingsModeParameter[uiSLA][0];
+	tsColorRGB.uiGreen = uiSettingsModeParameter[uiSLA][1];
+	tsColorRGB.uiBlue = uiSettingsModeParameter[uiSLA][2];
 
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
 	{
-		vGraphicsGamma8Correction(puiColor);
+		tsColorRGB = tsGraphicsGamma8Correction(tsColorRGB);
 	}
 
     piModeActors[uiSLA][1]++;
@@ -129,12 +128,12 @@ void vMode2(char uiSLA)
 
     for(uiCounter = uiBottomBoundary;uiCounter < uiTopBoundary;uiCounter++)
     {
-        vGraphicsSetPixel(1<<uiSLA,uiCounter,puiColor);
+        vGraphicsSetPixel(1<<uiSLA,uiCounter,tsColorRGB);
     }
 }
 
 /*
-parameter 0-2: RGB: 0-255
+parameter 0-2: RGB_influence: 0-255
 parameter 3: GammaorrectionEnable: boolean
 parameter 4: ShrinkingVelocity: 0-255
 parameter 5: expanding velocity: 0-255
@@ -142,16 +141,16 @@ parameter 5: expanding velocity: 0-255
 
 void vMode3(char uiSLA)
 {
-    char puiColor[3];
+    tsGraphicsRGB tsColorRGB;
 
-    puiColor[uiSettingsModeParameter[uiSLA][0]] = 0;
-    puiColor[uiSettingsModeParameter[uiSLA][1]] = 0.35*(uiSettingsSLALength[uiSLA]/2-piModeActors[uiSLA][0]);
-    puiColor[uiSettingsModeParameter[uiSLA][2]] = 0.35*piModeActors[uiSLA][0];
+    tsColorRGB.uiRed = uiSettingsModeParameter[uiSLA][0];
+    tsColorRGB.uiGreen = (uiSettingsModeParameter[uiSLA][1]/255)*(uiSettingsSLALength[uiSLA]/2-piModeActors[uiSLA][0]);
+    tsColorRGB.uiBlue = (uiSettingsModeParameter[uiSLA][2]/255)*piModeActors[uiSLA][0];
 
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
 	{
-		vGraphicsGamma8Correction(puiColor);
+		tsColorRGB = tsGraphicsGamma8Correction(tsColorRGB);
 	}
 	
     if(piModeActors[uiSLA][0] > uiSettingsSLALength[uiSLA]/2)
@@ -172,6 +171,6 @@ void vMode3(char uiSLA)
         piModeActors[uiSLA][0]-=uiSettingsModeParameter[uiSLA][4];
     }
 
-    vGraphicsSetPixelFromTo(1<<uiSLA,piModeActors[uiSLA][0],250-piModeActors[uiSLA][0],puiColor);
+    vGraphicsSetPixelFromTo(1<<uiSLA,piModeActors[uiSLA][0],250-piModeActors[uiSLA][0],tsColorRGB);
 
 }
