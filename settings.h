@@ -6,7 +6,7 @@
 
 long uiSettingsSLALengthMAX;
 
-char uiSettingsSLALength[SLA_NUMBER];
+long uiSettingsSLALength[SLA_NUMBER];
 char uiSettingsSLAState[SLA_NUMBER];
 char uiSettingsModeActive[SLA_NUMBER];
 char uiSettingsModeParameter[SLA_NUMBER][MODE_PARAMETER_NUMBER];

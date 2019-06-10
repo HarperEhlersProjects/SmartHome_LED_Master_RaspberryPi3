@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <termios.h>
 
-#incude "graphics.h"
+#include "graphics.h"
 #include "led_serial.h"
 
 int iPort;
@@ -58,7 +58,7 @@ void vLEDSerialTransmit()
                 tcflush(iPort, TCIOFLUSH);
                 
                 iCount = 0;
-                while(iCount < LED_SERIAL_DATA_SIZE)
+                while(iCount < GRAPHICS_DATA_SIZE)
                 {   
                     iRet = write(iPort, &(puiGraphicsData[iCount]), GRAPHICS_DATA_SIZE-iCount);
                     if(iRet != -1)

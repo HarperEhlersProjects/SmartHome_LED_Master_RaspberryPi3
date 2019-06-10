@@ -27,8 +27,7 @@ const char puiGraphicsGamma8Correction[] = {
 
 void vGraphicsInit(void)
 {
-	char i,j;
-	long uiCount
+	long uiCount;
 	
 	for(uiCount=0;uiCount < GRAPHICS_DATA_SIZE;uiCount++)
 	{
@@ -37,9 +36,9 @@ void vGraphicsInit(void)
 }
 
 
-void vGraphicsSetPixel(char uiSLAMask,char uiLED,char* puiColor)    
+void vGraphicsSetPixel(char uiSLAMask,long uiLED,char* puiColor)    
 {
-    char i;
+    long i;
     for(i=0;i<8;i++)
     {
         if((puiColor[0] & (0x80 >> i)) > 0)
@@ -71,9 +70,9 @@ void vGraphicsSetPixel(char uiSLAMask,char uiLED,char* puiColor)
     }
 }
 
-void vGraphicsSetPixelFromTo(char uiSLAMask,char uiLEDmin,char uiLEDmax,char* puiColor)
+void vGraphicsSetPixelFromTo(char uiSLAMask,long uiLEDmin,long uiLEDmax,char* puiColor)
 {
-    char i;
+    long i;
     for(i=uiLEDmin;i<=uiLEDmax;i++)
     {
         vGraphicsSetPixel(uiSLAMask, i, puiColor);
@@ -82,9 +81,9 @@ void vGraphicsSetPixelFromTo(char uiSLAMask,char uiLEDmin,char uiLEDmax,char* pu
 
 void vGraphicsGamma8Correction(char* puiColor)
 {
-	puiColor[0] = puiGraphicsGamma8Correction[puiColor[0]]
-	puiColor[1] = puiGraphicsGamma8Correction[puiColor[1]]
-	puiColor[2] = puiGraphicsGamma8Correction[puiColor[2]]
+	puiColor[0] = puiGraphicsGamma8Correction[puiColor[0]];
+	puiColor[1] = puiGraphicsGamma8Correction[puiColor[1]];
+	puiColor[2] = puiGraphicsGamma8Correction[puiColor[2]];
 }
 
 void vGraphicsPixelResetAll(void)
