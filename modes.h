@@ -1,6 +1,8 @@
 #ifndef MODES_H
 #define MODES_H
 
+void vModesInit(void);
+
 void vModesFrameCalculate(void);
 
 void vGraphicsMode0(char uiSLA);

@@ -12,5 +12,7 @@
 #define SLA_ACTIVE 1
 #define SLA_DEACTIVE 0
 
+#define TRUE 1
+#define FALSE 0
 
 #endif /* MAKROS_H */
