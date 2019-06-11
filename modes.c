@@ -37,6 +37,7 @@ void vModesFrameCalculate()
             break;
             case 3:vMode3(uiCounterSLA);//Pulse
             break;
+			case 4:vMode4(uiCounterSLA);//Color Fade
 		}
 	}
 }
@@ -181,4 +182,30 @@ void vMode3(char uiSLA)
 
     vGraphicsSetPixelFromTo(1<<uiSLA,piModeActors[uiSLA][0],250-piModeActors[uiSLA][0],tsColorRGB);
 
+}
+
+//Color Fade
+void vMode4(char uiSLA)
+{
+	tsGraphicsHSV tsColorHSV;
+	tsGraphicsRGB tsColorRGB;
+    long uiCounter;
+	
+	for(uiCounter=0;uiCounter<uiSettingsSLALength[uiSLA];uiCounter++)
+    {
+	
+	tsColorHSV.uiHuel = 360*uiCounter/uiSettingsSLALength[uiSLA];
+	tsColorHSV.udSaturation = uiSettingsModeParameter[uiSLA][1];
+	tsColorHSV.udBrightness = uiSettingsModeParameter[uiSLA][2];
+	
+	tsColorRGB = tsGraphicsHSV2RGB(tsColorHSV);
+	
+		//use gamma correction if enabled
+		if(uiSettingsModeParameter[uiSLA][3])
+		{
+			tsColorRGB = tsGraphicsGamma8Correction(uiSLA, tsColorRGB);
+		}
+	
+        vGraphicsSetPixel(1<<uiSLA,uiCounter,tsColorRGB);
+    }
 }
