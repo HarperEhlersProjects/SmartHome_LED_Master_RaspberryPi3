@@ -24,20 +24,20 @@ void main(int argc, char **argv)
 	//Enable SLA
 	uiSettingsSLAState[1] = SLA_ACTIVE;
 	//Mode
-    uiSettingsModeActive[1] = 3;
+    uiSettingsModeActive[1] = 0;
 	//Huel
-    uiSettingsModeParameter[1][0] = 1;
+    uiSettingsModeParameter[1][0] = 0;
 	//Saturation
-    uiSettingsModeParameter[1][1] = 2;
+    uiSettingsModeParameter[1][1] = 1;
 	//Brightness
-    uiSettingsModeParameter[1][2] = 0;
+    uiSettingsModeParameter[1][2] = 0.5;
 	//Gamme Enable
 	uiSettingsModeParameter[1][3] = TRUE;
 	
 	
 	
-    uiSettingsModeParameter[1][4] = 10;
-    uiSettingsModeParameter[1][5] = 3;
+    uiSettingsModeParameter[1][4] = 1;
+    uiSettingsModeParameter[1][5] = 0;
 	
 
     while(1)
