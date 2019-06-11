@@ -122,7 +122,7 @@ tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV tsColorHSV)
 	char h;
 	double f,p,q,t; 
 	
-	h = (char) tsColorHSV.uiHuel/60;
+	h = (char) (tsColorHSV.uiHuel/60.0);
 	f = tsColorHSV.uiHuel/60-h;
 	
 	p = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation);

@@ -205,7 +205,24 @@ void vMode4(char uiSLA)
 		{
 			tsColorRGB = tsGraphicsGamma8Correction(uiSLA, tsColorRGB);
 		}
-	
-        vGraphicsSetPixel(1<<uiSLA,uiCounter,tsColorRGB);
+		
+		if(uiCounter + piModeActors[uiSLA][1] >= uiSettingsSLALength[uiSLA])
+		{
+			vGraphicsSetPixel(1<<uiSLA,uiCounter + piModeActors[uiSLA][1] - uiSettingsSLALength[uiSLA],tsColorRGB);
+		}
+		else
+		{
+			vGraphicsSetPixel(1<<uiSLA,uiCounter + piModeActors[uiSLA][1],tsColorRGB);
+		}
+
     }
+		
+	if(piModeActors[uiSLA][1] >= uiSettingsSLALength[uiSLA])
+	{
+		piModeActors[uiSLA][1] = 0;
+	}
+	else
+	{	
+		piModeActors[uiSLA][1] += uiSettingsModeParameter[uiSLA][4];
+	}
 }
