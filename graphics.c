@@ -5,8 +5,13 @@
 #include "settings.h"
 #include "led_serial.h"
 
+#include <math.h>
 
-const char puiGraphicsGamma8Correction[] = {
+char puiGraphicsGamma8CorrectionLUTRed[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
+char puiGraphicsGamma8CorrectionLUTGreen[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
+char puiGraphicsGamma8CorrectionLUTBlue[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
+
+const char puiGraphicsGamma8CorrectionLUT[] = {
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,
     1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,
@@ -32,6 +37,14 @@ void vGraphicsInit(void)
 	for(uiCount=0;uiCount < GRAPHICS_DATA_SIZE;uiCount++)
 	{
 		puiGraphicsData[uiCount] = 0;
+	}
+	
+	//Generate gamma correction tables
+	for(uiCount=0;uiCount < SLA_NUMBER;uiCount++)
+	{
+		vGraphicsGenerateGamma8LUT(fSettingsGamma8RedValue[uiCount], puiGraphicsGamma8CorrectionLUTRed[uiCount]);
+		vGraphicsGenerateGamma8LUT(fSettingsGamma8GreenValue[uiCount], puiGraphicsGamma8CorrectionLUTGreen[uiCount]);
+		vGraphicsGenerateGamma8LUT(fSettingsGamma8BlueValue[uiCount], puiGraphicsGamma8CorrectionLUTBlue[uiCount]);
 	}
 }
 
@@ -79,12 +92,13 @@ void vGraphicsSetPixelFromTo(char uiSLAMask,long uiLEDmin,long uiLEDmax,tsGraphi
     }
 }
 
-tsGraphicsRGB tsGraphicsGamma8Correction(tsGraphicsRGB tsColorRGB)
+tsGraphicsRGB tsGraphicsGamma8Correction(char uiSLA, char tsColorRGB)
 {
-	tsGraphicsRGB tsTempColorRGB; 
-	tsTempColorRGB.uiRed = puiGraphicsGamma8Correction[tsColorRGB.uiRed];
-	tsTempColorRGB.uiGreen = puiGraphicsGamma8Correction[tsColorRGB.uiGreen];
-	tsTempColorRGB.uiBlue = puiGraphicsGamma8Correction[tsColorRGB.uiBlue];
+	tsGraphicsRGB tsTempColorRGB;
+	
+	tsTempColorRGB.uiRed = puiGraphicsGamma8CorrectionLUTRed[uiSLA][tsColorRGB.uiRed];
+	tsTempColorRGB.uiGreen = puiGraphicsGamma8CorrectionLUTGreen[uiSLA][tsColorRGB.uiGreen];
+	tsTempColorRGB.uiBlue = puiGraphicsGamma8CorrectionLUTBlue[uiSLA][tsColorRGB.uiBlue];
 	
 	return tsTempColorRGB;
 }
@@ -133,4 +147,18 @@ tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV tsColorHSV)
 	}
 	
 	return tsColorTempRGB;
+}
+
+void vGraphicsGenerateGamma8LUT(float fGamma, char* puiLUT)
+{
+	long uiCount;
+	char uiMax_in,uiMax_out;
+	
+	uiMax_in = GRAPHICS_GAMMA8_MAX_IN;
+	uiMax_out = GRAPHICS_GAMMA8_MAX_OUT;
+	
+	for(uiCount=0;uiCount<uiMax_in;uiCount++)
+	{
+		puiLUT[uiCount] = (int)(pow((float) uiCount / (float) uiMax_in, fgamma) * uiMax_out + 0.5));
+	}
 }

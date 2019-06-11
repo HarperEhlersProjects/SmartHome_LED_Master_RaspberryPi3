@@ -14,6 +14,10 @@ void vSettingsInit(void)
 		{
 			uiSettingsModeParameter[i][j] = 0;
 		}
+		
+		fSettingsGamma8RedValue[i] = SETTINGS_GAMMA8_RED_DEFAULT;
+		fSettingsGamma8GreenValue[i] = SETTINGS_GAMMA8_GREEN_DEFAULT;
+		fSettingsGamma8BlueValue[i] = SETTINGS_GAMMA8_BLUE_DEFAULT;
 	}
 }
 

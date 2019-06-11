@@ -11,6 +11,10 @@ char uiSettingsSLAState[SLA_NUMBER];
 char uiSettingsModeActive[SLA_NUMBER];
 char uiSettingsModeParameter[SLA_NUMBER][MODE_PARAMETER_NUMBER];
 
+float fSettingsGamma8RedValue[SLA_NUMBER];
+float fSettingsGamma8GreenValue[SLA_NUMBER];
+float fSettingsGamma8BlueValue[SLA_NUMBER];
+
 void vSettingsInit(void);
 
 void vSettingsSetSLALength(char uiSLANumber,char uiLength);
