@@ -92,7 +92,7 @@ void vGraphicsSetPixelFromTo(char uiSLAMask,long uiLEDmin,long uiLEDmax,tsGraphi
     }
 }
 
-tsGraphicsRGB tsGraphicsGamma8Correction(char uiSLA, char tsColorRGB)
+tsGraphicsRGB tsGraphicsGamma8Correction(char uiSLA, tsGraphicsRGB tsColorRGB)
 {
 	tsGraphicsRGB tsTempColorRGB;
 	
@@ -122,28 +122,42 @@ tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV tsColorHSV)
 	char h;
 	double f,p,q,t; 
 	
-	h = (char) tsColorHSV.uiHuel/60
+	h = (char) tsColorHSV.uiHuel/60;
 	f = tsColorHSV.uiHuel/60-h;
 	
-	p = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation)
-	q = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation)
-	t = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation * (1 - f))
+	p = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation);
+	q = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation);
+	t = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation * (1 - f));
 	
 	switch(&h)
 	{
-		case 0: tsColorTempRGB = {(char) tsColorHSV.udBrightness * 255,(char) t * 255,(char) p * 255};
+		case 0: tsColorTempRGB.uiRed = (char) tsColorHSV.udBrightness * 255;
+				tsColorTempRGB.uiGreen = (char) t * 255;
+				tsColorTempRGB.uiBlue = (char) p * 255;
 		break;
-		case 1: tsColorTempRGB = {(char) q * 255,(char) tsColorHSV.udBrightness * 255,(char) p * 255};
+		case 1: tsColorTempRGB.uiRed = (char) q * 255;
+				tsColorTempRGB.uiGreen = (char) tsColorHSV.udBrightness * 255;
+				tsColorTempRGB.uiBlue = (char) p * 255;
 		break;
-		case 2: tsColorTempRGB = {(char) p * 255,(char) tsColorHSV.udBrightness * 255,(char) t * 255};
+		case 2: tsColorTempRGB.uiRed = (char) p * 255;
+				tsColorTempRGB.uiGreen = (char) tsColorHSV.udBrightness * 255;
+				tsColorTempRGB.uiBlue = (char) t * 255;
 		break;
-		case 3: tsColorTempRGB = {(char) p * 255,(char) q * 255,(char) tsColorHSV.udBrightness * 255};
+		case 3: tsColorTempRGB.uiRed = (char) p * 255;
+				tsColorTempRGB.uiGreen = (char) q * 255;
+				tsColorTempRGB.uiBlue = (char) tsColorHSV.udBrightness * 255;
 		break;
-		case 4: tsColorTempRGB = {(char) t * 255,(char) p * 255,(char) tsColorHSV.udBrightness * 255};
+		case 4: tsColorTempRGB.uiRed = (char) t * 255;
+				tsColorTempRGB.uiGreen = (char) p * 255;
+				tsColorTempRGB.uiBlue = (char) tsColorHSV.udBrightness * 255;
 		break;
-		case 5: tsColorTempRGB = {(char) tsColorHSV.udBrightness * 255,(char) p * 255,(char) q * 255};
+		case 5: tsColorTempRGB.uiRed = (char) tsColorHSV.udBrightness * 255;
+				tsColorTempRGB.uiGreen = (char) p * 255;
+				tsColorTempRGB.uiBlue = (char) q * 255;
 		break;
-		case 6: tsColorTempRGB = {(char) tsColorHSV.udBrightness * 255,(char) t * 255,(char) p * 255};
+		case 6: tsColorTempRGB.uiRed = (char) tsColorHSV.udBrightness * 255;
+				tsColorTempRGB.uiGreen = (char) t * 255;
+				tsColorTempRGB.uiBlue = (char) p * 255;
 	}
 	
 	return tsColorTempRGB;
@@ -159,6 +173,6 @@ void vGraphicsGenerateGamma8LUT(float fGamma, char* puiLUT)
 	
 	for(uiCount=0;uiCount<uiMax_in;uiCount++)
 	{
-		puiLUT[uiCount] = (int)(pow((float) uiCount / (float) uiMax_in, fgamma) * uiMax_out + 0.5));
+		puiLUT[uiCount] = (int)(pow((float) uiCount / (float) uiMax_in, fGamma) * uiMax_out + 0.5));
 	}
 }

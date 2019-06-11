@@ -19,11 +19,13 @@ char puiGraphicsData[GRAPHICS_DATA_SIZE];
 
 void vGraphicsInit(void);
 
-tsGraphicsRGB tsGraphicsGamma8Correction(tsGraphicsRGB tsColor);
+tsGraphicsRGB tsGraphicsGamma8Correction(char uiSLA, tsGraphicsRGB tsColor);
 
 void vGraphicsSetPixel(char uiSLAMask,long uiLED,tsGraphicsRGB tsColorRGB);
 void vGraphicsSetPixelFromTo(char uiSLAMask,long uiLEDmin,long uiLEDmax,tsGraphicsRGB tsColorRGB);
 void vGraphicsPixelResetAll(void);
+
+void vGraphicsGenerateGamma8LUT(float fGamma, char* puiLUT);
 
 tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV);
 #endif /* GRAPHICS_H */

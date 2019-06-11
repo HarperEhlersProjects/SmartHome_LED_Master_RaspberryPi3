@@ -63,7 +63,7 @@ void vMode1(char uiSLA)
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
 	{
-		tsColorRGB = tsGraphicsGamma8Correction(tsColorRGB);
+		tsColorRGB = tsGraphicsGamma8Correction(uiSLA, tsColorRGB);
 	}
 	
     for(uiCounter=0;uiCounter<uiSettingsSLALength[uiSLA];uiCounter++)
@@ -92,7 +92,7 @@ void vMode2(char uiSLA)
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
 	{
-		tsColorRGB = tsGraphicsGamma8Correction(tsColorRGB);
+		tsColorRGB = tsGraphicsGamma8Correction(uiSLA, tsColorRGB);
 	}
 
     piModeActors[uiSLA][1]++;
@@ -150,7 +150,7 @@ void vMode3(char uiSLA)
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
 	{
-		tsColorRGB = tsGraphicsGamma8Correction(tsColorRGB);
+		tsColorRGB = tsGraphicsGamma8Correction(uiSLA, tsColorRGB);
 	}
 	
     if(piModeActors[uiSLA][0] > uiSettingsSLALength[uiSLA]/2)
