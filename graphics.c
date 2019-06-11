@@ -129,7 +129,7 @@ tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV tsColorHSV)
 	q = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation);
 	t = tsColorHSV.udBrightness*(1 - tsColorHSV.udSaturation * (1 - f));
 	
-	switch(&h)
+	switch(h)
 	{
 		case 0: tsColorTempRGB.uiRed = (char) tsColorHSV.udBrightness * 255;
 				tsColorTempRGB.uiGreen = (char) t * 255;
@@ -173,6 +173,6 @@ void vGraphicsGenerateGamma8LUT(float fGamma, char* puiLUT)
 	
 	for(uiCount=0;uiCount<uiMax_in;uiCount++)
 	{
-		puiLUT[uiCount] = (int)(pow((float) uiCount / (float) uiMax_in, fGamma) * uiMax_out + 0.5));
+		puiLUT[uiCount] = (int)(pow((float) uiCount / (float) uiMax_in, fGamma) * uiMax_out + 0.5);
 	}
 }

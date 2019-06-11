@@ -11,8 +11,8 @@ char uiBlue;
 
 typedef struct{
 long uiHuel;
-unsigned double udSaturation;
-unsigned double udBrightness;
+double udSaturation;
+double udBrightness;
 } tsGraphicsHSV;
 
 char puiGraphicsData[GRAPHICS_DATA_SIZE];
