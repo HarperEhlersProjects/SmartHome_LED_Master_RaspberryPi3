@@ -55,12 +55,12 @@ char vSettingsGetModeActive(char uiSLANumber)
 }
 
 
-void vSettingsSetModeParameter(char uiSLANumber,char uiParameter, char uiValue)
+void vSettingsSetModeParameter(char uiSLANumber,char uiParameter, double uiValue)
 {
 	uiSettingsModeParameter[uiSLANumber][uiParameter] = uiValue;
 }
 
-char vSettingsGetModeParameter(char uiSLANumber, char uiParameter)
+double vSettingsGetModeParameter(char uiSLANumber, char uiParameter)
 {
 	return uiSettingsModeParameter[uiSLANumber][uiParameter];
 }

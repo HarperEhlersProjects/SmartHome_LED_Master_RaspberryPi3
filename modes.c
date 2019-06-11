@@ -53,12 +53,15 @@ parameter 3: GammaorrectionEnable: boolean
 */
 void vMode1(char uiSLA)
 {
+	tsGraphicsHSV tsColorHSV;
 	tsGraphicsRGB tsColorRGB;
     long uiCounter;
 	
-	tsColorRGB.uiRed = uiSettingsModeParameter[uiSLA][0];
-	tsColorRGB.uiGreen = uiSettingsModeParameter[uiSLA][1];
-	tsColorRGB.uiBlue = uiSettingsModeParameter[uiSLA][2];
+	tsColorHSV.uiHuel = uiSettingsModeParameter[uiSLA][0];
+	tsColorHSV.udSaturation = uiSettingsModeParameter[uiSLA][1];
+	tsColorHSV.udBrightness = uiSettingsModeParameter[uiSLA][2];
+	
+	tsColorRGB = tsGraphicsHSV2RGB(tsColorHSV);
 	
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
@@ -80,15 +83,17 @@ parameter 5: snake veloity: 0-255
 */
 void vMode2(char uiSLA)
 {
+	tsGraphicsHSV tsColorHSV;
     tsGraphicsRGB tsColorRGB;
     long uiCounter;
     long uiTopBoundary,uiBottomBoundary;
 
-
-	tsColorRGB.uiRed = uiSettingsModeParameter[uiSLA][0];
-	tsColorRGB.uiGreen = uiSettingsModeParameter[uiSLA][1];
-	tsColorRGB.uiBlue = uiSettingsModeParameter[uiSLA][2];
-
+	tsColorHSV.uiHuel = uiSettingsModeParameter[uiSLA][0];
+	tsColorHSV.udSaturation = uiSettingsModeParameter[uiSLA][1];
+	tsColorHSV.udBrightness = uiSettingsModeParameter[uiSLA][2];
+	
+	tsColorRGB = tsGraphicsHSV2RGB(tsColorHSV);
+	
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
 	{
@@ -141,12 +146,15 @@ parameter 5: expanding velocity: 0-255
 
 void vMode3(char uiSLA)
 {
+	tsGraphicsHSV tsColorHSV;
     tsGraphicsRGB tsColorRGB;
 
-    tsColorRGB.uiRed = uiSettingsModeParameter[uiSLA][0];
-    tsColorRGB.uiGreen = (uiSettingsModeParameter[uiSLA][1]/255)*(uiSettingsSLALength[uiSLA]/2-piModeActors[uiSLA][0]);
-    tsColorRGB.uiBlue = (uiSettingsModeParameter[uiSLA][2]/255)*piModeActors[uiSLA][0];
-
+	tsColorHSV.uiHuel = uiSettingsModeParameter[uiSLA][0];
+	tsColorHSV.udSaturation = uiSettingsModeParameter[uiSLA][1];
+	tsColorHSV.udBrightness = uiSettingsModeParameter[uiSLA][2];
+	
+	tsColorRGB = tsGraphicsHSV2RGB(tsColorHSV);
+	
 	//use gamma correction if enabled
 	if(uiSettingsModeParameter[uiSLA][3])
 	{

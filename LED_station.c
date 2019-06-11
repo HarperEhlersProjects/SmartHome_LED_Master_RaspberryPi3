@@ -19,20 +19,26 @@ void main(int argc, char **argv)
 	vModesInit();
 	vLEDSerialTransmitterInit();
 
-	/*
+	//SLA Length
 	uiSettingsSLALength[1] = 300;
-	uiSettingsSLAState[1] = SLA_ACTIVE;	
-
+	//Enable SLA
+	uiSettingsSLAState[1] = SLA_ACTIVE;
+	//Mode
     uiSettingsModeActive[1] = 3;
+	//Huel
     uiSettingsModeParameter[1][0] = 1;
+	//Saturation
     uiSettingsModeParameter[1][1] = 2;
+	//Brightness
     uiSettingsModeParameter[1][2] = 0;
-    
+	//Gamme Enable
 	uiSettingsModeParameter[1][3] = TRUE;
+	
+	
 	
     uiSettingsModeParameter[1][4] = 10;
     uiSettingsModeParameter[1][5] = 3;
-	*/
+	
 
     while(1)
     {       
