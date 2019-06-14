@@ -15,14 +15,14 @@ double udSaturation;
 double udBrightness;
 } tsGraphicsHSV;
 
-char puiGraphicsData[GRAPHICS_DATA_SIZE];
+tsGraphicsRGB puiGraphicsData[SLA_NUMBER][GRAPHICS_DATA_SIZE];
 
 void vGraphicsInit(void);
 
 tsGraphicsRGB tsGraphicsGamma8Correction(char uiSLA, tsGraphicsRGB tsColor);
 
-void vGraphicsSetPixel(char uiSLAMask,long uiLED,tsGraphicsRGB tsColorRGB);
-void vGraphicsSetPixelFromTo(char uiSLAMask,long uiLEDmin,long uiLEDmax,tsGraphicsRGB tsColorRGB);
+void vGraphicsSetPixel(char uiSLA,long uiLED,tsGraphicsRGB tsColorRGB);
+void vGraphicsSetPixelFromTo(char uiSLA,long uiLEDmin,long uiLEDmax,tsGraphicsRGB tsColorRGB);
 void vGraphicsPixelResetAll(void);
 
 void vGraphicsGenerateGamma8LUT(float fGamma, char* puiLUT);

@@ -43,6 +43,7 @@ void main(int argc, char **argv)
     while(1)
     {       
 		vModesFrameCalculate();
+		vLEDSerialRGB2PacketSerial();
 		//while(15ms);
         vLEDSerialTransmit();
 

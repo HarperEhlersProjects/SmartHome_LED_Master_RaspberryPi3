@@ -8,6 +8,8 @@
 
 int iPort;
 
+char uiLEDSerialBuffer[LED_SERIAL_DATA_SIZE];
+
 void vLEDSerialTransmitterInit(void)
 {
     int iUART0_filestream = -1, uiCount;
@@ -60,7 +62,7 @@ void vLEDSerialTransmit()
                 iCount = 0;
                 while(iCount < GRAPHICS_DATA_SIZE)
                 {   
-                    iRet = write(iPort, &(puiGraphicsData[iCount]), GRAPHICS_DATA_SIZE-iCount);
+                    iRet = write(iPort, &(uiLEDSerialBuffer[iCount]), LED_SERIAL_DATA_SIZE-iCount);
                     if(iRet != -1)
                     {
                         iCount += iRet;
@@ -85,4 +87,47 @@ void vLEDSerialTransmit()
     }
 
     return;
+}
+
+void vLEDSerialRGB2PacketSerial(void)
+{
+	long i, uiLED, uiSLA;
+	
+	for(uiSLA=0;uiSLA < SLA_NUMBER;uiSLA++)
+	{
+		uiSLAMask = 1 << uiSLA;
+		
+		for(uiLED=0;uiLED < GRAPHICS_DATA_SIZE;uiLED++)
+		{
+			for(i=0;i<8;i++)
+			{
+				if((puiGraphicsData[uiSLA][uiLED].uiRed & (0x80 >> i)) > 0)
+				{
+					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
+				}
+				else
+				{
+					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;        
+				}
+
+				if((puiGraphicsData[uiSLA][uiLED].uiGreen & (0x80 >> i)) > 0)
+				{
+					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
+				}
+				else
+				{
+					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
+				}
+
+				if((puiGraphicsData[uiSLA][uiLED].uiBlue & (0x80 >> i)) > 0)
+				{
+					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
+				}
+				else
+				{
+					uiLEDSerialBuffer[uiLED * 24 + 16 + i] &= ~uiSLAMask;
+				}
+			}
+		}
+	}
 }

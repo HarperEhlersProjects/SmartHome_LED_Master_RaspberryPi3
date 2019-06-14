@@ -11,6 +11,7 @@ char puiGraphicsGamma8CorrectionLUTRed[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
 char puiGraphicsGamma8CorrectionLUTGreen[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
 char puiGraphicsGamma8CorrectionLUTBlue[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
 
+/*outdated LUT
 const char puiGraphicsGamma8CorrectionLUT[] = {
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,
@@ -28,15 +29,20 @@ const char puiGraphicsGamma8CorrectionLUT[] = {
   144,146,148,150,152,154,156,158,160,162,164,167,169,171,173,175,
   177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
-
+*/
 
 void vGraphicsInit(void)
 {
-	long uiCount;
+	long uiCount, uiSLA;
 	
-	for(uiCount=0;uiCount < GRAPHICS_DATA_SIZE;uiCount++)
+	for(uiSLA=0;uiSLA < SLA_NUMBER;uiSLA++)
 	{
-		puiGraphicsData[uiCount] = 0;
+		for(uiCount=0;uiCount < GRAPHICS_DATA_SIZE;uiCount++)
+		{
+			puiGraphicsData[uiSLA][uiCount].uiRed = 0;
+			puiGraphicsData[uiSLA][uiCount].uiGreen = 0;
+			puiGraphicsData[uiSLA][uiCount].uiBlue = 0;
+		}
 	}
 	
 	//Generate gamma correction tables
@@ -49,46 +55,17 @@ void vGraphicsInit(void)
 }
 
 
-void vGraphicsSetPixel(char uiSLAMask,long uiLED,tsGraphicsRGB tsColorRGB)    
+void vGraphicsSetPixel(char uiSLA,long uiLED,tsGraphicsRGB tsColorRGB)    
 {
-    long i;
-    for(i=0;i<8;i++)
-    {
-        if((tsColorRGB.uiRed & (0x80 >> i)) > 0)
-        {
-            puiGraphicsData[uiLED * 24 + i] |= uiSLAMask;
-        }
-        else
-        {
-            puiGraphicsData[uiLED * 24 + i] &= ~uiSLAMask;        
-        }
-
-        if((tsColorRGB.uiGreen & (0x80 >> i)) > 0)
-        {
-            puiGraphicsData[uiLED * 24 + 8 + i] |= uiSLAMask;
-        }
-        else
-        {
-            puiGraphicsData[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
-        }
-
-        if((tsColorRGB.uiBlue & (0x80 >> i)) > 0)
-        {
-            puiGraphicsData[uiLED * 24 + 16 + i] |= uiSLAMask;
-        }
-        else
-        {
-            puiGraphicsData[uiLED * 24 + 16 + i] &= ~uiSLAMask;
-        }
-    }
+    puiGraphicsData[uiSLA][uiLED] = tsColorRGB;
 }
 
-void vGraphicsSetPixelFromTo(char uiSLAMask,long uiLEDmin,long uiLEDmax,tsGraphicsRGB tsColorRGB)
+void vGraphicsSetPixelFromTo(char uiSLA,long uiLEDmin,long uiLEDmax,tsGraphicsRGB tsColorRGB)
 {
     long i;
     for(i=uiLEDmin;i<=uiLEDmax;i++)
     {
-        vGraphicsSetPixel(uiSLAMask, i, tsColorRGB);
+        vGraphicsSetPixel(uiSLA, i, tsColorRGB);
     }
 }
 
@@ -106,12 +83,16 @@ tsGraphicsRGB tsGraphicsGamma8Correction(char uiSLA, tsGraphicsRGB tsColorRGB)
 void vGraphicsPixelResetAll(void)
 {
     tsGraphicsRGB tsTempColorRGB; 
+	long uiSLA;
 	
     tsTempColorRGB.uiRed = 0;
     tsTempColorRGB.uiGreen = 0;
     tsTempColorRGB.uiBlue = 0;
-
-    vGraphicsSetPixelFromTo(0xFF,0,SLA_LENGTH_MAX-1,tsTempColorRGB);
+	
+	for(uiSLA=0;uiSLA < SLA_NUMBER;uiSLA++)
+	{
+		vGraphicsSetPixelFromTo(0,0,SLA_LENGTH_MAX-1,tsTempColorRGB);
+	}
 }
 
 //using formular from wikipedia "HSV-Farbraum"
