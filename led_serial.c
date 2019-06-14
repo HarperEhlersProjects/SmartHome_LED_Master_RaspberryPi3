@@ -60,7 +60,7 @@ void vLEDSerialTransmit()
                 tcflush(iPort, TCIOFLUSH);
                 
                 iCount = 0;
-                while(iCount < GRAPHICS_DATA_SIZE)
+                while(iCount < LED_SERIAL_DATA_SIZE)
                 {   
                     iRet = write(iPort, &(uiLEDSerialBuffer[iCount]), LED_SERIAL_DATA_SIZE-iCount);
                     if(iRet != -1)
@@ -92,6 +92,7 @@ void vLEDSerialTransmit()
 void vLEDSerialRGB2PacketSerial(void)
 {
 	long i, uiLED, uiSLA;
+	char uiSLAMask;
 	
 	for(uiSLA=0;uiSLA < SLA_NUMBER;uiSLA++)
 	{

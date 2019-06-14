@@ -1,7 +1,7 @@
 #include "modes.h"
 #include "makros.h"
 #include "graphics.h"
-#include "gamebox.h"
+#include "game_box.h"
 
 #include "settings.h"
 
@@ -39,7 +39,7 @@ void vModesFrameCalculate()
             break;
 			case 4:vMode4(uiCounterSLA);//Color Fade
 			break;
-			case 4:vMode5(uiCounterSLA);//Game Box
+			case 5:vMode5(uiCounterSLA);//Game Box
 		}
 	}
 }
