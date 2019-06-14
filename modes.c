@@ -1,7 +1,7 @@
 #include "modes.h"
 #include "makros.h"
 #include "graphics.h"
-
+#include "gamebox.h"
 
 #include "settings.h"
 
@@ -38,6 +38,8 @@ void vModesFrameCalculate()
             case 3:vMode3(uiCounterSLA);//Pulse
             break;
 			case 4:vMode4(uiCounterSLA);//Color Fade
+			break;
+			case 4:vMode5(uiCounterSLA);//Game Box
 		}
 	}
 }
@@ -225,4 +227,12 @@ void vMode4(char uiSLA)
 	{	
 		piModeActors[uiSLA][1] += uiSettingsModeParameter[uiSLA][4];
 	}
+}
+
+
+//Game Box
+void vMode5(char uiSLA)
+{
+	
+	
 }
