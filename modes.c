@@ -5,13 +5,13 @@
 
 #include "settings.h"
 
-int piModeActors[SLA_NUMBER][MODE_ACTOR_NUMBER];
+int piModeActors[VIRTUAL_SLA_NUMBER][MODE_ACTOR_NUMBER];
 
 void vModesInit()
 {
 	char i,j;
 	
-	for(i=0;i<SLA_NUMBER;i++)
+	for(i=0;i<VIRTUAL_SLA_NUMBER;i++)
 	{
 		for(j=0;j<MODE_ACTOR_NUMBER;j++)
 		{
@@ -25,7 +25,7 @@ void vModesFrameCalculate()
 {
 	char uiCounterSLA;
 	
-	for(uiCounterSLA=0;uiCounterSLA < SLA_NUMBER;uiCounterSLA++)
+	for(uiCounterSLA=0;uiCounterSLA < VIRTUAL_SLA_NUMBER;uiCounterSLA++)
 	{
 		switch(uiSettingsModeActive[uiCounterSLA])
         {
@@ -72,7 +72,7 @@ void vMode1(char uiSLA)
 		tsColorRGB = tsGraphicsGamma8Correction(uiSLA, tsColorRGB);
 	}
 	
-    for(uiCounter=0;uiCounter<uiSettingsSLALength[uiSLA];uiCounter++)
+    for(uiCounter=0;uiCounter<uiSettingsVirtualSLALength[uiSLA];uiCounter++)
     {
         vGraphicsSetPixel(uiSLA,uiCounter,tsColorRGB);
     }
@@ -109,7 +109,7 @@ void vMode2(char uiSLA)
     {
         piModeActors[uiSLA][0]++;
 
-        if(piModeActors[uiSLA][0] >= uiSettingsSLALength[uiSLA] + uiSettingsModeParameter[uiSLA][4])
+        if(piModeActors[uiSLA][0] >= uiSettingsVirtualSLALength[uiSLA] + uiSettingsModeParameter[uiSLA][4])
         {
             piModeActors[uiSLA][0] = 0;
         }
@@ -128,7 +128,7 @@ void vMode2(char uiSLA)
 
     uiTopBoundary=piModeActors[uiSLA][0];
 
-    if(uiTopBoundary >= uiSettingsSLALength[uiSLA])
+    if(uiTopBoundary >= uiSettingsVirtualSLALength[uiSLA])
     {
         uiTopBoundary = uiSettingsSLALength[uiSLA];
 
@@ -164,7 +164,7 @@ void vMode3(char uiSLA)
 		tsColorRGB = tsGraphicsGamma8Correction(uiSLA, tsColorRGB);
 	}
 	
-    if(piModeActors[uiSLA][0] > uiSettingsSLALength[uiSLA]/2)
+    if(piModeActors[uiSLA][0] > uiSettingsVirtualSLALength[uiSLA]/2)
     {   
         piModeActors[uiSLA][1]=0;
     }
@@ -182,7 +182,7 @@ void vMode3(char uiSLA)
         piModeActors[uiSLA][0]-=uiSettingsModeParameter[uiSLA][4];
     }
 
-    vGraphicsSetPixelFromTo(uiSLA,piModeActors[uiSLA][0],250-piModeActors[uiSLA][0],tsColorRGB);
+    vGraphicsSetPixelFromTo(uiSLA,piModeActors[uiSLA][0],uiSettingsVirtualSLALength[uiSLA]-1-piModeActors[uiSLA][0],tsColorRGB);
 
 }
 
@@ -193,10 +193,10 @@ void vMode4(char uiSLA)
 	tsGraphicsRGB tsColorRGB;
     long uiCounter;
 	
-	for(uiCounter=0;uiCounter<uiSettingsSLALength[uiSLA];uiCounter++)
+	for(uiCounter=0;uiCounter<uiSettingsVirtualSLALength[uiSLA];uiCounter++)
     {
 	
-	tsColorHSV.uiHuel = 360*uiCounter/uiSettingsSLALength[uiSLA];
+	tsColorHSV.uiHuel = 360*uiCounter/uiSettingsVirtualSLALength[uiSLA];
 	tsColorHSV.udSaturation = uiSettingsModeParameter[uiSLA][1];
 	tsColorHSV.udBrightness = uiSettingsModeParameter[uiSLA][2];
 	
@@ -208,9 +208,9 @@ void vMode4(char uiSLA)
 			tsColorRGB = tsGraphicsGamma8Correction(uiSLA, tsColorRGB);
 		}
 		
-		if(uiCounter + piModeActors[uiSLA][1] >= uiSettingsSLALength[uiSLA])
+		if(uiCounter + piModeActors[uiSLA][1] >= uiSettingsVirtualSLALength[uiSLA])
 		{
-			vGraphicsSetPixel(uiSLA,uiCounter + piModeActors[uiSLA][1] - uiSettingsSLALength[uiSLA],tsColorRGB);
+			vGraphicsSetPixel(uiSLA,uiCounter + piModeActors[uiSLA][1] - uiSettingsVirtualSLALength[uiSLA],tsColorRGB);
 		}
 		else
 		{
@@ -219,7 +219,7 @@ void vMode4(char uiSLA)
 
     }
 		
-	if(piModeActors[uiSLA][1] >= uiSettingsSLALength[uiSLA])
+	if(piModeActors[uiSLA][1] >= uiSettingsVirtualSLALength[uiSLA])
 	{
 		piModeActors[uiSLA][1] = 0;
 	}

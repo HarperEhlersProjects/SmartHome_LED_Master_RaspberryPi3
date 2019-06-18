@@ -19,48 +19,26 @@ void vSettingsInit(void)
 		fSettingsGamma8GreenValue[i] = SETTINGS_GAMMA8_GREEN_DEFAULT;
 		fSettingsGamma8BlueValue[i] = SETTINGS_GAMMA8_BLUE_DEFAULT;
 	}
-}
-
-
-void vSettingsSetSLALength(char uiSLANumber,char uiLength)
-{
-	uiSettingsSLALength[uiSLANumber] = uiLength;
-}
-
-char vSettingsGetSLALength(char uiSLANumber)
-{
-	return uiSettingsSLALength[uiSLANumber];
-}
-
-
-void vSettingsSetSLAState(char uiSLANumber,char uiState)
-{
-	uiSettingsSLALength[uiSLANumber] = uiState;
-}
-
-char vSettingsGetSLAState(char uiSLANumber)
-{
-	return uiSettingsSLALength[uiSLANumber];
-}
-
-
-void vSettingsSetModeActive(char uiSLANumber,char uiMode)
-{
-	uiSettingsSLALength[uiSLANumber] = uiMode;
-}
-
-char vSettingsGetModeActive(char uiSLANumber)
-{
-	return uiSettingsModeActive[uiSLANumber];
-}
-
-
-void vSettingsSetModeParameter(char uiSLANumber,char uiParameter, double uiValue)
-{
-	uiSettingsModeParameter[uiSLANumber][uiParameter] = uiValue;
-}
-
-double vSettingsGetModeParameter(char uiSLANumber, char uiParameter)
-{
-	return uiSettingsModeParameter[uiSLANumber][uiParameter];
+	
+	
+	for(i=0;i<VIRTUAL_SLA_NUMBER;i++)
+	{
+		uiSettingsVirtualSLALength[i] = 0;
+		uiSettingsVirtualSLAState[i] = SLA_DEACTIVE;
+		uiSettingsVirtualSLAModeActive[i] = 0;
+		
+		for(j=0;j<MODE_PARAMETER_NUMBER;j++)
+		{
+			uiSettingsVirtualSLAModeParameter[i][j] = 0;
+		}
+		
+		for(j=0;j<VIRTUAL_SLA_SEGMENTS_NUMBER;j++)
+		{
+			tsSettingsVirtualSLAMap[i][j].uiDestSLA=VIRTUAL_SLA_DEST_NONE;
+			tsSettingsVirtualSLAMap[i][j].bInverted=FALSE;
+			tsSettingsVirtualSLAMap[i][j].uiSegmentLength=0;
+			tsSettingsVirtualSLAMap[i][j].uiSourceLEDStart=0;
+			tsSettingsVirtualSLAMap[i][j].uiSourceLEDEnd=0;
+		}
+	}
 }

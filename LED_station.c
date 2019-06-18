@@ -19,25 +19,32 @@ void main(int argc, char **argv)
 	vModesInit();
 	vLEDSerialTransmitterInit();
 
+	//Configure Virtual SLA
+	//VSLA-0:
+	//Segment 0:
+	tsSettingsVirtualSLAMap[0][0].uiDestSLA = 1;
+	//tsSettingsVirtualSLAMap[0][0].bSLAInverted = False; default
+	tsSettingsVirtualSLAMap[0][0].uiSegmentLength = 100;
+	tsSettingsVirtualSLAMap[0][0].uiSourceLEDStart = 0;
+	tsSettingsVirtualSLAMap[0][0].uiDestLEDStart = 0;
+	
 	//SLA Length
-	uiSettingsSLALength[1] = 300;
-	//Enable SLA
-	uiSettingsSLAState[1] = SLA_ACTIVE;
+	uiSettingsVirtualSLALength[0] = 100;
 	//Mode
-    uiSettingsModeActive[1] = 0;
+    uiSettingsModeActive[0] = 0;
 	//Huel
-    uiSettingsModeParameter[1][0] = 0;
+    uiSettingsModeParameter[0][0] = 0;
 	//Saturation
-    uiSettingsModeParameter[1][1] = 1;
+    uiSettingsModeParameter[0][1] = 1;
 	//Brightness
-    uiSettingsModeParameter[1][2] = 0.5;
+    uiSettingsModeParameter[0][2] = 0.5;
 	//Gamme Enable
-	uiSettingsModeParameter[1][3] = TRUE;
+	uiSettingsModeParameter[0][3] = TRUE;
 	
 	
 	
-    uiSettingsModeParameter[1][4] = 1;
-    uiSettingsModeParameter[1][5] = 0;
+    uiSettingsModeParameter[0][4] = 1;
+    uiSettingsModeParameter[0][5] = 0;
 	
 
     while(1)

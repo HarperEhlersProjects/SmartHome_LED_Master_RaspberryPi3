@@ -83,7 +83,6 @@ void vLEDSerialTransmit()
             printf("Transmission failed\n\n");
             //tcflush(iPort, TCIOFLUSH);
         }
-        
     }
 
     return;
@@ -91,42 +90,91 @@ void vLEDSerialTransmit()
 
 void vLEDSerialRGB2PacketSerial(void)
 {
-	long i, uiLED, uiSLA;
+	long i, uiLEDOffset, uiLED, uiVirtualLED, uiVirtualSLA, uiSegmentCounter;
 	char uiSLAMask;
 	
-	for(uiSLA=0;uiSLA < SLA_NUMBER;uiSLA++)
+	for(uiVirtualSLA=0;uiVirtualSLA < VIRTUAL_SLA_NUMBER;uiVirtualSLA++)
 	{
-		uiSLAMask = 1 << uiSLA;
-		
-		for(uiLED=0;uiLED < GRAPHICS_DATA_SIZE;uiLED++)
+		for(uiSegmentCounter=0;uiSegmentCounter < VIRTUAL_SLA_SEGMENTS_NUMBER;uiSegmentCounter++)
 		{
-			for(i=0;i<8;i++)
+			if(tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiDestSLA != VIRTUAL_SLA_DEST_NONE)
 			{
-				if((puiGraphicsData[uiSLA][uiLED].uiRed & (0x80 >> i)) > 0)
-				{
-					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
-				}
-				else
-				{
-					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;        
-				}
+				uiSLAMask = 1 << tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiDestSLA;
+				if(tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].bInverted)
+				{	
+					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
+					{
+						uiVirtualLED = tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiSourceLEDStart + uiLEDOffset;
+						uiLED = tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiDestLEDStart - uiLEDOffset;
+						
+						for(i=0;i<8;i++)
+						{
+							if((puiGraphicsData[Virtual][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+							{
+								uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
+							}
+							else
+							{
+								uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
+							}
 
-				if((puiGraphicsData[uiSLA][uiLED].uiGreen & (0x80 >> i)) > 0)
-				{
-					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
-				}
-				else
-				{
-					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
-				}
+							if((puiGraphicsData[Virtual][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+							{
+								uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
+							}
+							else
+							{
+								uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
+							}
 
-				if((puiGraphicsData[uiSLA][uiLED].uiBlue & (0x80 >> i)) > 0)
-				{
-					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
+							if((puiGraphicsData[Virtual][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+							{
+								uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
+							}
+							else
+							{
+								uiLEDSerialBuffer[uiLED * 24 + 16 + i] &= ~uiSLAMask;
+							}
+						}
+					}
 				}
 				else
 				{
-					uiLEDSerialBuffer[uiLED * 24 + 16 + i] &= ~uiSLAMask;
+					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
+					{
+						uiVirtualLED = tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiSourceLEDStart + uiLEDOffset;
+						uiLED = tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiDestLEDStart + uiLEDOffset;
+						
+						for(i=0;i<8;i++)
+						{
+							if((puiGraphicsData[Virtual][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+							{
+								uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
+							}
+							else
+							{
+								uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
+							}
+
+							if((puiGraphicsData[Virtual][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+							{
+								uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
+							}
+							else
+							{
+								uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
+							}
+
+							if((puiGraphicsData[Virtual][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+							{
+								uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
+							}
+							else
+							{
+								uiLEDSerialBuffer[uiLED * 24 + 16 + i] &= ~uiSLAMask;
+							}
+						}
+					}
 				}
 			}
 		}

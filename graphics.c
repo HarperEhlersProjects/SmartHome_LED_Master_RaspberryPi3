@@ -7,9 +7,9 @@
 
 #include <math.h>
 
-char puiGraphicsGamma8CorrectionLUTRed[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
-char puiGraphicsGamma8CorrectionLUTGreen[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
-char puiGraphicsGamma8CorrectionLUTBlue[SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
+char puiGraphicsGamma8CorrectionLUTRed[VIRTUAL_SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
+char puiGraphicsGamma8CorrectionLUTGreen[VIRTUAL_SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
+char puiGraphicsGamma8CorrectionLUTBlue[VIRTUAL_SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
 
 /*outdated LUT
 const char puiGraphicsGamma8CorrectionLUT[] = {
@@ -35,7 +35,7 @@ void vGraphicsInit(void)
 {
 	long uiCount, uiSLA;
 	
-	for(uiSLA=0;uiSLA < SLA_NUMBER;uiSLA++)
+	for(uiSLA=0;uiSLA < VIRTUAL_SLA_NUMBER;uiSLA++)
 	{
 		for(uiCount=0;uiCount < GRAPHICS_DATA_SIZE;uiCount++)
 		{
@@ -46,7 +46,7 @@ void vGraphicsInit(void)
 	}
 	
 	//Generate gamma correction tables
-	for(uiCount=0;uiCount < SLA_NUMBER;uiCount++)
+	for(uiCount=0;uiCount < VIRTUAL_SLA_NUMBER;uiCount++)
 	{
 		vGraphicsGenerateGamma8LUT(fSettingsGamma8RedValue[uiCount], puiGraphicsGamma8CorrectionLUTRed[uiCount]);
 		vGraphicsGenerateGamma8LUT(fSettingsGamma8GreenValue[uiCount], puiGraphicsGamma8CorrectionLUTGreen[uiCount]);
@@ -89,9 +89,9 @@ void vGraphicsPixelResetAll(void)
     tsTempColorRGB.uiGreen = 0;
     tsTempColorRGB.uiBlue = 0;
 	
-	for(uiSLA=0;uiSLA < SLA_NUMBER;uiSLA++)
+	for(uiSLA=0;uiSLA < VIRTUAL_SLA_NUMBER;uiSLA++)
 	{
-		vGraphicsSetPixelFromTo(0,0,SLA_LENGTH_MAX-1,tsTempColorRGB);
+		vGraphicsSetPixelFromTo(0,0,VIRTUAL_SLA_LENGTH_MAX-1,tsTempColorRGB);
 	}
 }
 

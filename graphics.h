@@ -15,7 +15,7 @@ double udSaturation;
 double udBrightness;
 } tsGraphicsHSV;
 
-tsGraphicsRGB puiGraphicsData[SLA_NUMBER][GRAPHICS_DATA_SIZE];
+tsGraphicsRGB puiGraphicsData[VIRTUAL_SLA_NUMBER][GRAPHICS_DATA_SIZE];
 
 void vGraphicsInit(void);
 
