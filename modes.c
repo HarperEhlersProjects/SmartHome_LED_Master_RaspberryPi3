@@ -146,7 +146,6 @@ parameter 3: GammaorrectionEnable: boolean
 parameter 4: ShrinkingVelocity: 0-255
 parameter 5: expanding velocity: 0-255
 */
-
 void vMode3(char uiSLA)
 {
 	tsGraphicsHSV tsColorHSV;

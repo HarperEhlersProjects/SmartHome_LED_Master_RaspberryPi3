@@ -6,6 +6,8 @@
 #include "graphics.h"
 #include "led_serial.h"
 
+#include "settings.h"
+
 int iPort;
 
 char uiLEDSerialBuffer[LED_SERIAL_DATA_SIZE];
@@ -97,19 +99,19 @@ void vLEDSerialRGB2PacketSerial(void)
 	{
 		for(uiSegmentCounter=0;uiSegmentCounter < VIRTUAL_SLA_SEGMENTS_NUMBER;uiSegmentCounter++)
 		{
-			if(tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiDestSLA != VIRTUAL_SLA_DEST_NONE)
+			if(tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA != VIRTUAL_SLA_DEST_NONE)
 			{
-				uiSLAMask = 1 << tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiDestSLA;
-				if(tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].bInverted)
+				uiSLAMask = 1 << tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA;
+				if(tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].bInverted)
 				{	
-					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
+					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
 					{
-						uiVirtualLED = tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiSourceLEDStart + uiLEDOffset;
-						uiLED = tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiDestLEDStart - uiLEDOffset;
+						uiVirtualLED = tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSourceLEDStart + uiLEDOffset;
+						uiLED = tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestLEDStart - uiLEDOffset;
 						
 						for(i=0;i<8;i++)
 						{
-							if((puiGraphicsData[Virtual][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+							if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 							{
 								uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 							}
@@ -118,7 +120,7 @@ void vLEDSerialRGB2PacketSerial(void)
 								uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 							}
 
-							if((puiGraphicsData[Virtual][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+							if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 							{
 								uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 							}
@@ -127,7 +129,7 @@ void vLEDSerialRGB2PacketSerial(void)
 								uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 							}
 
-							if((puiGraphicsData[Virtual][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+							if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 							{
 								uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 							}
@@ -140,14 +142,14 @@ void vLEDSerialRGB2PacketSerial(void)
 				}
 				else
 				{
-					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
+					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
 					{
-						uiVirtualLED = tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiSourceLEDStart + uiLEDOffset;
-						uiLED = tsSettingsVirtualSLAMap[Virtual][uiSegmentCounter].uiDestLEDStart + uiLEDOffset;
+						uiVirtualLED = tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSourceLEDStart + uiLEDOffset;
+						uiLED = tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestLEDStart + uiLEDOffset;
 						
 						for(i=0;i<8;i++)
 						{
-							if((puiGraphicsData[Virtual][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+							if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 							{
 								uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 							}
@@ -156,7 +158,7 @@ void vLEDSerialRGB2PacketSerial(void)
 								uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 							}
 
-							if((puiGraphicsData[Virtual][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+							if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 							{
 								uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 							}
@@ -165,7 +167,7 @@ void vLEDSerialRGB2PacketSerial(void)
 								uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 							}
 
-							if((puiGraphicsData[Virtual][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+							if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 							{
 								uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 							}
