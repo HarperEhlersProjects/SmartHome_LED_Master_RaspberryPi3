@@ -24,7 +24,7 @@ void vSettingsInit(void)
 		for(j=0;j<VIRTUAL_SLA_SEGMENTS_NUMBER;j++)
 		{
 			tsSettingsVirtualSLAMap[i][j].uiDestSLA=VIRTUAL_SLA_DEST_NONE;
-			tsSettingsVirtualSLAMap[i][j].bInverted=FALSE;
+			tsSettingsVirtualSLAMap[i][j].bSLAInverted=FALSE;
 			tsSettingsVirtualSLAMap[i][j].uiSegmentLength=0;
 			tsSettingsVirtualSLAMap[i][j].uiSourceLEDStart=0;
 			tsSettingsVirtualSLAMap[i][j].uiDestLEDStart=0;

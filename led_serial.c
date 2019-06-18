@@ -102,7 +102,7 @@ void vLEDSerialRGB2PacketSerial(void)
 			if(tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA != VIRTUAL_SLA_DEST_NONE)
 			{
 				uiSLAMask = 1 << tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA;
-				if(tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].bInverted)
+				if(tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].bSLAInverted)
 				{	
 					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
 					{
