@@ -276,6 +276,34 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] &= ~uiSLAMask;
 				}
 			break;
+			case SETTINGS_SLATYPE_RBG:
+				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				{
+					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
+				}
+				else
+				{
+					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
+				}
+
+				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				{
+					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
+				}
+				else
+				{
+					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
+				}
+
+				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				{
+					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
+				}
+				else
+				{
+					uiLEDSerialBuffer[uiLED * 24 + 16 + i] &= ~uiSLAMask;
+				}
+			break;
 		}
 	}	
 }
