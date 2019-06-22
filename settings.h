@@ -21,6 +21,7 @@ tsVirtualSLAMap tsSettingsVirtualSLAMap[VIRTUAL_SLA_NUMBER][VIRTUAL_SLA_SEGMENTS
 
 long uiSettingsSLALengthMAX;
 
+char uiSettingsSLAType[SLA_NUMBER];
 long uiSettingsSLALength[SLA_NUMBER];
 char uiSettingsSLAState[SLA_NUMBER];
 

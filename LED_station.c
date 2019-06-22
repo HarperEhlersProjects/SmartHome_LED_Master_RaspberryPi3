@@ -19,6 +19,10 @@ void main(int argc, char **argv)
 	vModesInit();
 	vLEDSerialTransmitterInit();
 
+	//Configure	SLAs
+	uiSettingsSLAType[0] = SETTINGS_SLATYPE_RGB;
+	uiSettingsSLAType[1] = SETTINGS_SLATYPE_RGB;
+	
 	//Configure Virtual SLA
 	//VSLA-0:
 	//Segment 0:
