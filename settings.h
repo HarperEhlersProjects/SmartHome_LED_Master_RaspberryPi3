@@ -14,6 +14,12 @@ typedef struct{
 
 }tsVirtualSLAMap;
 
+typedef struct{
+	char bIsActive;
+	char uiPriority;
+	long uiParameter[EVENT_HANDLER_PARAMETER_NUMBER];
+}tsEventHandler;
+
 long uiSettingsVirtualSLALength[VIRTUAL_SLA_NUMBER];
 char uiSettingsModeActive[VIRTUAL_SLA_NUMBER];
 double uiSettingsModeParameter[VIRTUAL_SLA_NUMBER][MODE_PARAMETER_NUMBER];

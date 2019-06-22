@@ -17,7 +17,9 @@ void main(int argc, char **argv)
 	vSettingsInit();
 	vGraphicsInit();
 	vModesInit();
+	vEventHandlerInit();
 	vLEDSerialTransmitterInit();
+	
 
 	//Configure	SLAs
 	uiSettingsSLAType[0] = SETTINGS_SLATYPE_RGB;
