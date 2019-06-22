@@ -130,9 +130,11 @@ void vLEDSerialRGB2PacketSerial(void)
 
 void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVirtualLED,char uiSLAType)
 {
+	char i;
+	
 	for(i=0;i<8;i++)
 	{
-		switch(uiSettingsSLAType[tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA])
+		switch(uiSLAType)
 		{
 			case SETTINGS_SLATYPE_RGB:
 				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
