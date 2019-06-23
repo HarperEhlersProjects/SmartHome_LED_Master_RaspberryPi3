@@ -18,7 +18,7 @@ typedef struct{
 	char bIsActive;
 	char bEnabled;
 	char uiPriority;
-	long uiParameter[EVENT_HANDLER_MODE_PARAMETER_NUMBER];
+	long uiParameter[MODE_PARAMETER_NUMBER];
 	long uiModeParameter[MODE_PARAMETER_NUMBER];
 }tsEventHandler;
 

@@ -53,7 +53,7 @@ void main(int argc, char **argv)
 	
 	
 	//Configure Event Handler
-	tsSettingsEventHandler[0].bEnable = TRUE;
+	tsSettingsEventHandler[0].bEnabled = TRUE;
 	tsSettingsEventHandler[0].uiParameter[0] = 4;
 	tsSettingsEventHandler[0].uiParameter[1] = 4;
 	tsSettingsEventHandler[0].uiParameter[2] = 4;

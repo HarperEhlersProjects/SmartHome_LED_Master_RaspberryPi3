@@ -1,4 +1,6 @@
 #include "event_handler.h"
+#include "makros.h"
+#include "settings.h"
 
 #include <time.h>
 
