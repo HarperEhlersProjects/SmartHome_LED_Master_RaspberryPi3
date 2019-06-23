@@ -16,8 +16,10 @@ typedef struct{
 
 typedef struct{
 	char bIsActive;
+	char bEnabled;
 	char uiPriority;
-	long uiParameter[EVENT_HANDLER_PARAMETER_NUMBER];
+	long uiParameter[EVENT_HANDLER_MODE_PARAMETER_NUMBER];
+	long uiModeParameter[MODE_PARAMETER_NUMBER];
 }tsEventHandler;
 
 long uiSettingsVirtualSLALength[VIRTUAL_SLA_NUMBER];
@@ -35,6 +37,7 @@ float fSettingsGamma8RedValue[VIRTUAL_SLA_NUMBER];
 float fSettingsGamma8GreenValue[VIRTUAL_SLA_NUMBER];
 float fSettingsGamma8BlueValue[VIRTUAL_SLA_NUMBER];
 
+tsEventHandler tsSettingsEventHandler[EVENT_HANDLER_NUMBER];
 
 void vSettingsInit(void);
 

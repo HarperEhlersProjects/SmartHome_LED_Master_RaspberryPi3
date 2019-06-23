@@ -41,4 +41,14 @@
 #define TRUE 1
 #define FALSE 0
 
+#define MODES_MODE_BLANK 0
+#define MODES_MODE_1COLOR 1
+#define MODES_MODE_SNAKE 2
+#define MODES_MODE_PULSE 3
+#define MODES_MODE_COLORFADE 4
+#define MODES_MODE_GAMEBOX 5
+
+
+
+
 #endif /* MAKROS_H */
