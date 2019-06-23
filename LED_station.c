@@ -3,6 +3,7 @@
 #include "graphics.h"
 #include "ui.h"
 #include "modes.h"
+#include "event_handler.h"
 
 #include "makros.h"
 #include <time.h>
