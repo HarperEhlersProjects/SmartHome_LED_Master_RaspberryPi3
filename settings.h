@@ -18,8 +18,8 @@ typedef struct{
 	char bIsActive;
 	char bEnabled;
 	char uiPriority;
-	long uiParameter[MODE_PARAMETER_NUMBER];
-	long uiModeParameter[MODE_PARAMETER_NUMBER];
+	double uiParameter[MODE_PARAMETER_NUMBER];
+	double uiModeParameter[MODE_PARAMETER_NUMBER];
 }tsEventHandler;
 
 long uiSettingsVirtualSLALength[VIRTUAL_SLA_NUMBER];

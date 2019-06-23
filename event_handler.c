@@ -48,7 +48,7 @@ void vEventHandler0(char uiVirtualSLA)
 
 	if(tsSettingsEventHandler[uiVirtualSLA][0].bEnabled && !tsSettingsEventHandler[uiVirtualSLA][0].bIsActive)
 	{
-		if(tm.tm_hour == tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[0] && tm.tm_min == tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[1])
+		if(tm.tm_hour == tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[1] && tm.tm_min == tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[2])
 		{
 			uiSettingsModeActive[uiVirtualSLA] = tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[0];
 			
@@ -62,7 +62,7 @@ void vEventHandler0(char uiVirtualSLA)
 			tsSettingsEventHandler[uiVirtualSLA][0].bIsActive = 1;
 		}
 	}
-	else
+	else if(tsSettingsEventHandler[uiVirtualSLA][0].bIsActive)
 	{
 		tsSettingsEventHandler[uiVirtualSLA][0].bEnabled = 0;
 		tsSettingsEventHandler[uiVirtualSLA][0].bIsActive = 0;
