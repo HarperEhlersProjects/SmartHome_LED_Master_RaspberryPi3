@@ -37,7 +37,7 @@ float fSettingsGamma8RedValue[VIRTUAL_SLA_NUMBER];
 float fSettingsGamma8GreenValue[VIRTUAL_SLA_NUMBER];
 float fSettingsGamma8BlueValue[VIRTUAL_SLA_NUMBER];
 
-tsEventHandler tsSettingsEventHandler[EVENT_HANDLER_NUMBER];
+tsEventHandler tsSettingsEventHandler[VIRTUAL_SLA_NUMBER][EVENT_HANDLER_NUMBER];
 
 void vSettingsInit(void);
 

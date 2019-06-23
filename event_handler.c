@@ -4,7 +4,7 @@
 
 #include <time.h>
 
-puiEventHandlerActor[VIRTUAL_SLA_NUMBER][EVENT_HANDLER_NUMBER];
+double puiEventHandlerActor[VIRTUAL_SLA_NUMBER][EVENT_HANDLER_NUMBER];
 
 void vEventHandlerInit(void)
 {
@@ -46,9 +46,9 @@ void vEventHandler0(char uiVirtualSLA)
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
 
-	if(tsSettingsEventHandler[uiVirtualSLA][0].bEnable && !tsSettingsEventHandler[uiVirtualSLA][0].bIsActive)
+	if(tsSettingsEventHandler[uiVirtualSLA][0].bEnabled && !tsSettingsEventHandler[uiVirtualSLA][0].bIsActive)
 	{
-		if(tm.tm_hour = tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[0] && tm.tm_min = tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[1])
+		if(tm.tm_hour == tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[0] && tm.tm_min == tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[1])
 		{
 			uiSettingsModeActive[uiVirtualSLA] = tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[0];
 			
@@ -64,7 +64,7 @@ void vEventHandler0(char uiVirtualSLA)
 	}
 	else
 	{
-		tsSettingsEventHandler[uiVirtualSLA][0].bEnable = 0;
+		tsSettingsEventHandler[uiVirtualSLA][0].bEnabled = 0;
 		tsSettingsEventHandler[uiVirtualSLA][0].bIsActive = 0;
 	}
 }
