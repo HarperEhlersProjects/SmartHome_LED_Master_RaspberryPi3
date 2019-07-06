@@ -1,3 +1,8 @@
+/*------------Description of Makros module-------------------------------
+The makros module does contain every makro that is in usage by the LED_Station. 
+Makros are used for basic settings that does not change on the run or default values for user defined settings.
+*/
+
 #ifndef MAKROS_H
 #define MAKROS_H
 
