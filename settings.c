@@ -1,4 +1,5 @@
 #include "settings.h"
+#include "cJSON.h"
 
 
 void vSettingsInit(void)
