@@ -11,12 +11,5 @@ sudo usermod -a -G dialout user
 
 sudo nano /boot/cmdline.txt -> Remove: console=serial0,115200
 
-sudo raspi-config -> interface options -> serial -> No -> Finish
+sudo raspi-config -> interface options -> serial -> No -> Yes -> Finish
 reboot
-
-
-#no python needed anymore
-#sudo apt-get python
-#sudo apt-get python-pip
-
-#pip install pyserial
