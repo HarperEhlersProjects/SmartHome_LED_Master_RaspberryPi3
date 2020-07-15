@@ -3,13 +3,16 @@
 enable_uart=1
 dtoverlay=pi3-miniuart-bt
 
-init_uart_baud=2000000
-init_uart_clock=32000000
+init_uart_baud=4000000
+init_uart_clock=64000000
 
 cmd:
 sudo usermod -a -G dialout user
 
 sudo nano /boot/cmdline.txt -> Remove: console=serial0,115200
+
+//Keine Ahnugn warum das hier zusätzlich nötig ist
+stty -F /dev/ttyAMA0 4000000 
 
 sudo raspi-config -> interface options -> serial -> No -> Yes -> Finish
 reboot
