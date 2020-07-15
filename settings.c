@@ -37,4 +37,6 @@ void vSettingsInit(void)
 		fSettingsGamma8GreenValue[i] = SETTINGS_GAMMA8_GREEN_DEFAULT;
 		fSettingsGamma8BlueValue[i] = SETTINGS_GAMMA8_BLUE_DEFAULT;
 	}
+	fSettingsGamma8GreenValue[0] = SETTINGS_GAMMA8_GREEN_DEFAULT;
+
 }

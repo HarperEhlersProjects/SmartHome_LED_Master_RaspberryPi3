@@ -38,11 +38,11 @@ void main(int argc, char **argv)
 	//SLA Length
 	uiSettingsVirtualSLALength[0] = 100;
 	//Mode
-    uiSettingsModeActive[0] = 0;
+    uiSettingsModeActive[0] = 4;
 	//Huel
     uiSettingsModeParameter[0][0] = 0;
 	//Saturation
-    uiSettingsModeParameter[0][1] = 1;
+    uiSettingsModeParameter[0][1] = 0.9;
 	//Brightness
     uiSettingsModeParameter[0][2] = 0.5;
 	//Gamme Enable
@@ -53,19 +53,19 @@ void main(int argc, char **argv)
     uiSettingsModeParameter[0][5] = 0;
 	
 	
-	//Configure Event Handler
-	tsSettingsEventHandler[0][0].bEnabled = TRUE;
-	tsSettingsEventHandler[0][0].uiParameter[0] = 4;
-	tsSettingsEventHandler[0][0].uiParameter[1] = 4;
-	tsSettingsEventHandler[0][0].uiParameter[2] = 4;
-	tsSettingsEventHandler[0][0].uiParameter[3] = 4;
-	
-	tsSettingsEventHandler[0][0].uiModeParameter[0] = 0;
-	tsSettingsEventHandler[0][0].uiModeParameter[1] = 1;
-	tsSettingsEventHandler[0][0].uiModeParameter[2] = 0.5;
-	tsSettingsEventHandler[0][0].uiModeParameter[3] = TRUE;
-	tsSettingsEventHandler[0][0].uiModeParameter[4] = 1;
-	tsSettingsEventHandler[0][0].uiModeParameter[5] = 0;
+	////Configure Event Handler
+	//tsSettingsEventHandler[0].bEnabled = TRUE;
+	//tsSettingsEventHandler[0].uiParameter[0] = 4;
+	//tsSettingsEventHandler[0].uiParameter[1] = 4;
+	//tsSettingsEventHandler[0].uiParameter[2] = 4;
+	//tsSettingsEventHandler[0].uiParameter[3] = 4;
+	//
+	//tsSettingsEventHandler[0].uiModeParameter[0] = 0;
+	//tsSettingsEventHandler[0].uiModeParameter[1] = 1;
+	//tsSettingsEventHandler[0].uiModeParameter[2] = 0.5;
+	//tsSettingsEventHandler[0].uiModeParameter[3] = TRUE;
+	//tsSettingsEventHandler[0].uiModeParameter[4] = 1;
+	//tsSettingsEventHandler[0].uiModeParameter[5] = 0;
 	
     while(1)
     {   

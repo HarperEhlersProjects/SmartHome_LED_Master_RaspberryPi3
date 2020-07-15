@@ -47,25 +47,25 @@ void vEventHandler0(char uiVirtualSLA)
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
 
-	if(tsSettingsEventHandler[uiVirtualSLA][0].bEnabled && !tsSettingsEventHandler[uiVirtualSLA][0].bIsActive)
+	if(tsSettingsEventHandler[uiVirtualSLA].bEnabled && !tsSettingsEventHandler[uiVirtualSLA].bIsActive)
 	{
-		if(tm.tm_hour == tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[1] && tm.tm_min == tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[2])
+		if(tm.tm_hour == tsSettingsEventHandler[uiVirtualSLA].uiParameter[1] && tm.tm_min == tsSettingsEventHandler[uiVirtualSLA].uiParameter[2])
 		{
-			uiSettingsModeActive[uiVirtualSLA] = tsSettingsEventHandler[uiVirtualSLA][0].uiParameter[0];
+			uiSettingsModeActive[uiVirtualSLA] = tsSettingsEventHandler[uiVirtualSLA].uiParameter[0];
 			
-			uiSettingsModeParameter[uiVirtualSLA][0]=tsSettingsEventHandler[uiVirtualSLA][0].uiModeParameter[0];
-			uiSettingsModeParameter[uiVirtualSLA][1]=tsSettingsEventHandler[uiVirtualSLA][0].uiModeParameter[1];
-			uiSettingsModeParameter[uiVirtualSLA][2]=tsSettingsEventHandler[uiVirtualSLA][0].uiModeParameter[2];
-			uiSettingsModeParameter[uiVirtualSLA][3]=tsSettingsEventHandler[uiVirtualSLA][0].uiModeParameter[3];
-			uiSettingsModeParameter[uiVirtualSLA][4]=tsSettingsEventHandler[uiVirtualSLA][0].uiModeParameter[4];
-			uiSettingsModeParameter[uiVirtualSLA][5]=tsSettingsEventHandler[uiVirtualSLA][0].uiModeParameter[5];
+			uiSettingsModeParameter[uiVirtualSLA][0]=tsSettingsEventHandler[uiVirtualSLA].uiModeParameter[0];
+			uiSettingsModeParameter[uiVirtualSLA][1]=tsSettingsEventHandler[uiVirtualSLA].uiModeParameter[1];
+			uiSettingsModeParameter[uiVirtualSLA][2]=tsSettingsEventHandler[uiVirtualSLA].uiModeParameter[2];
+			uiSettingsModeParameter[uiVirtualSLA][3]=tsSettingsEventHandler[uiVirtualSLA].uiModeParameter[3];
+			uiSettingsModeParameter[uiVirtualSLA][4]=tsSettingsEventHandler[uiVirtualSLA].uiModeParameter[4];
+			uiSettingsModeParameter[uiVirtualSLA][5]=tsSettingsEventHandler[uiVirtualSLA].uiModeParameter[5];
 			
-			tsSettingsEventHandler[uiVirtualSLA][0].bIsActive = 1;
+			tsSettingsEventHandler[uiVirtualSLA].bIsActive = 1;
 		}
 	}
-	else if(tsSettingsEventHandler[uiVirtualSLA][0].bIsActive)
+	else if(tsSettingsEventHandler[uiVirtualSLA].bIsActive)
 	{
-		tsSettingsEventHandler[uiVirtualSLA][0].bEnabled = 0;
-		tsSettingsEventHandler[uiVirtualSLA][0].bIsActive = 0;
+		tsSettingsEventHandler[uiVirtualSLA].bEnabled = 0;
+		tsSettingsEventHandler[uiVirtualSLA].bIsActive = 0;
 	}
 }
