@@ -1,19 +1,19 @@
-#include "settings.h"
+#include "LED_station.h"
+
 #include "led_serial.h"
 #include "graphics.h"
-#include "ui.h"
-#include "modes.h"
 #include "event_handler.h"
+#include "settings.h"
+#include "modes.h"
+#include "ui.h"
 
 #include "makros.h"
 #include <time.h>
 
-#include "LED_station.h"
 
-
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {  
-    int time_previous,time_now;    
+    int time_previous,time_now;
 
 	vSettingsInit();
 	vGraphicsInit();
@@ -77,4 +77,6 @@ void main(int argc, char **argv)
 
         vGraphicsPixelResetAll();
     }
+
+	return 0;
 }

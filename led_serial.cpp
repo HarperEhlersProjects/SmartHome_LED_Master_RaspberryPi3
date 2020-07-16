@@ -1,12 +1,13 @@
+#include "led_serial.h"
+
+
+#include "graphics.h"
+#include "settings.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
-
-#include "graphics.h"
-#include "led_serial.h"
-
-#include "settings.h"
 
 int iPort;
 

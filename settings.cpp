@@ -1,6 +1,24 @@
 #include "settings.h"
-#include "cJSON.h"
 
+//#include "cJSON.h"
+
+//Definitions
+long uiSettingsVirtualSLALength[VIRTUAL_SLA_NUMBER] = {};
+char uiSettingsModeActive[VIRTUAL_SLA_NUMBER] = {};
+double uiSettingsModeParameter[VIRTUAL_SLA_NUMBER][MODE_PARAMETER_NUMBER] = {};
+tsVirtualSLAMap tsSettingsVirtualSLAMap[VIRTUAL_SLA_NUMBER][VIRTUAL_SLA_SEGMENTS_NUMBER] = {};
+
+long uiSettingsSLALengthMAX = 0;
+
+char uiSettingsSLAType[SLA_NUMBER] = {};
+long uiSettingsSLALength[SLA_NUMBER] = {};
+char uiSettingsSLAState[SLA_NUMBER] = {};
+
+float fSettingsGamma8RedValue[VIRTUAL_SLA_NUMBER] = {};
+float fSettingsGamma8GreenValue[VIRTUAL_SLA_NUMBER] = {};
+float fSettingsGamma8BlueValue[VIRTUAL_SLA_NUMBER] = {};
+
+extern tsEventHandler tsSettingsEventHandler[EVENT_HANDLER_NUMBER] = {};
 
 void vSettingsInit(void)
 {
@@ -37,6 +55,4 @@ void vSettingsInit(void)
 		fSettingsGamma8GreenValue[i] = SETTINGS_GAMMA8_GREEN_DEFAULT;
 		fSettingsGamma8BlueValue[i] = SETTINGS_GAMMA8_BLUE_DEFAULT;
 	}
-	fSettingsGamma8GreenValue[0] = SETTINGS_GAMMA8_GREEN_DEFAULT;
-
 }

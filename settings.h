@@ -41,24 +41,34 @@ typedef struct{
 }tsEventHandler;
 
 
-long uiSettingsVirtualSLALength[VIRTUAL_SLA_NUMBER];//length for the virtual SLAs
-char uiSettingsModeActive[VIRTUAL_SLA_NUMBER];//Active Mode for every virtual SLA
-double uiSettingsModeParameter[VIRTUAL_SLA_NUMBER][MODE_PARAMETER_NUMBER];//Parameters of activated mode for every virtual SLA
-tsVirtualSLAMap tsSettingsVirtualSLAMap[VIRTUAL_SLA_NUMBER][VIRTUAL_SLA_SEGMENTS_NUMBER];//Every virtual SLA owns a collection of segment mapping structures
+extern long uiSettingsVirtualSLALength[VIRTUAL_SLA_NUMBER];//length for the virtual SLAs
+extern char uiSettingsModeActive[VIRTUAL_SLA_NUMBER];//Active Mode for every virtual SLA
+extern double uiSettingsModeParameter[VIRTUAL_SLA_NUMBER][MODE_PARAMETER_NUMBER];//Parameters of activated mode for every virtual SLA
+extern tsVirtualSLAMap tsSettingsVirtualSLAMap[VIRTUAL_SLA_NUMBER][VIRTUAL_SLA_SEGMENTS_NUMBER];//Every virtual SLA owns a collection of segment mapping structures
 
-long uiSettingsSLALengthMAX;//maximum length of physical SLA
+extern long uiSettingsSLALengthMAX;//maximum length of physical SLA
 
-char uiSettingsSLAType[SLA_NUMBER];//type of physical SLA. e.g. RGB or GBR
-long uiSettingsSLALength[SLA_NUMBER];//length of physical SLAs
-char uiSettingsSLAState[SLA_NUMBER];//state of physical SLA: active or inactive
+extern char uiSettingsSLAType[SLA_NUMBER];//type of physical SLA. e.g. RGB or GBR
+extern long uiSettingsSLALength[SLA_NUMBER];//length of physical SLAs
+extern char uiSettingsSLAState[SLA_NUMBER];//state of physical SLA: active or inactive
 
-float fSettingsGamma8RedValue[VIRTUAL_SLA_NUMBER];//gamma value of red for every SLA
-float fSettingsGamma8GreenValue[VIRTUAL_SLA_NUMBER];//gamma values of green for every SLA
-float fSettingsGamma8BlueValue[VIRTUAL_SLA_NUMBER];//gamma values of blue for every SLA
+extern float fSettingsGamma8RedValue[VIRTUAL_SLA_NUMBER];//gamma value of red for every SLA
+extern float fSettingsGamma8GreenValue[VIRTUAL_SLA_NUMBER];//gamma values of green for every SLA
+extern float fSettingsGamma8BlueValue[VIRTUAL_SLA_NUMBER];//gamma values of blue for every SLA
 
-tsEventHandler tsSettingsEventHandler[EVENT_HANDLER_NUMBER];//Structures of event handler configurations 
+extern tsEventHandler tsSettingsEventHandler[EVENT_HANDLER_NUMBER];//Structures of event handler configurations 
 
 void vSettingsInit(void);
+
+
+//class VirtualSLA
+//{
+//
+//public:
+//
+//
+//};
+
 
 
 #endif /* SETTING_H */

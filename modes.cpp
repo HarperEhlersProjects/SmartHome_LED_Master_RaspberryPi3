@@ -1,9 +1,11 @@
 #include "modes.h"
-#include "makros.h"
-#include "graphics.h"
-#include "game_box.h"
 
+#include "makros.h"
+
+#include "game_box.h"
+#include "graphics.h"
 #include "settings.h"
+
 
 int piModeActors[VIRTUAL_SLA_NUMBER][MODE_ACTOR_NUMBER];
 

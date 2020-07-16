@@ -27,7 +27,7 @@ double udBrightness;
 } tsGraphicsHSV;
 
 //Pixeldata array in RGB format for every SLA.
-tsGraphicsRGB puiGraphicsData[VIRTUAL_SLA_NUMBER][GRAPHICS_DATA_SIZE];
+extern tsGraphicsRGB puiGraphicsData[VIRTUAL_SLA_NUMBER][GRAPHICS_DATA_SIZE];
 
 //Initialize graphics module.
 void vGraphicsInit(void);

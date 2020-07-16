@@ -1,11 +1,12 @@
 #include "graphics.h"
 
 #include "makros.h"
-
 #include "settings.h"
-#include "led_serial.h"
 
 #include <math.h>
+
+//Definitions
+tsGraphicsRGB puiGraphicsData[VIRTUAL_SLA_NUMBER][GRAPHICS_DATA_SIZE] = {};
 
 char puiGraphicsGamma8CorrectionLUTRed[VIRTUAL_SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
 char puiGraphicsGamma8CorrectionLUTGreen[VIRTUAL_SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
