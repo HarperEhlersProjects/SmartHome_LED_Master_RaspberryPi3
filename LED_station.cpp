@@ -17,7 +17,8 @@ int main(int argc, char **argv)
 
 	vSettingsInit();
 	vGraphicsInit();
-	vModesInit();
+	//vModesInit();
+	ModeManager modeManager = new ModeManager;
 	vEventHandlerInit();
 	vLEDSerialTransmitterInit();
 	

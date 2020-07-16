@@ -1,27 +1,25 @@
 #include "modes.h"
 
-#include "makros.h"
-
 #include "game_box.h"
 #include "graphics.h"
 #include "settings.h"
 
 
-int piModeActors[VIRTUAL_SLA_NUMBER][MODE_ACTOR_NUMBER];
+//int piModeActors[VIRTUAL_SLA_NUMBER][MODE_ACTOR_NUMBER];
 
-void vModesInit()
-{
-	char i,j;
-	
-	for(i=0;i<VIRTUAL_SLA_NUMBER;i++)
-	{
-		for(j=0;j<MODE_ACTOR_NUMBER;j++)
-		{
-			piModeActors[i][j] = 0;
-		}
-	}
-	
-}
+//void vModesInit()
+//{
+//	char i,j;
+//	
+//	for(i=0;i<VIRTUAL_SLA_NUMBER;i++)
+//	{
+//		for(j=0;j<MODE_ACTOR_NUMBER;j++)
+//		{
+//			piModeActors[i][j] = 0;
+//		}
+//	}
+//	
+//}
 
 void vModesFrameCalculate()
 {
