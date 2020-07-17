@@ -2,37 +2,19 @@
 #define MODES_H
 
 #include "makros.h"
-
-void vModesInit(void);
-
-void vModesFrameCalculate(void);
-
-void vMode0(char uiSLA);
-void vMode1(char uiSLA);
-void vMode2(char uiSLA);
-void vMode3(char uiSLA);
-void vMode4(char uiSLA);
-void vMode5(char uiSLA);
+#include "system.h"
 
 class ModeManager
 {
-private:
-	int piModeActors[VIRTUAL_SLA_NUMBER][MODE_ACTOR_NUMBER];
-
 public:
+	VirtualSLA* virtualSLAs;
 
 	//Constructor
-	ModeManager()
+	ModeManager(VirtualSLA* virtualSLAs)
 	{
 		char i, j;
 
-		for (i = 0; i < VIRTUAL_SLA_NUMBER; i++)
-		{
-			for (j = 0; j < MODE_ACTOR_NUMBER; j++)
-			{
-				piModeActors[i][j] = 0;
-			}
-		}
+		this->virtualSLAs = virtualSLAs;
 	}
 
 	void vFrameCalculate(void);
@@ -40,32 +22,32 @@ public:
 
 	//Methods for defining mode behavior
 
-	void vMode0(char uiSLA);
+	static void vMode0(VirtualSLA* vSLA);
 
 	/*
 	parameter 0-2: RGB: 0-255
 	parameter 3: GammaorrectionEnable: boolean*/
-	void vMode1(char uiSLA);
+	static void vMode1(VirtualSLA* vSLA);
 
 	/*
 	parameter 0-2: RGB: 0-255
 	parameter 3: GammaorrectionEnable: boolean
 	parameter 4: snake length: 0-255
 	parameter 5: snake veloity: 0-255*/
-	void vMode2(char uiSLA);
+	static void vMode2(VirtualSLA* vSLA);
 
 	/*
 	parameter 0-2: RGB_influence: 0-255
 	parameter 3: GammaorrectionEnable: boolean
 	parameter 4: ShrinkingVelocity: 0-255
 	parameter 5: expanding velocity: 0-255*/
-	void vMode3(char uiSLA);
+	static void vMode3(VirtualSLA* vSLA);
 
 	//Color Fade
-	void vMode4(char uiSLA);
+	static void vMode4(VirtualSLA* vSLA);
 
 	//Game Box
-	void vMode5(char uiSLA);
+	static void vMode5(VirtualSLA* vSLA);
 
 };
 

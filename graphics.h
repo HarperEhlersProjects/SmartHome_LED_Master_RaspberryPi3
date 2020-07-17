@@ -5,44 +5,74 @@ It declares and initialize multiple arrays with RGB data as a buffer for graphic
 vGprahicsInit() has to be executed once for a usage of this module.
 */
 
-
-
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
 #include "makros.h"
 
+typedef struct {
+	float red;
+	float green;
+	float blue;
+}tsGammaValues;
+
+typedef struct {
+	char red[GRAPHICS_GAMMA8_MAX_IN];
+	char green[GRAPHICS_GAMMA8_MAX_IN];
+	char blue[GRAPHICS_GAMMA8_MAX_IN];
+}tsGamma8LUT;
+
 //Structure that defines pixelcolor in RGB format.
-typedef struct{	
-char uiRed;
-char uiGreen;
-char uiBlue;
-} tsGraphicsRGB;
+typedef struct {
+	char uiRed;
+	char uiGreen;
+	char uiBlue;
+} tsRGB;
 
 //Structure that defines pixelcolor in HSV format.
-typedef struct{
-long uiHuel;
-double udSaturation;
-double udBrightness;
-} tsGraphicsHSV;
+typedef struct {
+	long uiHuel;
+	double udSaturation;
+	double udBrightness;
+} tsHSV;
 
-//Pixeldata array in RGB format for every SLA.
-extern tsGraphicsRGB puiGraphicsData[VIRTUAL_SLA_NUMBER][GRAPHICS_DATA_SIZE];
 
-//Initialize graphics module.
-void vGraphicsInit(void);
+class GraphicsTB
+{
+public:
+	
+	tsRGB frameBuffer[GRAPHICS_DATA_SIZE];
+	tsGammaValues gamma8Value;	//gamma Values for every color
+	tsGamma8LUT gamma8LUT;
 
-//gamma correct one pixel with a given precalculated gamma correction LUT.
-tsGraphicsRGB tsGraphicsGamma8Correction(char uiSLA, tsGraphicsRGB tsColor);
+	GraphicsTB()
+	{
+		long uiCount;
 
-//Set the RGB values of pecified pixel and SLA.
-void vGraphicsSetPixel(char uiSLA,long uiLED,tsGraphicsRGB tsColorRGB);
-void vGraphicsSetPixelFromTo(char uiSLA,long uiLEDmin,long uiLEDmax,tsGraphicsRGB tsColorRGB);
-void vGraphicsPixelResetAll(void);
+		for (uiCount = 0; uiCount < GRAPHICS_DATA_SIZE; uiCount++)
+		{
+			frameBuffer[uiCount].uiRed = 0;
+			frameBuffer[uiCount].uiGreen = 0;
+			frameBuffer[uiCount].uiBlue = 0;
+		}
 
-//generate LUT with a given gamma value.
-void vGraphicsGenerateGamma8LUT(float fGamma, char* puiLUT);
+		gamma8Value = { SETTINGS_GAMMA8_RED_DEFAULT ,SETTINGS_GAMMA8_GREEN_DEFAULT ,SETTINGS_GAMMA8_BLUE_DEFAULT };
+		vGenerateGamma8LUT();
+	}
 
-//convert color from HSV to RGB format.
-tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV);
+	//gamma correct one pixel with a given precalculated gamma correction LUT.
+	tsRGB tsGamma8Correction(tsRGB tsColor);
+
+	//convert color from HSV to RGB format.
+	static tsRGB tsHSV2RGB(tsHSV);
+
+	//Set the RGB values of pecified pixel and SLA.
+	void vSetPixel(long uiLED, tsRGB tsColorRGB);
+	void vSetPixelFromTo(long uiLEDmin, long uiLEDmax, tsRGB tsColorRGB);
+	void vResetAllPixel(void);
+
+	//generate LUT with a given gamma value.
+	void vGenerateGamma8LUT();
+
+};
 #endif /* GRAPHICS_H */

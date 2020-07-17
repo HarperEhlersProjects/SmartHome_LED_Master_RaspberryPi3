@@ -6,6 +6,7 @@ Makros are used for basic settings that does not change on the run or default va
 #ifndef MAKROS_H
 #define MAKROS_H
 
+
 #define VIRTUAL_SLA_NUMBER 12
 #define VIRTUAL_SLA_LENGTH_MAX 600
 #define VIRTUAL_SLA_SEGMENTS_NUMBER 5

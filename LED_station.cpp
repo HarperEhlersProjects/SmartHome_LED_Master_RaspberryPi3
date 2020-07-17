@@ -1,57 +1,47 @@
-#include "LED_station.h"
-
 #include "led_serial.h"
-#include "graphics.h"
-#include "event_handler.h"
-#include "settings.h"
-#include "modes.h"
-#include "ui.h"
+//#include "event_handler.h"
+#include "system.h"
+#include "mode_manager.h"
 
 #include "makros.h"
 #include <time.h>
 
 
-int main(int argc, char **argv)
-{  
-    int time_previous,time_now;
+int main(int argc, char** argv)
+{
+	int time_previous, time_now;
 
-	vSettingsInit();
-	vGraphicsInit();
-	//vModesInit();
-	ModeManager modeManager = new ModeManager;
-	vEventHandlerInit();
-	vLEDSerialTransmitterInit();
-	
+	System system = System();
+	ModeManager modeManager = ModeManager(system.virtualSLAs);
+	Transmitter transmitter = Transmitter(system.virtualSLAs, system.SLAs);
 
 	//Configure	SLAs
-	uiSettingsSLAType[0] = SETTINGS_SLATYPE_RGB;
-	uiSettingsSLAType[1] = SETTINGS_SLATYPE_RGB;
-	
+	system.SLAs[1].state = SLA_ACTIVE;
+
 	//Configure Virtual SLA
 	//VSLA-0:
-	//Segment 0:
-	tsSettingsVirtualSLAMap[0][0].uiDestSLA = 1;
-	//tsSettingsVirtualSLAMap[0][0].bSLAInverted = False; default
-	tsSettingsVirtualSLAMap[0][0].uiSegmentLength = 100;
-	tsSettingsVirtualSLAMap[0][0].uiSourceLEDStart = 0;
-	tsSettingsVirtualSLAMap[0][0].uiDestLEDStart = 0;
-	
+	//Segment
+	system.virtualSLAs[0].segments[0].uiDestSLA = 1;
+	system.virtualSLAs[0].segments[0].length = 100;
+	system.virtualSLAs[0].segments[0].firstDestLED = 0;
+	system.virtualSLAs[0].segments[0].firstSourceLED = 0;
+
 	//SLA Length
-	uiSettingsVirtualSLALength[0] = 100;
+	system.virtualSLAs[0].length = 100;
 	//Mode
-    uiSettingsModeActive[0] = 4;
+	system.virtualSLAs[0].mode = 4;
 	//Huel
-    uiSettingsModeParameter[0][0] = 0;
+	system.virtualSLAs[0].modeParameter[0] = 0;
 	//Saturation
-    uiSettingsModeParameter[0][1] = 0.9;
+	system.virtualSLAs[0].modeParameter[1] = 0.9;
 	//Brightness
-    uiSettingsModeParameter[0][2] = 0.5;
+	system.virtualSLAs[0].modeParameter[2] = 0.9;
 	//Gamme Enable
-	uiSettingsModeParameter[0][3] = TRUE;
+	system.virtualSLAs[0].modeParameter[3] = TRUE;
 	
 		
-    uiSettingsModeParameter[0][4] = 1;
-    uiSettingsModeParameter[0][5] = 0;
+	system.virtualSLAs[0].modeParameter[4] = 1;
+	system.virtualSLAs[0].modeParameter[5] = 0;
 	
 	
 	////Configure Event Handler
@@ -70,13 +60,11 @@ int main(int argc, char **argv)
 	
     while(1)
     {   
-		vEventHandlerCheckEvents();
-		vModesFrameCalculate();
-		vLEDSerialRGB2PacketSerial();
+		//vEventHandlerCheckEvents();
+		modeManager.vFrameCalculate();
+		transmitter.vRGB2PacketSerial();
 		//while(15ms);
-        vLEDSerialTransmit();
-
-        vGraphicsPixelResetAll();
+        transmitter.vSerialTransmit();
     }
 
 	return 0;

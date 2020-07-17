@@ -2,20 +2,21 @@
 
 
 #include "graphics.h"
-#include "settings.h"
+#include "system.h"
 
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
 
-int iPort;
 
-char uiLEDSerialBuffer[LED_SERIAL_DATA_SIZE];
 
-void vLEDSerialTransmitterInit(void)
+Transmitter::Transmitter(VirtualSLA* virtualSLAs, SLA* SLAs)
 {
     int iUART0_filestream = -1, uiCount;
+
+	this->virtualSLAs = virtualSLAs;
+	this->SLAs = SLAs;
 
     iUART0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
 
@@ -38,7 +39,7 @@ void vLEDSerialTransmitterInit(void)
 	return;
 }
 
-void vLEDSerialTransmit()
+void Transmitter::vSerialTransmit()
 {
     char uiTempTx = 'r', uiTempRx = 0;
     int iCount, iRet;
@@ -91,7 +92,7 @@ void vLEDSerialTransmit()
     return;
 }
 
-void vLEDSerialRGB2PacketSerial(void)
+void Transmitter::vRGB2PacketSerial(void)
 {
 	long i, uiLEDOffset, uiLED, uiVirtualLED, uiVirtualSLA, uiSegmentCounter;
 	char uiSLAMask;
@@ -100,27 +101,27 @@ void vLEDSerialRGB2PacketSerial(void)
 	{
 		for(uiSegmentCounter=0;uiSegmentCounter < VIRTUAL_SLA_SEGMENTS_NUMBER;uiSegmentCounter++)
 		{
-			if(tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA != VIRTUAL_SLA_DEST_NONE)
+			if(virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].uiDestSLA != VIRTUAL_SLA_DEST_NONE)
 			{
-				uiSLAMask = 1 << tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA;
-				if(tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].bSLAInverted)
+				uiSLAMask = 1 << virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].uiDestSLA;
+				if(virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].bSLAInverted)
 				{	
-					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
+					for(uiLEDOffset=0;uiLEDOffset < virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].length;uiLEDOffset++)
 					{
-						uiVirtualLED = tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSourceLEDStart + uiLEDOffset;
-						uiLED = tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestLEDStart - uiLEDOffset;
+						uiVirtualLED = virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstSourceLED + uiLEDOffset;
+						uiLED = virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstDestLED - uiLEDOffset;
 						
-						vLEDSerialSetPixel(uiSLAMask,uiLED,uiVirtualSLA,uiVirtualLED,uiSettingsSLAType[tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA]);
+						vSetPixel(uiSLAMask,uiLED,uiVirtualSLA,uiVirtualLED,SLAs[virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].uiDestSLA].colorType);
 					}
 				}
 				else
 				{
-					for(uiLEDOffset=0;uiLEDOffset < tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSegmentLength;uiLEDOffset++)
+					for(uiLEDOffset=0;uiLEDOffset < virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].length;uiLEDOffset++)
 					{
-						uiVirtualLED = tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiSourceLEDStart + uiLEDOffset;
-						uiLED = tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestLEDStart + uiLEDOffset;
+						uiVirtualLED = virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstSourceLED + uiLEDOffset;
+						uiLED = virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstDestLED + uiLEDOffset;
 					
-						vLEDSerialSetPixel(uiSLAMask,uiLED,uiVirtualSLA,uiVirtualLED,uiSettingsSLAType[tsSettingsVirtualSLAMap[uiVirtualSLA][uiSegmentCounter].uiDestSLA]);
+						vSetPixel(uiSLAMask,uiLED,uiVirtualSLA,uiVirtualLED, SLAs[virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].uiDestSLA].colorType);
 						
 					}
 				}
@@ -129,7 +130,7 @@ void vLEDSerialRGB2PacketSerial(void)
 	}
 }
 
-void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVirtualLED,char uiSLAType)
+void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVirtualLED,char uiSLAType)
 {
 	char i;
 	
@@ -138,7 +139,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 		switch(uiSLAType)
 		{
 			case SETTINGS_SLATYPE_RGB:
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -147,7 +148,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -156,7 +157,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -166,7 +167,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 				}
 			break;
 			case SETTINGS_SLATYPE_GBR:
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -175,7 +176,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -184,7 +185,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -194,7 +195,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 				}
 			break;
 			case SETTINGS_SLATYPE_BRG:
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -203,7 +204,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -212,7 +213,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -222,7 +223,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 				}
 			break;
 			case SETTINGS_SLATYPE_BGR:
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -231,7 +232,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -240,7 +241,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -250,7 +251,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 				}
 			break;
 			case SETTINGS_SLATYPE_GRB:
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -259,7 +260,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -268,7 +269,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -278,7 +279,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 				}
 			break;
 			case SETTINGS_SLATYPE_RBG:
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -287,7 +288,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -296,7 +297,7 @@ void vLEDSerialSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVi
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((puiGraphicsData[uiVirtualSLA][uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}

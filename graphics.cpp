@@ -1,16 +1,8 @@
 #include "graphics.h"
 
 #include "makros.h"
-#include "settings.h"
-
 #include <math.h>
 
-//Definitions
-tsGraphicsRGB puiGraphicsData[VIRTUAL_SLA_NUMBER][GRAPHICS_DATA_SIZE] = {};
-
-char puiGraphicsGamma8CorrectionLUTRed[VIRTUAL_SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
-char puiGraphicsGamma8CorrectionLUTGreen[VIRTUAL_SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
-char puiGraphicsGamma8CorrectionLUTBlue[VIRTUAL_SLA_NUMBER][GRAPHICS_GAMMA8_MAX_IN];
 
 /*outdated LUT
 const char puiGraphicsGamma8CorrectionLUT[] = {
@@ -32,74 +24,48 @@ const char puiGraphicsGamma8CorrectionLUT[] = {
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 */
 
-void vGraphicsInit(void)
+
+void GraphicsTB::vSetPixel(long uiLED,tsRGB tsColorRGB)    
 {
-	long uiCount, uiSLA;
-	
-	for(uiSLA=0;uiSLA < VIRTUAL_SLA_NUMBER;uiSLA++)
-	{
-		for(uiCount=0;uiCount < GRAPHICS_DATA_SIZE;uiCount++)
-		{
-			puiGraphicsData[uiSLA][uiCount].uiRed = 0;
-			puiGraphicsData[uiSLA][uiCount].uiGreen = 0;
-			puiGraphicsData[uiSLA][uiCount].uiBlue = 0;
-		}
-	}
-	
-	//Generate gamma correction tables
-	for(uiCount=0;uiCount < VIRTUAL_SLA_NUMBER;uiCount++)
-	{
-		vGraphicsGenerateGamma8LUT(fSettingsGamma8RedValue[uiCount], puiGraphicsGamma8CorrectionLUTRed[uiCount]);
-		vGraphicsGenerateGamma8LUT(fSettingsGamma8GreenValue[uiCount], puiGraphicsGamma8CorrectionLUTGreen[uiCount]);
-		vGraphicsGenerateGamma8LUT(fSettingsGamma8BlueValue[uiCount], puiGraphicsGamma8CorrectionLUTBlue[uiCount]);
-	}
+    frameBuffer[uiLED] = tsColorRGB;
 }
 
-
-void vGraphicsSetPixel(char uiSLA,long uiLED,tsGraphicsRGB tsColorRGB)    
-{
-    puiGraphicsData[uiSLA][uiLED] = tsColorRGB;
-}
-
-void vGraphicsSetPixelFromTo(char uiSLA,long uiLEDmin,long uiLEDmax,tsGraphicsRGB tsColorRGB)
+void GraphicsTB::vSetPixelFromTo(long uiLEDmin,long uiLEDmax,tsRGB tsColorRGB)
 {
     long i;
     for(i=uiLEDmin;i<=uiLEDmax;i++)
     {
-        vGraphicsSetPixel(uiSLA, i, tsColorRGB);
+        vSetPixel(i, tsColorRGB);
     }
 }
 
-tsGraphicsRGB tsGraphicsGamma8Correction(char uiSLA, tsGraphicsRGB tsColorRGB)
+tsRGB GraphicsTB::tsGamma8Correction(tsRGB tsColorRGB)
 {
-	tsGraphicsRGB tsTempColorRGB;
+	tsRGB tsTempColorRGB;
 	
-	tsTempColorRGB.uiRed = puiGraphicsGamma8CorrectionLUTRed[uiSLA][tsColorRGB.uiRed];
-	tsTempColorRGB.uiGreen = puiGraphicsGamma8CorrectionLUTGreen[uiSLA][tsColorRGB.uiGreen];
-	tsTempColorRGB.uiBlue = puiGraphicsGamma8CorrectionLUTBlue[uiSLA][tsColorRGB.uiBlue];
+	tsTempColorRGB.uiRed = gamma8LUT.red[tsColorRGB.uiRed];
+	tsTempColorRGB.uiGreen = gamma8LUT.green[tsColorRGB.uiGreen];
+	tsTempColorRGB.uiBlue = gamma8LUT.blue[tsColorRGB.uiBlue];
 	
 	return tsTempColorRGB;
 }
 
-void vGraphicsPixelResetAll(void)
+void GraphicsTB::vResetAllPixel(void)
 {
-    tsGraphicsRGB tsTempColorRGB; 
+    tsRGB tsTempColorRGB; 
 	long uiSLA;
 	
     tsTempColorRGB.uiRed = 0;
     tsTempColorRGB.uiGreen = 0;
     tsTempColorRGB.uiBlue = 0;
 	
-	for(uiSLA=0;uiSLA < VIRTUAL_SLA_NUMBER;uiSLA++)
-	{
-		vGraphicsSetPixelFromTo(0,0,VIRTUAL_SLA_LENGTH_MAX-1,tsTempColorRGB);
-	}
+	vSetPixelFromTo(0,VIRTUAL_SLA_LENGTH_MAX-1,tsTempColorRGB);
 }
 
 //using formular from wikipedia "HSV-Farbraum"
-tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV tsColorHSV)
+tsRGB GraphicsTB::tsHSV2RGB(tsHSV tsColorHSV)
 {
-	tsGraphicsRGB tsColorTempRGB;
+	tsRGB tsColorTempRGB;
 	
 	char h;
 	double f,p,q,t; 
@@ -145,7 +111,7 @@ tsGraphicsRGB tsGraphicsHSV2RGB(tsGraphicsHSV tsColorHSV)
 	return tsColorTempRGB;
 }
 
-void vGraphicsGenerateGamma8LUT(float fGamma, char* puiLUT)
+void GraphicsTB::vGenerateGamma8LUT()
 {
 	long uiCount;
 	char uiMax_in,uiMax_out;
@@ -155,6 +121,8 @@ void vGraphicsGenerateGamma8LUT(float fGamma, char* puiLUT)
 	
 	for(uiCount=0;uiCount<uiMax_in;uiCount++)
 	{
-		puiLUT[uiCount] = (int)(pow((float) uiCount / (float) uiMax_in, fGamma) * uiMax_out + 0.5);
+		gamma8LUT.red[uiCount] = (int)(pow((float) uiCount / (float) uiMax_in, gamma8Value.red) * uiMax_out + 0.5);
+		gamma8LUT.green[uiCount] = (int)(pow((float)uiCount / (float)uiMax_in, gamma8Value.green) * uiMax_out + 0.5);
+		gamma8LUT.blue[uiCount] = (int)(pow((float)uiCount / (float)uiMax_in, gamma8Value.blue) * uiMax_out + 0.5);
 	}
 }
