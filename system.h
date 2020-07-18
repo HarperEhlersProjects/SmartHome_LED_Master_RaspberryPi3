@@ -1,8 +1,8 @@
 /*-------------------Description of settings module-----------------------
 The settings module contains every setting that can be changed by the user. Watch below for detailed descriptions.
 */
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#ifndef SYSTEM_H
+#define SYSTEM_H
 
 #include "makros.h"
 #include "graphics.h"
@@ -42,6 +42,12 @@ typedef struct{
 }tsEventHandler;
 
 
+typedef struct {
+	char Number;								//Active mode
+	double Parameter[MODE_PARAMETER_NUMBER];	//Parameters of activated mode
+	int Actors[MODE_ACTOR_NUMBER];
+}tsMode;
+
 class SLA
 {
 public:
@@ -62,9 +68,7 @@ class VirtualSLA
 public:
 	long length;	//length of virtual SLA
 
-	char mode;		//active mode
-	double modeParameter[MODE_PARAMETER_NUMBER];	//Parameters of activated mode
-	int modeActors[MODE_ACTOR_NUMBER];
+	tsMode mode;
 
 	tsSegment segments[VIRTUAL_SLA_SEGMENTS_NUMBER];
 
@@ -75,11 +79,16 @@ public:
 		char i;
 
 		length = 0;
-		mode = MODES_MODE_BLANK;
+		mode.Number = MODES_MODE_BLANK;
 
 		for(i = i; i < MODE_PARAMETER_NUMBER; i++)
 		{
-			modeParameter[i] = 0;
+			mode.Parameter[i] = 0;
+		}
+
+		for (i = i; i < MODE_ACTOR_NUMBER; i++)
+		{
+			mode.Actors[i] = 0;
 		}
 
 		for (i=0;i<VIRTUAL_SLA_SEGMENTS_NUMBER;i++)
@@ -117,4 +126,4 @@ public:
 	}
 };
 
-#endif /* SETTING_H */
+#endif /* SYSTEM_H */

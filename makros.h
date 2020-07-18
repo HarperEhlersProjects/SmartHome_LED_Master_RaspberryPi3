@@ -28,6 +28,8 @@ Makros are used for basic settings that does not change on the run or default va
 #define SETTINGS_GAMMA8_GREEN_DEFAULT 2.7
 #define SETTINGS_GAMMA8_BLUE_DEFAULT 2.8
 
+#define GRAPHICS_BRIGHTNESS_CORRECTION_ENABLE 1
+
 #define SETTINGS_COLOR_MODE_RGB 0
 #define SETTINGS_COLOR_MODE_HSV 1
 

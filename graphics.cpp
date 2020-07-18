@@ -42,11 +42,20 @@ void GraphicsTB::vSetPixelFromTo(long uiLEDmin,long uiLEDmax,tsRGB tsColorRGB)
 tsRGB GraphicsTB::tsGamma8Correction(tsRGB tsColorRGB)
 {
 	tsRGB tsTempColorRGB;
-	
+	double correction;
+
 	tsTempColorRGB.uiRed = gamma8LUT.red[tsColorRGB.uiRed];
 	tsTempColorRGB.uiGreen = gamma8LUT.green[tsColorRGB.uiGreen];
 	tsTempColorRGB.uiBlue = gamma8LUT.blue[tsColorRGB.uiBlue];
 	
+	if (GRAPHICS_BRIGHTNESS_CORRECTION_ENABLE)
+	{
+		correction = 255.0 / (tsTempColorRGB.uiRed + tsTempColorRGB.uiGreen + tsTempColorRGB.uiBlue);
+		tsTempColorRGB.uiRed = (char)tsTempColorRGB.uiRed * correction;
+		tsTempColorRGB.uiGreen = (char)tsTempColorRGB.uiGreen * correction;
+		tsTempColorRGB.uiBlue = (char)tsTempColorRGB.uiBlue * correction;
+	}
+
 	return tsTempColorRGB;
 }
 
@@ -68,7 +77,7 @@ tsRGB GraphicsTB::tsHSV2RGB(tsHSV tsColorHSV)
 	tsRGB tsColorTempRGB;
 	
 	char h;
-	double f,p,q,t; 
+	double f,p,q,t,correction; 
 	
 	h = (char) (tsColorHSV.uiHuel/60.0);
 	f = (tsColorHSV.uiHuel/60.0-h);
@@ -107,7 +116,7 @@ tsRGB GraphicsTB::tsHSV2RGB(tsHSV tsColorHSV)
 				tsColorTempRGB.uiGreen = (char) (t * 255);
 				tsColorTempRGB.uiBlue = (char) (p * 255);
 	}
-	
+
 	return tsColorTempRGB;
 }
 

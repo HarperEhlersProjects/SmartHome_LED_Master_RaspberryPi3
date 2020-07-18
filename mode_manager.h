@@ -1,5 +1,5 @@
-#ifndef MODES_H
-#define MODES_H
+#ifndef MODE_MANAGER_H
+#define MODE_MANAGER_H
 
 #include "makros.h"
 #include "system.h"
@@ -51,4 +51,4 @@ public:
 
 };
 
-#endif /* MODES_H */
+#endif /* MODE_MANAGER_H */

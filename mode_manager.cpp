@@ -14,7 +14,7 @@ void ModeManager::vFrameCalculate()
 
 		currentVirtualSLA->graphics.vResetAllPixel();
 
-		switch(currentVirtualSLA->mode)
+		switch(currentVirtualSLA->mode.Number)
         {
 			case 0:ModeManager::vMode0(currentVirtualSLA);//LED off
             break;
@@ -47,14 +47,14 @@ void ModeManager::vMode1(VirtualSLA* vSLA)
 	tsRGB tsColorRGB;
     long uiCounter;
 	
-	tsColorHSV.uiHuel = vSLA->modeParameter[0];
-	tsColorHSV.udSaturation = vSLA->modeParameter[1];
-	tsColorHSV.udBrightness = vSLA->modeParameter[2];
+	tsColorHSV.uiHuel = vSLA->mode.Parameter[0];
+	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
+	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
 	
 	tsColorRGB = GraphicsTB::tsHSV2RGB(tsColorHSV);
 	
 	//use gamma correction if enabled
-	if(vSLA->modeParameter[3])
+	if(vSLA->mode.Parameter[3])
 	{
 		tsColorRGB = vSLA->graphics.tsGamma8Correction(tsColorRGB);
 	}
@@ -78,42 +78,42 @@ void ModeManager::vMode2(VirtualSLA* vSLA)
     long uiCounter;
     long uiTopBoundary,uiBottomBoundary;
 
-	tsColorHSV.uiHuel = vSLA->modeParameter[0];
-	tsColorHSV.udSaturation = vSLA->modeParameter[1];
-	tsColorHSV.udBrightness = vSLA->modeParameter[2];
+	tsColorHSV.uiHuel = vSLA->mode.Parameter[0];
+	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
+	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
 	
 	tsColorRGB = GraphicsTB::tsHSV2RGB(tsColorHSV);
 	
 	//use gamma correction if enabled
-	if (vSLA->modeParameter[3])
+	if (vSLA->mode.Parameter[3])
 	{
 		tsColorRGB = vSLA->graphics.tsGamma8Correction(tsColorRGB);
 	}
 
-	vSLA->modeActors[1]++;
+	vSLA->mode.Actors[1]++;
 
-    if(vSLA->modeActors[1] > 255- vSLA->modeParameter[5])
+    if(vSLA->mode.Actors[1] > 255- vSLA->mode.Parameter[5])
     {
-		vSLA->modeActors[0]++;
+		vSLA->mode.Actors[0]++;
 
-        if(vSLA->modeActors[0] >= vSLA->length + vSLA->modeParameter[4])
+        if(vSLA->mode.Actors[0] >= vSLA->length + vSLA->mode.Parameter[4])
         {
-			vSLA->modeActors[0] = 0;
+			vSLA->mode.Actors[0] = 0;
         }
 
-		vSLA->modeActors[1] = 0;
+		vSLA->mode.Actors[1] = 0;
     }
 
-    if(vSLA->modeActors[0] - vSLA->modeParameter[4] < 0)  //cut if its too long for SLA
+    if(vSLA->mode.Actors[0] - vSLA->mode.Parameter[4] < 0)  //cut if its too long for SLA
     {
         uiBottomBoundary = 0;
     }
     else
     {
-        uiBottomBoundary = vSLA->modeActors[0] - vSLA->modeParameter[4];
+        uiBottomBoundary = vSLA->mode.Actors[0] - vSLA->mode.Parameter[4];
     }
 
-    uiTopBoundary = vSLA->modeActors[0];
+    uiTopBoundary = vSLA->mode.Actors[0];
 
     if(uiTopBoundary >= vSLA->length)
     {
@@ -138,37 +138,37 @@ void ModeManager::vMode3(VirtualSLA* vSLA)
 	tsHSV tsColorHSV;
     tsRGB tsColorRGB;
 
-	tsColorHSV.uiHuel = vSLA->modeParameter[0];
-	tsColorHSV.udSaturation = vSLA->modeParameter[1];
-	tsColorHSV.udBrightness = vSLA->modeParameter[2];
+	tsColorHSV.uiHuel = vSLA->mode.Parameter[0];
+	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
+	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
 	
 	tsColorRGB = GraphicsTB::tsHSV2RGB(tsColorHSV);
 	
 	//use gamma correction if enabled
-	if (vSLA->modeParameter[3])
+	if (vSLA->mode.Parameter[3])
 	{
 		tsColorRGB = vSLA->graphics.tsGamma8Correction(tsColorRGB);
 	}
 	
-    if(vSLA->modeActors[0] > vSLA->length/2)
+    if(vSLA->mode.Actors[0] > vSLA->length/2)
     {   
-		vSLA->modeActors[1] = 0;
+		vSLA->mode.Actors[1] = 0;
     }
-    else if(vSLA->modeActors[0] < vSLA->modeParameter[4])
+    else if(vSLA->mode.Actors[0] < vSLA->mode.Parameter[4])
     {
-		vSLA->modeActors[1] = 1;
+		vSLA->mode.Actors[1] = 1;
     }
 
-    if(vSLA->modeActors[1] == 1)
+    if(vSLA->mode.Actors[1] == 1)
     {
-		vSLA->modeActors[0] += vSLA->modeParameter[5];
+		vSLA->mode.Actors[0] += vSLA->mode.Parameter[5];
     }
     else
     {
-		vSLA->modeActors[0] -= vSLA->modeParameter[4];
+		vSLA->mode.Actors[0] -= vSLA->mode.Parameter[4];
     }
 
-	vSLA->graphics.vSetPixelFromTo(vSLA->modeActors[0], vSLA->length -1- vSLA->modeActors[0],tsColorRGB);
+	vSLA->graphics.vSetPixelFromTo(vSLA->mode.Actors[0], vSLA->length -1- vSLA->mode.Actors[0],tsColorRGB);
 
 }
 
@@ -183,35 +183,35 @@ void ModeManager::vMode4(VirtualSLA* vSLA)
     {
 	
 	tsColorHSV.uiHuel = 360*uiCounter/ vSLA->length;
-	tsColorHSV.udSaturation = vSLA->modeParameter[1];
-	tsColorHSV.udBrightness = vSLA->modeParameter[2];
+	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
+	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
 	
 	tsColorRGB = GraphicsTB::tsHSV2RGB(tsColorHSV);
 	
 		//use gamma correction if enabled
-		if (vSLA->modeParameter[3])
+		if (vSLA->mode.Parameter[3])
 		{
 			tsColorRGB = vSLA->graphics.tsGamma8Correction(tsColorRGB);
 		}
 		
-		if(uiCounter + vSLA->modeActors[1] >= vSLA->length)
+		if(uiCounter + vSLA->mode.Actors[1] >= vSLA->length)
 		{
-			vSLA->graphics.vSetPixel(uiCounter + vSLA->modeActors[1] - vSLA->length,tsColorRGB);
+			vSLA->graphics.vSetPixel(uiCounter + vSLA->mode.Actors[1] - vSLA->length,tsColorRGB);
 		}
 		else
 		{
-			vSLA->graphics.vSetPixel(uiCounter + vSLA->modeActors[1],tsColorRGB);
+			vSLA->graphics.vSetPixel(uiCounter + vSLA->mode.Actors[1],tsColorRGB);
 		}
 
     }
 		
-	if(vSLA->modeActors[1] >= vSLA->length)
+	if(vSLA->mode.Actors[1] >= vSLA->length)
 	{
-		vSLA->modeActors[1] = 0;
+		vSLA->mode.Actors[1] = 0;
 	}
 	else
 	{	
-		vSLA->modeActors[1] += vSLA->modeParameter[4];
+		vSLA->mode.Actors[1] += vSLA->mode.Parameter[4];
 	}
 }
 

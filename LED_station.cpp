@@ -2,6 +2,8 @@
 //#include "event_handler.h"
 #include "system.h"
 #include "mode_manager.h"
+#include "settings.h"
+
 
 #include "makros.h"
 #include <time.h>
@@ -12,8 +14,11 @@ int main(int argc, char** argv)
 	int time_previous, time_now;
 
 	System system = System();
+	Settings settings = Settings(&system);
 	ModeManager modeManager = ModeManager(system.virtualSLAs);
 	Transmitter transmitter = Transmitter(system.virtualSLAs, system.SLAs);
+	
+	settings.downSync();
 
 	//Configure	SLAs
 	system.SLAs[1].state = SLA_ACTIVE;
@@ -29,19 +34,19 @@ int main(int argc, char** argv)
 	//SLA Length
 	system.virtualSLAs[0].length = 100;
 	//Mode
-	system.virtualSLAs[0].mode = 4;
+	system.virtualSLAs[0].mode.Number = 4;
 	//Huel
-	system.virtualSLAs[0].modeParameter[0] = 0;
+	system.virtualSLAs[0].mode.Parameter[0] = 0;
 	//Saturation
-	system.virtualSLAs[0].modeParameter[1] = 0.9;
+	system.virtualSLAs[0].mode.Parameter[1] = 0.9;
 	//Brightness
-	system.virtualSLAs[0].modeParameter[2] = 0.9;
+	system.virtualSLAs[0].mode.Parameter[2] = 0.9;
 	//Gamme Enable
-	system.virtualSLAs[0].modeParameter[3] = TRUE;
+	system.virtualSLAs[0].mode.Parameter[3] = TRUE;
 	
 		
-	system.virtualSLAs[0].modeParameter[4] = 1;
-	system.virtualSLAs[0].modeParameter[5] = 0;
+	system.virtualSLAs[0].mode.Parameter[4] = 1;
+	system.virtualSLAs[0].mode.Parameter[5] = 0;
 	
 	
 	////Configure Event Handler
