@@ -8,6 +8,8 @@ The settings module contains every setting that can be changed by the user. Watc
 #include "graphics.h"
 
 
+
+
 /*
 uiDestSLA: unsigned integer that defines the physical SLA on which the pixel segment will be mapped.
 bSLAInverted : boolean value for inverse mapping.
