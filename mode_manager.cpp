@@ -1,7 +1,6 @@
 #include "mode_manager.h"
 
 #include "game_box.h"
-#include "graphics.h"
 
 
 void ModeManager::vFrameCalculate()
@@ -39,7 +38,6 @@ void ModeManager::vMode0(VirtualSLA* vSLA)
 
 /*
 parameter 0-2: RGB: 0-255
-parameter 3: GammaorrectionEnable: boolean
 */
 void ModeManager::vMode1(VirtualSLA* vSLA)
 {
@@ -51,25 +49,16 @@ void ModeManager::vMode1(VirtualSLA* vSLA)
 	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
 	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
 	
-	tsColorRGB = GraphicsTB::tsHSV2RGB(tsColorHSV);
-	
-	//use gamma correction if enabled
-	if(vSLA->mode.Parameter[3])
-	{
-		tsColorRGB = vSLA->graphics.tsGamma8Correction(tsColorRGB);
-	}
-	
     for(uiCounter=0;uiCounter< vSLA->length;uiCounter++)
     {
-		vSLA->graphics.vSetPixel(uiCounter,tsColorRGB);
+		vSLA->graphics.vSetPixel(uiCounter,tsColorHSV);
     }
 }
 
 /*
 parameter 0-2: RGB: 0-255
-parameter 3: GammaorrectionEnable: boolean
-parameter 4: snake length: 0-255
-parameter 5: snake veloity: 0-255
+parameter 3: snake length: 0-255
+parameter 4: snake veloity: 0-255
 */
 void ModeManager::vMode2(VirtualSLA* vSLA)
 {
@@ -81,18 +70,10 @@ void ModeManager::vMode2(VirtualSLA* vSLA)
 	tsColorHSV.uiHuel = vSLA->mode.Parameter[0];
 	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
 	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
-	
-	tsColorRGB = GraphicsTB::tsHSV2RGB(tsColorHSV);
-	
-	//use gamma correction if enabled
-	if (vSLA->mode.Parameter[3])
-	{
-		tsColorRGB = vSLA->graphics.tsGamma8Correction(tsColorRGB);
-	}
 
 	vSLA->mode.Actors[1]++;
 
-    if(vSLA->mode.Actors[1] > 255- vSLA->mode.Parameter[5])
+    if(vSLA->mode.Actors[1] > 255- vSLA->mode.Parameter[4])
     {
 		vSLA->mode.Actors[0]++;
 
@@ -110,7 +91,7 @@ void ModeManager::vMode2(VirtualSLA* vSLA)
     }
     else
     {
-        uiBottomBoundary = vSLA->mode.Actors[0] - vSLA->mode.Parameter[4];
+        uiBottomBoundary = vSLA->mode.Actors[0] - vSLA->mode.Parameter[3];
     }
 
     uiTopBoundary = vSLA->mode.Actors[0];
@@ -123,15 +104,14 @@ void ModeManager::vMode2(VirtualSLA* vSLA)
 
     for(uiCounter = uiBottomBoundary;uiCounter < uiTopBoundary;uiCounter++)
     {
-		vSLA->graphics.vSetPixel(uiCounter,tsColorRGB);
+		vSLA->graphics.vSetPixel(uiCounter,tsColorHSV);
     }
 }
 
 /*
 parameter 0-2: RGB_influence: 0-255
-parameter 3: GammaorrectionEnable: boolean
-parameter 4: ShrinkingVelocity: 0-255
-parameter 5: expanding velocity: 0-255
+parameter 3: ShrinkingVelocity: 0-255
+parameter 4: expanding velocity: 0-255
 */
 void ModeManager::vMode3(VirtualSLA* vSLA)
 {
@@ -142,33 +122,25 @@ void ModeManager::vMode3(VirtualSLA* vSLA)
 	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
 	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
 	
-	tsColorRGB = GraphicsTB::tsHSV2RGB(tsColorHSV);
-	
-	//use gamma correction if enabled
-	if (vSLA->mode.Parameter[3])
-	{
-		tsColorRGB = vSLA->graphics.tsGamma8Correction(tsColorRGB);
-	}
-	
     if(vSLA->mode.Actors[0] > vSLA->length/2)
     {   
 		vSLA->mode.Actors[1] = 0;
     }
-    else if(vSLA->mode.Actors[0] < vSLA->mode.Parameter[4])
+    else if(vSLA->mode.Actors[0] < vSLA->mode.Parameter[3])
     {
 		vSLA->mode.Actors[1] = 1;
     }
 
     if(vSLA->mode.Actors[1] == 1)
     {
-		vSLA->mode.Actors[0] += vSLA->mode.Parameter[5];
+		vSLA->mode.Actors[0] += vSLA->mode.Parameter[4];
     }
     else
     {
-		vSLA->mode.Actors[0] -= vSLA->mode.Parameter[4];
+		vSLA->mode.Actors[0] -= vSLA->mode.Parameter[3];
     }
 
-	vSLA->graphics.vSetPixelFromTo(vSLA->mode.Actors[0], vSLA->length -1- vSLA->mode.Actors[0],tsColorRGB);
+	vSLA->graphics.vSetPixelFromTo(vSLA->mode.Actors[0], vSLA->length -1- vSLA->mode.Actors[0],tsColorHSV);
 
 }
 
@@ -185,22 +157,14 @@ void ModeManager::vMode4(VirtualSLA* vSLA)
 	tsColorHSV.uiHuel = 360*uiCounter/ vSLA->length;
 	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
 	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
-	
-	tsColorRGB = GraphicsTB::tsHSV2RGB(tsColorHSV);
-	
-		//use gamma correction if enabled
-		if (vSLA->mode.Parameter[3])
-		{
-			tsColorRGB = vSLA->graphics.tsGamma8Correction(tsColorRGB);
-		}
 		
 		if(uiCounter + vSLA->mode.Actors[1] >= vSLA->length)
 		{
-			vSLA->graphics.vSetPixel(uiCounter + vSLA->mode.Actors[1] - vSLA->length,tsColorRGB);
+			vSLA->graphics.vSetPixel(uiCounter + vSLA->mode.Actors[1] - vSLA->length,tsColorHSV);
 		}
 		else
 		{
-			vSLA->graphics.vSetPixel(uiCounter + vSLA->mode.Actors[1],tsColorRGB);
+			vSLA->graphics.vSetPixel(uiCounter + vSLA->mode.Actors[1],tsColorHSV);
 		}
 
     }
@@ -211,7 +175,7 @@ void ModeManager::vMode4(VirtualSLA* vSLA)
 	}
 	else
 	{	
-		vSLA->mode.Actors[1] += vSLA->mode.Parameter[4];
+		vSLA->mode.Actors[1] += vSLA->mode.Parameter[3];
 	}
 }
 

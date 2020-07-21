@@ -44,6 +44,7 @@ public:
 	tsRGB frameBuffer[GRAPHICS_DATA_SIZE];
 	tsGammaValues gamma8Value;	//gamma Values for every color
 	tsGamma8LUT gamma8LUT;
+	bool gammaEnable;
 
 	GraphicsTB()
 	{
@@ -58,17 +59,21 @@ public:
 
 		gamma8Value = { SETTINGS_GAMMA8_RED_DEFAULT ,SETTINGS_GAMMA8_GREEN_DEFAULT ,SETTINGS_GAMMA8_BLUE_DEFAULT };
 		vGenerateGamma8LUT();
+		gammaEnable = true;
 	}
 
 	//gamma correct one pixel with a given precalculated gamma correction LUT.
 	tsRGB tsGamma8Correction(tsRGB tsColor);
+	void applyGammaCorrection(void);
 
 	//convert color from HSV to RGB format.
 	static tsRGB tsHSV2RGB(tsHSV);
 
 	//Set the RGB values of pecified pixel and SLA.
 	void vSetPixel(long uiLED, tsRGB tsColorRGB);
+	void vSetPixel(long uiLED, tsHSV tsColorHSV);
 	void vSetPixelFromTo(long uiLEDmin, long uiLEDmax, tsRGB tsColorRGB);
+	void vSetPixelFromTo(long uiLEDmin, long uiLEDmax, tsHSV tsColorHSV);
 	void vResetAllPixel(void);
 
 	//generate LUT with a given gamma value.

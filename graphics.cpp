@@ -27,7 +27,20 @@ const char puiGraphicsGamma8CorrectionLUT[] = {
 
 void GraphicsTB::vSetPixel(long uiLED,tsRGB tsColorRGB)    
 {
-    frameBuffer[uiLED] = tsColorRGB;
+	if (gammaEnable)
+	{
+		frameBuffer[uiLED] = tsGamma8Correction(tsColorRGB);
+	}
+	else
+	{
+		frameBuffer[uiLED] = tsColorRGB;
+	}
+}
+
+void GraphicsTB::vSetPixel(long uiLED, tsHSV tsColorHSV)
+{
+	vSetPixel(uiLED, tsHSV2RGB(tsColorHSV));
+
 }
 
 void GraphicsTB::vSetPixelFromTo(long uiLEDmin,long uiLEDmax,tsRGB tsColorRGB)
@@ -37,6 +50,11 @@ void GraphicsTB::vSetPixelFromTo(long uiLEDmin,long uiLEDmax,tsRGB tsColorRGB)
     {
         vSetPixel(i, tsColorRGB);
     }
+}
+
+void GraphicsTB::vSetPixelFromTo(long uiLEDmin, long uiLEDmax, tsHSV tsColorHSV)
+{
+	vSetPixelFromTo(uiLEDmin, uiLEDmax, tsHSV2RGB(tsColorHSV));
 }
 
 tsRGB GraphicsTB::tsGamma8Correction(tsRGB tsColorRGB)
@@ -57,6 +75,16 @@ tsRGB GraphicsTB::tsGamma8Correction(tsRGB tsColorRGB)
 	}
 
 	return tsTempColorRGB;
+}
+
+void GraphicsTB::applyGammaCorrection()
+{
+	char i;
+
+	for (i = 0; i < GRAPHICS_DATA_SIZE; i++)
+	{
+		frameBuffer[i] = tsGamma8Correction(frameBuffer[i]);
+	}
 }
 
 void GraphicsTB::vResetAllPixel(void)

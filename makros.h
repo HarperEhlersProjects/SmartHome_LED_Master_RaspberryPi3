@@ -21,7 +21,7 @@ Makros are used for basic settings that does not change on the run or default va
 
 
 #define SLA_NUMBER 8
-#define MODE_PARAMETER_NUMBER 8
+#define MODE_PARAMETER_NUMBER 7
 #define MODE_ACTOR_NUMBER 6
 
 #define GRAPHICS_GAMMA8_MAX_IN 255
