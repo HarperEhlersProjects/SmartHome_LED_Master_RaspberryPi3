@@ -2,7 +2,7 @@
 
 #include "makros.h"
 #include <math.h>
-
+#include <stdlib.h>
 
 /*outdated LUT
 const char puiGraphicsGamma8CorrectionLUT[] = {
@@ -161,5 +161,316 @@ void GraphicsTB::vGenerateGamma8LUT()
 		gamma8LUT.red[uiCount] = (int)(pow((float) uiCount / (float) uiMax_in, gamma8Value.red) * uiMax_out + 0.5);
 		gamma8LUT.green[uiCount] = (int)(pow((float)uiCount / (float)uiMax_in, gamma8Value.green) * uiMax_out + 0.5);
 		gamma8LUT.blue[uiCount] = (int)(pow((float)uiCount / (float)uiMax_in, gamma8Value.blue) * uiMax_out + 0.5);
+	}
+}
+
+void DPU::allocateMatrix()
+{
+	char i;
+
+	this->matrix = (tsRGB**) malloc(this->resolution.y * sizeof(tsRGB*));
+
+	for (i = 0; i < this->resolution.y; i++)
+	{
+		matrix[i] = (tsRGB*) malloc(this->resolution.y * sizeof(tsRGB));
+	}
+}
+
+
+int gameobjects::ObjectCollection::getIndex(tsObjectID id)
+{
+	char i, size;
+
+	switch (id.type)
+	{
+	case OTypeRectangle:
+
+		size = sizeof(rectangles) / sizeof(Rectangle);
+		i = 0;
+		while (i < size)
+		{
+			if (id.id == rectangles[i].idnumber)
+			{
+				return i;
+			}
+			i++;
+		}
+		return -1;
+		break;
+	case OTypeCircle:
+
+		size = sizeof(circles) / sizeof(Circle);
+		i = 0;
+		while (i < size)
+		{
+			if (id.id == circles[i].idnumber)
+			{
+				return i;
+			}
+			i++;
+		}
+		return -1;
+		break;
+	case OTypeTriangle:
+
+		size = sizeof(triangles) / sizeof(Triangle);
+		i = 0;
+		while (i < size)
+		{
+			if (id.id == triangles[i].idnumber)
+			{
+				return i;
+			}
+			i++;
+		}
+		return -1;
+		break;
+	}
+
+	return -1;
+}
+
+gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Rectangle rectangle)
+{
+	char newIndex = sizeof(rectangles) / sizeof(Rectangle);
+	int lowestAvailableID = 0;
+
+	while (getIndex({ lowestAvailableID , OTypeRectangle}) != -1)
+	{
+		lowestAvailableID++;
+	}
+
+	this->rectangles = (Rectangle*) realloc(this->rectangles, sizeof(Rectangle) * (newIndex + 1));
+	rectangle.idnumber = lowestAvailableID;
+	rectangles[newIndex] = rectangle;
+
+	return {lowestAvailableID,OTypeRectangle};
+}
+
+gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Circle circle)
+{
+	char newIndex = sizeof(rectangles) / sizeof(Circle);
+	int lowestAvailableID = 0;
+
+	while (getIndex({ lowestAvailableID , OTypeCircle }) != -1)
+	{
+		lowestAvailableID++;
+	}
+
+	this->circles = (Circle*)realloc(this->circles, sizeof(Circle) * (newIndex + 1));
+	circle.idnumber = lowestAvailableID;
+	circles[newIndex] = circle;
+
+	return { lowestAvailableID,OTypeCircle };
+}
+
+gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Triangle triangle)
+{
+	char newIndex = sizeof(triangles) / sizeof(Triangle);
+	int lowestAvailableID = 0;
+
+	while (getIndex({ lowestAvailableID , OTypeTriangle }) != -1)
+	{
+		lowestAvailableID++;
+	}
+
+	this->triangles = (Triangle*)realloc(this->triangles, sizeof(Triangle) * (newIndex + 1));
+	triangle.idnumber = lowestAvailableID;
+	triangles[newIndex] = triangle;
+
+	return { lowestAvailableID,OTypeTriangle };
+}
+
+void gameobjects::ObjectCollection::removeObject(tsObjectID id)
+{
+	char size;
+	int index = getIndex(id);
+
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeRectangle:
+			size = sizeof(rectangles) / sizeof(Rectangle);
+
+			rectangles[index] = rectangles[size - 1];
+			rectangles = (Rectangle*)realloc(rectangles, sizeof(Rectangle) * (size - 1));
+			break;
+		case OTypeCircle:
+
+			size = sizeof(circles) / sizeof(Circle);
+
+			circles[index] = circles[size - 1];
+			circles = (Circle*)realloc(circles, sizeof(Circle) * (size - 1));
+
+			break;
+		case OTypeTriangle:
+
+			size = sizeof(triangles) / sizeof(Triangle);
+
+			triangles[index] = triangles[size - 1];
+			triangles = (Triangle*)realloc(triangles, sizeof(Triangle) * (size - 1));
+			break;
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::setPosition(tsObjectID id, tsPosition position)
+{
+	int index = getIndex(id);
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeRectangle:
+			rectangles[index].position = position;
+		break;
+		case OTypeCircle:
+			circles[index].position = position;
+		break;
+		case OTypeTriangle:
+			triangles[index].position = position;
+		break;
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::setColor(tsObjectID id, tsRGB color)
+{
+	int index = getIndex(id);
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeRectangle:
+			rectangles[index].color = color;
+			break;
+		case OTypeCircle:
+			circles[index].color = color;
+			break;
+		case OTypeTriangle:
+			triangles[index].color = color;
+			break;
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::deactivate(tsObjectID id)
+{
+	int index = getIndex(id);
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeRectangle:
+			rectangles[index].isActive = false;
+			break;
+		case OTypeCircle:
+			circles[index].isActive = false;
+			break;
+		case OTypeTriangle:
+			triangles[index].isActive = false;
+			break;
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::activate(tsObjectID id)
+{
+	int index = getIndex(id);
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeRectangle:
+			rectangles[index].isActive = true;
+			break;
+		case OTypeCircle:
+			circles[index].isActive = true;
+			break;
+		case OTypeTriangle:
+			triangles[index].isActive = true;
+			break;
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::resetObjectCollection()
+{
+	free(rectangles);
+	free(circles);
+	free(triangles);
+}
+
+bool isInsideBorders(DPU* display, tsPosition coord)
+{
+	return (coord.x > 0 && coord.x < display->resolution.x&& coord.y > 0 && coord.y < display->resolution.y);
+}
+
+void gameobjects::ObjectCollection::drawObject(DPU* display, Rectangle rectangle)
+{
+	int x,y;
+
+	if(rectangle.isActive)
+	{ 
+		for (y=round(rectangle.position.y - rectangle.height/2); y <= round(rectangle.position.y + rectangle.height / 2); y++)
+		{
+			for (x = round(rectangle.position.x - rectangle.length / 2); x <= round(rectangle.position.x + rectangle.length / 2); x++)
+			{
+				if (isInsideBorders(display, { x,y }))
+				{
+					display->matrix[y][x] = rectangle.color;
+				}
+			}
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::drawObject(DPU* display, Circle circle)
+{
+	int x, y;
+
+	if (circle.isActive)
+	{
+		for (y = round(circle.position.y - circle.radius); y <= round(circle.position.y + circle.radius); y++)
+		{
+			for (x = round(circle.position.x - circle.radius); x <= round(circle.position.x + circle.radius); x++)
+			{
+				if (isInsideBorders(display, { x,y }))
+				{
+					if (sqrt((circle.position.x - x) * (circle.position.x - x) + (circle.position.y - y) * (circle.position.y - y)) <= circle.radius)
+					{
+						display->matrix[y][x] = circle.color;
+					}
+				}
+			}
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::drawObject(DPU* display, Triangle triangle)
+{
+	int x, y;
+
+
+}
+
+void gameobjects::ObjectCollection::drawObjects(DPU* display)
+{
+	char i;
+
+	for (i = 0; i < sizeof(rectangles) / sizeof(Rectangle); i++)
+	{
+		drawObject(display, rectangles[i]);
+	}
+
+	for (i = 0; i < sizeof(circles) / sizeof(Circle); i++)
+	{
+		drawObject(display, circles[i]);
+	}
+
+	for (i = 0; i < sizeof(triangles) / sizeof(Triangle); i++)
+	{
+		drawObject(display, triangles[i]);
 	}
 }

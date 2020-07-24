@@ -7,14 +7,14 @@
 class ModeManager
 {
 public:
-	VirtualSLA* virtualSLAs;
+	System* system;
 
 	//Constructor
-	ModeManager(VirtualSLA* virtualSLAs)
+	ModeManager(System* system)
 	{
 		char i, j;
 
-		this->virtualSLAs = virtualSLAs;
+		this->system = system;
 	}
 
 	void vFrameCalculate(void);
@@ -22,32 +22,32 @@ public:
 
 	//Methods for defining mode behavior
 
-	static void vMode0(VirtualSLA* vSLA);
+	void vMode0(VirtualSLA* vSLA);
 
 	/*
 	parameter 0-2: RGB: 0-255
 	parameter 3: GammaorrectionEnable: boolean*/
-	static void vMode1(VirtualSLA* vSLA);
+	void vMode1(VirtualSLA* vSLA);
 
 	/*
 	parameter 0-2: RGB: 0-255
 	parameter 3: GammaorrectionEnable: boolean
 	parameter 4: snake length: 0-255
 	parameter 5: snake veloity: 0-255*/
-	static void vMode2(VirtualSLA* vSLA);
+	void vMode2(VirtualSLA* vSLA);
 
 	/*
 	parameter 0-2: RGB_influence: 0-255
 	parameter 3: GammaorrectionEnable: boolean
 	parameter 4: ShrinkingVelocity: 0-255
 	parameter 5: expanding velocity: 0-255*/
-	static void vMode3(VirtualSLA* vSLA);
+	void vMode3(VirtualSLA* vSLA);
 
 	//Color Fade
-	static void vMode4(VirtualSLA* vSLA);
+	void vMode4(VirtualSLA* vSLA);
 
 	//Game Box
-	static void vMode5(VirtualSLA* vSLA);
+	void vMode5(VirtualSLA* vSLA);
 
 };
 

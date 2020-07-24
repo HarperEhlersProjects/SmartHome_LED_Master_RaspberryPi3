@@ -1,7 +1,5 @@
 #include "mode_manager.h"
 
-#include "game_box.h"
-
 
 void ModeManager::vFrameCalculate()
 {
@@ -9,7 +7,7 @@ void ModeManager::vFrameCalculate()
 	
 	for(uiCounterSLA=0;uiCounterSLA < VIRTUAL_SLA_NUMBER;uiCounterSLA++)
 	{
-		VirtualSLA* currentVirtualSLA = &virtualSLAs[uiCounterSLA];
+		VirtualSLA* currentVirtualSLA = &(system->virtualSLAs[uiCounterSLA]);
 
 		currentVirtualSLA->graphics.vResetAllPixel();
 
@@ -183,6 +181,6 @@ void ModeManager::vMode4(VirtualSLA* vSLA)
 //Game Box
 void ModeManager::vMode5(VirtualSLA* vSLA)
 {
-	
-	
+	system->gamebox.objects.drawObjects(&vSLA->display);
+	vSLA->serializeDPUMatrix();
 }

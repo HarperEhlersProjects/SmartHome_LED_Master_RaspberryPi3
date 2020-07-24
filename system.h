@@ -6,9 +6,7 @@ The settings module contains every setting that can be changed by the user. Watc
 
 #include "makros.h"
 #include "graphics.h"
-
-
-
+#include "game_box.h"
 
 /*
 uiDestSLA: unsigned integer that defines the physical SLA on which the pixel segment will be mapped.
@@ -76,6 +74,8 @@ public:
 
 	GraphicsTB graphics;
 
+	DPU display;
+
 	VirtualSLA()
 	{
 		char i;
@@ -99,8 +99,10 @@ public:
 		}
 
 		graphics = GraphicsTB();
-
 	}
+
+	void serializeDPUMatrix();
+
 };
 
 class System
@@ -110,6 +112,7 @@ public:
 	VirtualSLA virtualSLAs[VIRTUAL_SLA_NUMBER];
 	SLA SLAs[SLA_NUMBER];
 
+	GameBox gamebox;
 	System()
 	{
 		char i;
@@ -125,6 +128,8 @@ public:
 		{
 			SLAs[i] = SLA();
 		}
+
+		gamebox = GameBox();
 	}
 };
 

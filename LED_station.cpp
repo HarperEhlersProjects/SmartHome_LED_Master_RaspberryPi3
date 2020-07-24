@@ -3,7 +3,7 @@
 #include "system.h"
 #include "mode_manager.h"
 #include "settings.h"
-
+#include "game_box.h"
 
 #include "makros.h"
 #include <time.h>
@@ -15,39 +15,10 @@ int main(int argc, char** argv)
 
 	System system = System();
 	Settings settings = Settings(&system);
-	ModeManager modeManager = ModeManager(system.virtualSLAs);
+	ModeManager modeManager = ModeManager(&system);
 	Transmitter transmitter = Transmitter(system.virtualSLAs, system.SLAs);
-	
+
 	settings.downSync();
-
-	//Configure	SLAs
-	//system.SLAs[1].state = SLA_ACTIVE;
-
-	////Configure Virtual SLA
-	////VSLA-0:
-	////Segment
-	//system.virtualSLAs[0].segments[0].uiDestSLA = 1;
-	//system.virtualSLAs[0].segments[0].length = 100;
-	//system.virtualSLAs[0].segments[0].firstDestLED = 0;
-	//system.virtualSLAs[0].segments[0].firstSourceLED = 0;
-
-	////SLA Length
-	//system.virtualSLAs[0].length = 100;
-	////Mode
-	//system.virtualSLAs[0].mode.Number = 4;
-	////Huel
-	//system.virtualSLAs[0].mode.Parameter[0] = 0;
-	////Saturation
-	//system.virtualSLAs[0].mode.Parameter[1] = 0.9;
-	////Brightness
-	//system.virtualSLAs[0].mode.Parameter[2] = 0.9;
-	////Gamme Enable
-	//system.virtualSLAs[0].mode.Parameter[3] = TRUE;
-	//
-	//	
-	//system.virtualSLAs[0].mode.Parameter[4] = 1;
-	//system.virtualSLAs[0].mode.Parameter[5] = 0;
-	
 	
 	////Configure Event Handler
 	//tsSettingsEventHandler[0].bEnabled = TRUE;

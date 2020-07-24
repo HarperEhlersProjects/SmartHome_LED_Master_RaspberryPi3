@@ -36,6 +36,37 @@ typedef struct {
 	double udBrightness;
 } tsHSV;
 
+typedef struct {
+	char x;
+	char y;
+} tsResolution;
+
+typedef struct {
+	float x;
+	float y;
+} tsPosition;
+
+class DPU
+{
+public:
+	tsRGB** matrix;
+	tsResolution resolution;
+
+	DPU()
+	{
+		this->resolution = {16,16};
+		allocateMatrix();
+	}
+
+	DPU(tsResolution resolution)
+	{
+		this->resolution = resolution;
+		allocateMatrix();
+	}
+
+	void allocateMatrix(void);
+
+};
 
 class GraphicsTB
 {
@@ -80,4 +111,121 @@ public:
 	void vGenerateGamma8LUT();
 
 };
+
+namespace gameobjects
+{
+	enum ObjectType
+	{
+		OTypeRectangle,
+		OTypeCircle,
+		OTypeTriangle
+	};
+
+	class Rectangle
+	{
+	public:
+		tsPosition position;
+		float height;
+		float length;
+
+		tsRGB color;
+
+		bool isActive;
+
+		char idnumber;
+
+		Rectangle(tsPosition position,char height,char length, tsRGB color)
+		{
+			this->position = position;
+			this->height = height;
+			this->length = length;
+
+			this->color = color;
+
+			this->isActive = true;
+		}
+	};
+
+	class Circle
+	{
+	public:
+		tsPosition position;
+		float radius;
+
+		tsRGB color;
+
+		bool isActive;
+
+		char idnumber;
+
+		Circle(tsPosition position, char radius, tsRGB color)
+		{
+			this->position = position;
+			this->radius = radius;
+
+			this->isActive = true;
+		}
+	};
+
+
+	class Triangle
+	{
+	public:
+		tsPosition position;
+		float baseLength;
+
+		tsRGB color;
+
+		bool isActive;
+
+		int idnumber;
+
+		Triangle(tsPosition position, char baseLength, tsRGB color)
+		{
+			this->position = position;
+			this->baseLength = baseLength;
+
+			this->isActive = true;
+		}
+	};
+
+	typedef struct {
+		int id;
+		ObjectType type;
+	}tsObjectID;
+
+	class ObjectCollection
+	{
+	public:
+		Rectangle* rectangles;
+		Circle* circles;
+		Triangle* triangles;
+
+		ObjectCollection()
+		{
+		}
+
+		tsObjectID addObject(Rectangle rectangle);
+		tsObjectID addObject(Circle circle);
+		tsObjectID addObject(Triangle triangle);
+
+		void setPosition(tsObjectID id,tsPosition position);
+		void setColor(tsObjectID id,tsRGB color);
+		void deactivate(tsObjectID);
+		void activate(tsObjectID);
+
+		void removeObject(tsObjectID id);
+		int getIndex(tsObjectID id);
+		void resetObjectCollection();
+		
+		void drawObjects(DPU* display);
+
+		void drawObject(DPU* display, Rectangle rectangle);
+		void drawObject(DPU* display, Circle circle);
+		void drawObject(DPU* display, Triangle triangle);
+
+		bool isInsideBorders(DPU* display, tsPosition coord);
+	};
+}
+
 #endif /* GRAPHICS_H */
