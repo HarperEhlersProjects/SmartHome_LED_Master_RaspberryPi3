@@ -45,7 +45,7 @@ typedef struct{
 typedef struct {
 	char Number;								//Active mode
 	double Parameter[MODE_PARAMETER_NUMBER];	//Parameters of activated mode
-	int Actors[MODE_ACTOR_NUMBER];
+	double Actors[MODE_ACTOR_NUMBER];
 }tsMode;
 
 class SLA
@@ -101,8 +101,6 @@ public:
 		graphics = GraphicsTB();
 	}
 
-	void serializeDPUMatrix();
-
 };
 
 class System
@@ -113,6 +111,7 @@ public:
 	SLA SLAs[SLA_NUMBER];
 
 	GameBox gamebox;
+
 	System()
 	{
 		char i;

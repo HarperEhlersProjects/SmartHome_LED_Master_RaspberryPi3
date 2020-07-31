@@ -1,6 +1,24 @@
 #include "mode_manager.h"
 
 
+void ModeManager::serializeDPUMatrix(VirtualSLA* vSLA)
+{
+	int x = vSLA->display.resolution.x, y = vSLA->display.resolution.y;
+
+	for (x = 0; x < vSLA->display.resolution.x; x++)
+	{	
+		for (y = 0; y < vSLA->display.resolution.y; y+=2)
+		{
+			vSLA->graphics.frameBuffer[y * vSLA->display.resolution.x + (vSLA->display.resolution.x - 1) - x] = vSLA->display.matrix[y][x];
+		}
+
+		for (y = 1; y < vSLA->display.resolution.y; y += 2)
+		{
+			vSLA->graphics.frameBuffer[y * vSLA->display.resolution.x + x] = vSLA->display.matrix[y][x];;
+		}
+	}
+}
+
 void ModeManager::vFrameCalculate()
 {
 	char uiCounterSLA;
@@ -83,7 +101,7 @@ void ModeManager::vMode2(VirtualSLA* vSLA)
 		vSLA->mode.Actors[1] = 0;
     }
 
-    if(vSLA->mode.Actors[0] - vSLA->mode.Parameter[4] < 0)  //cut if its too long for SLA
+    if(vSLA->mode.Actors[0] - vSLA->mode.Parameter[3] < 0)  //cut if its too long for SLA
     {
         uiBottomBoundary = 0;
     }
@@ -182,5 +200,7 @@ void ModeManager::vMode4(VirtualSLA* vSLA)
 void ModeManager::vMode5(VirtualSLA* vSLA)
 {
 	system->gamebox.objects.drawObjects(&vSLA->display);
-	vSLA->serializeDPUMatrix();
+	serializeDPUMatrix(vSLA);
+	vSLA->display.resetMatrix();
+
 }

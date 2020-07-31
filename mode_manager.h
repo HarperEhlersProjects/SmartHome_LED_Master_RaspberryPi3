@@ -18,7 +18,7 @@ public:
 	}
 
 	void vFrameCalculate(void);
-
+	void serializeDPUMatrix(VirtualSLA* vSLA);
 
 	//Methods for defining mode behavior
 

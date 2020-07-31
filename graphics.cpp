@@ -23,7 +23,52 @@ const char puiGraphicsGamma8CorrectionLUT[] = {
   177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 */
+#define TEXT_0 {{false,true,false},{true,false,true},{true,false,true},{false,true,false}}
+#define TEXT_1 {{true,true,false},{false,true,false},{false,true,false},{true,true,true}}
+#define TEXT_2 {{true,true,false},{false,false,true},{false,true,false},{true,true,true}}
+#define TEXT_3 {{true,true,false},{false,true,true},{false,false,true},{true,true,false}}
+#define TEXT_4 {{true,false,true},{true,true,true},{false,false,true},{false,false,true}}
+#define TEXT_5 {{true,true,true},{true,true,false},{false,false,true},{false,true,false}}
+#define TEXT_6 {{false,true,true},{true,false,false},{true,true,true},{true,true,false}}
+#define TEXT_7 {{true,true,true},{false,false,true},{false,true,false},{true,false,false}}
+#define TEXT_8 {{true,true,true},{true,true,true},{true,false,true},{true,true,true}}
+#define TEXT_9 {{false,true,true},{true,true,true},{false,false,true},{true,true,false}}
 
+#define TEXT_A {{false,true,false},{true,false,true},{true,true,true},{true,false,true}}
+#define TEXT_B {{true,true,true},{true,true,false},{true,false,true},{true,true,false}}
+#define TEXT_C {{false,true,true},{true,false,false},{true,false,false},{false,true,true}}
+#define TEXT_D {{true,true,false},{true,false,true},{true,false,true},{true,true,false}}
+#define TEXT_E {{true,true,true},{true,true,false},{true,false,false},{true,true,true}}
+#define TEXT_F {{true,true,true},{true,true,false},{true,false,false},{true,false,false}}
+#define TEXT_G {{false,true,true},{true,false,false},{true,false,true},{false,true,true}}
+#define TEXT_H {{true,false,true},{true,true,true},{true,false,true},{true,false,true}}
+#define TEXT_I {{true,true,true},{false,true,false},{false,true,false},{true,true,true}}
+#define TEXT_J {{true,true,true},{false,false,true},{true,false,true},{false,true,false}}
+#define TEXT_K {{true,false,true},{true,true,false},{true,false,true},{true,false,true}}
+#define TEXT_L {{true,false,false},{true,false,false},{true,false,false},{true,true,true}}
+#define TEXT_M {{true,true,true},{true,true,true},{true,false,true},{true,false,true}}
+#define TEXT_N {{true,true,false},{true,false,true},{true,false,true},{true,false,true}}
+#define TEXT_O {{false,true,false},{true,false,true},{true,false,true},{false,true,false}}
+#define TEXT_P {{true,true,true},{true,false,true},{true,true,true},{true,false,false}}
+#define TEXT_Q {{false,true,false},{true,false,true},{true,true,true},{false,true,true}}
+#define TEXT_R {{true,true,false},{true,false,true},{true,true,false},{true,false,true}}
+#define TEXT_S {{true,true,true},{true,true,false},{false,false,true},{true,true,true}}
+#define TEXT_T {{true,true,true},{false,true,false},{false,true,false},{false,true,false}}
+#define TEXT_U {{true,false,true},{true,false,true},{true,false,true},{false,true,false}}
+#define TEXT_V {{true,false,true},{true,false,true},{true,true,false},{true,false,false}}
+#define TEXT_W {{true,false,true},{true,false,true},{true,true,true},{true,true,true}}
+#define TEXT_X {{true,false,true},{false,true,false},{true,false,true},{true,false,true}}
+#define TEXT_Y {{true,false,true},{false,true,false},{false,true,false},{false,true,false}}
+#define TEXT_Z {{true,true,true},{false,true,false},{true,false,false},{true,true,true}}
+
+#define TEXT_BLANK {{false,false,false},{false,false,false},{false,false,false},{false,false,false}}
+
+
+const bool Text4x3LUT[43][4][3] = { TEXT_0,TEXT_1,TEXT_2,TEXT_3,TEXT_4,TEXT_5,TEXT_6,TEXT_7,TEXT_8,TEXT_9,
+									TEXT_BLANK,TEXT_BLANK,TEXT_BLANK,TEXT_BLANK,TEXT_BLANK,TEXT_BLANK,TEXT_BLANK,
+									TEXT_A,TEXT_B,TEXT_C,TEXT_D,TEXT_E,TEXT_F,TEXT_G,TEXT_H,TEXT_I,TEXT_J,
+									TEXT_K,TEXT_L,TEXT_M,TEXT_N,TEXT_O,TEXT_P,TEXT_Q,TEXT_R,TEXT_S,TEXT_T,
+									TEXT_U,TEXT_V,TEXT_W,TEXT_X,TEXT_Y,TEXT_Z };
 
 void GraphicsTB::vSetPixel(long uiLED,tsRGB tsColorRGB)    
 {
@@ -164,6 +209,22 @@ void GraphicsTB::vGenerateGamma8LUT()
 	}
 }
 
+gameobjects::Text::Text(tsPosition position, char* string, tsRGB color)
+{
+	char i=0;
+
+	while (string[i] != '\0' && i<50)
+	{
+		this->string[i] = string[i];
+		i++;
+	}
+
+	this->isActive = true;
+	this->position = position;
+	this->color = color;
+}
+
+
 void DPU::allocateMatrix()
 {
 	char i;
@@ -176,6 +237,18 @@ void DPU::allocateMatrix()
 	}
 }
 
+void DPU::resetMatrix()
+{
+	char x,y;
+
+	for (y = 0; y < this->resolution.y; y++)
+	{
+		for (x = 0; x < this->resolution.x; x++)
+		{
+			matrix[y][x] = {0, 0, 0};
+		}
+	}
+}
 
 int gameobjects::ObjectCollection::getIndex(tsObjectID id)
 {
@@ -183,9 +256,23 @@ int gameobjects::ObjectCollection::getIndex(tsObjectID id)
 
 	switch (id.type)
 	{
+	case OTypeText:
+
+		size = numberOfElementsText;
+		i = 0;
+		while (i < size)
+		{
+			if (id.id == texts[i].idnumber)
+			{
+				return i;
+			}
+			i++;
+		}
+		return -1;
+		break;
 	case OTypeRectangle:
 
-		size = sizeof(rectangles) / sizeof(Rectangle);
+		size = numberOfElementRectangle;
 		i = 0;
 		while (i < size)
 		{
@@ -199,7 +286,7 @@ int gameobjects::ObjectCollection::getIndex(tsObjectID id)
 		break;
 	case OTypeCircle:
 
-		size = sizeof(circles) / sizeof(Circle);
+		size = numberOfElementsCircle;
 		i = 0;
 		while (i < size)
 		{
@@ -213,7 +300,7 @@ int gameobjects::ObjectCollection::getIndex(tsObjectID id)
 		break;
 	case OTypeTriangle:
 
-		size = sizeof(triangles) / sizeof(Triangle);
+		size = numberOfElementsTriangle;
 		i = 0;
 		while (i < size)
 		{
@@ -230,9 +317,28 @@ int gameobjects::ObjectCollection::getIndex(tsObjectID id)
 	return -1;
 }
 
+
+gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Text text)
+{
+	char newIndex = numberOfElementsText;
+	int lowestAvailableID = 0;
+
+	while (getIndex({ lowestAvailableID , OTypeText }) != -1)
+	{
+		lowestAvailableID++;
+	}
+
+	this->texts = (Text*)realloc(this->texts, sizeof(Text) * (newIndex + 1));
+	numberOfElementsText++;
+	text.idnumber = lowestAvailableID;
+	texts[newIndex] = text;
+
+	return { lowestAvailableID,OTypeText };
+}
+
 gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Rectangle rectangle)
 {
-	char newIndex = sizeof(rectangles) / sizeof(Rectangle);
+	char newIndex = numberOfElementRectangle;
 	int lowestAvailableID = 0;
 
 	while (getIndex({ lowestAvailableID , OTypeRectangle}) != -1)
@@ -241,6 +347,7 @@ gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Rectangle recta
 	}
 
 	this->rectangles = (Rectangle*) realloc(this->rectangles, sizeof(Rectangle) * (newIndex + 1));
+	numberOfElementRectangle++;
 	rectangle.idnumber = lowestAvailableID;
 	rectangles[newIndex] = rectangle;
 
@@ -249,7 +356,7 @@ gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Rectangle recta
 
 gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Circle circle)
 {
-	char newIndex = sizeof(rectangles) / sizeof(Circle);
+	char newIndex = numberOfElementsCircle;
 	int lowestAvailableID = 0;
 
 	while (getIndex({ lowestAvailableID , OTypeCircle }) != -1)
@@ -258,6 +365,7 @@ gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Circle circle)
 	}
 
 	this->circles = (Circle*)realloc(this->circles, sizeof(Circle) * (newIndex + 1));
+	numberOfElementsCircle++;
 	circle.idnumber = lowestAvailableID;
 	circles[newIndex] = circle;
 
@@ -266,7 +374,7 @@ gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Circle circle)
 
 gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Triangle triangle)
 {
-	char newIndex = sizeof(triangles) / sizeof(Triangle);
+	char newIndex = numberOfElementsTriangle;
 	int lowestAvailableID = 0;
 
 	while (getIndex({ lowestAvailableID , OTypeTriangle }) != -1)
@@ -275,6 +383,7 @@ gameobjects::tsObjectID gameobjects::ObjectCollection::addObject(Triangle triang
 	}
 
 	this->triangles = (Triangle*)realloc(this->triangles, sizeof(Triangle) * (newIndex + 1));
+	numberOfElementsTriangle++;
 	triangle.idnumber = lowestAvailableID;
 	triangles[newIndex] = triangle;
 
@@ -290,23 +399,31 @@ void gameobjects::ObjectCollection::removeObject(tsObjectID id)
 	{
 		switch (id.type)
 		{
+		case OTypeText:
+			size = numberOfElementsText;
+
+			texts[index] = texts[size - 1];
+			texts = (Text*)realloc(texts, sizeof(Text) * (size - 1));
+			numberOfElementsText--;
+			break;
 		case OTypeRectangle:
-			size = sizeof(rectangles) / sizeof(Rectangle);
+			size = numberOfElementRectangle;
 
 			rectangles[index] = rectangles[size - 1];
 			rectangles = (Rectangle*)realloc(rectangles, sizeof(Rectangle) * (size - 1));
+			numberOfElementRectangle--;
 			break;
 		case OTypeCircle:
 
-			size = sizeof(circles) / sizeof(Circle);
+			size = numberOfElementsCircle;
 
 			circles[index] = circles[size - 1];
 			circles = (Circle*)realloc(circles, sizeof(Circle) * (size - 1));
-
+			numberOfElementsCircle--;
 			break;
 		case OTypeTriangle:
 
-			size = sizeof(triangles) / sizeof(Triangle);
+			size = numberOfElementsTriangle;
 
 			triangles[index] = triangles[size - 1];
 			triangles = (Triangle*)realloc(triangles, sizeof(Triangle) * (size - 1));
@@ -318,10 +435,14 @@ void gameobjects::ObjectCollection::removeObject(tsObjectID id)
 void gameobjects::ObjectCollection::setPosition(tsObjectID id, tsPosition position)
 {
 	int index = getIndex(id);
+
 	if (index != -1)
 	{
 		switch (id.type)
 		{
+		case OTypeText:
+			texts[index].position = position;
+			break;
 		case OTypeRectangle:
 			rectangles[index].position = position;
 		break;
@@ -335,6 +456,30 @@ void gameobjects::ObjectCollection::setPosition(tsObjectID id, tsPosition positi
 	}
 }
 
+tsPosition gameobjects::ObjectCollection::getPosition(tsObjectID id)
+{
+	int index = getIndex(id);
+
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeText:
+			return texts[index].position;
+			break;
+		case OTypeRectangle:
+			return rectangles[index].position;
+			break;
+		case OTypeCircle:
+			return circles[index].position;
+			break;
+		case OTypeTriangle:
+			return triangles[index].position;
+			break;
+		}
+	}
+}
+
 void gameobjects::ObjectCollection::setColor(tsObjectID id, tsRGB color)
 {
 	int index = getIndex(id);
@@ -342,6 +487,9 @@ void gameobjects::ObjectCollection::setColor(tsObjectID id, tsRGB color)
 	{
 		switch (id.type)
 		{
+		case OTypeText:
+			texts[index].color = color;
+			break;
 		case OTypeRectangle:
 			rectangles[index].color = color;
 			break;
@@ -362,6 +510,9 @@ void gameobjects::ObjectCollection::deactivate(tsObjectID id)
 	{
 		switch (id.type)
 		{
+		case OTypeText:
+			texts[index].isActive = false;
+			break;
 		case OTypeRectangle:
 			rectangles[index].isActive = false;
 			break;
@@ -382,6 +533,9 @@ void gameobjects::ObjectCollection::activate(tsObjectID id)
 	{
 		switch (id.type)
 		{
+		case OTypeText:
+			texts[index].isActive = true;
+			break;
 		case OTypeRectangle:
 			rectangles[index].isActive = true;
 			break;
@@ -397,14 +551,132 @@ void gameobjects::ObjectCollection::activate(tsObjectID id)
 
 void gameobjects::ObjectCollection::resetObjectCollection()
 {
-	free(rectangles);
-	free(circles);
-	free(triangles);
+	if(numberOfElementsText>0)
+	{
+		free(texts);
+		numberOfElementsText = 0;
+	}
+	if (numberOfElementRectangle > 0)
+	{
+		free(rectangles);
+		numberOfElementRectangle = 0;
+	}
+	if (numberOfElementsCircle > 0)
+	{
+		free(circles);
+		numberOfElementsCircle = 0;
+	}
+	if (numberOfElementsTriangle > 0)
+	{
+		free(triangles);
+		numberOfElementsTriangle = 0;
+	}
+
+
+
 }
 
-bool isInsideBorders(DPU* display, tsPosition coord)
+bool gameobjects::ObjectCollection::checkCollision(Rectangle rectangle1, Rectangle rectangle2)
 {
-	return (coord.x > 0 && coord.x < display->resolution.x&& coord.y > 0 && coord.y < display->resolution.y);
+	return ((fabs(rectangle1.position.x - rectangle2.position.x) <= (rectangle1.length + rectangle2.length) / 2 ) && (fabs(rectangle1.position.y - rectangle2.position.y) <= (rectangle1.height + rectangle2.height) / 2)) ;
+}
+
+bool gameobjects::ObjectCollection::checkCollision(Circle circle1, Circle circle2)
+{
+	return (sqrt((circle1.position.x - circle2.position.x) * (circle1.position.x - circle2.position.x) + (circle1.position.y - circle2.position.y) * (circle1.position.y - circle2.position.y)) <= (circle1.radius + circle2.radius));
+}
+
+bool gameobjects::ObjectCollection::checkCollision(Rectangle rectangle, Circle circle)
+{
+	float XLeft = rectangle.position.x - rectangle.length / 2, XRight = rectangle.position.x + rectangle.length / 2, YTop = rectangle.position.y - rectangle.height / 2, YBot = rectangle.position.y + rectangle.height / 2;
+	float XLeftEdit = XLeft - circle.position.x, XRightEdit = XRight - circle.position.x, YTOPEdit = YTop - circle.position.y, YBotEdit = YBot - circle.position.y;
+	float XLeftEditSquare = XLeftEdit*XLeftEdit, XRightEditSquare = XRightEdit* XRightEdit, YTOPEditSquare = YTOPEdit* YTOPEdit, YBotEditSquare = YBotEdit* YBotEdit;
+
+	bool CircleIsVerticalyInbetween = (circle.position.y >= YTop && circle.position.y <= YBot), CircleIsHorizontalyInbetween = (circle.position.x >= XLeft && circle.position.x <= XRight);
+
+	return (CircleIsHorizontalyInbetween <= XRight && CircleIsVerticalyInbetween) ||
+		(sqrt(XLeftEditSquare + YTOPEditSquare) <= circle.radius) ||
+		(sqrt(XRightEditSquare + YTOPEditSquare) <= circle.radius) ||
+		(sqrt(XLeftEditSquare + YBotEditSquare) <= circle.radius) ||
+		(sqrt(XRightEditSquare + YBotEditSquare) <= circle.radius) ||
+		(CircleIsHorizontalyInbetween && rectangle.position.y >= circle.position.y && fabs(YTOPEdit) <= circle.radius) ||
+		(CircleIsHorizontalyInbetween && rectangle.position.y <= circle.position.y && fabs(YBotEdit) <= circle.radius) ||
+		(CircleIsVerticalyInbetween && rectangle.position.x >= circle.position.x && fabs(XLeftEdit) <= circle.radius) ||
+		(CircleIsVerticalyInbetween && rectangle.position.x <= circle.position.x && fabs(XRightEdit) <= circle.radius);
+}
+
+bool gameobjects::ObjectCollection::checkCollision(tsObjectID object1, tsObjectID object2)
+{
+	int index1 = getIndex(object1), index2 = getIndex(object2);
+
+
+	switch (object1.type)
+	{
+	case OTypeRectangle:
+		switch (object2.type)
+		{
+		case OTypeRectangle:
+			return checkCollision(rectangles[index1], rectangles[index2]);
+		break;
+		case OTypeCircle:
+			return checkCollision(rectangles[index1], circles[index2]);
+		break;
+		default:
+		break;
+		}
+	break;
+	case OTypeCircle:
+		switch (object2.type)
+		{
+		case OTypeCircle:
+			return checkCollision(circles[index1], circles[index2]);
+		break;
+		case OTypeRectangle:
+			return checkCollision(rectangles[index2], circles[index1]);
+		break;
+		default:
+		break;
+		}
+
+	default:
+	break;
+	}
+
+	return false;
+}
+
+bool gameobjects::ObjectCollection::isInsideBorders(DPU* display, tsPosition coord)
+{
+	return (coord.x >= 0 && coord.x < display->resolution.x&& coord.y >= 0 && coord.y < display->resolution.y);
+}
+
+void gameobjects::ObjectCollection::drawObject(DPU* display, Text text)
+{
+	int i=0, x_rel, y_rel,x,y;
+
+	if (text.isActive)
+	{
+		while(text.string[i] != '\0' && i<50) 
+		{
+			for (y_rel = 0; y_rel < 4; y_rel++)
+			{
+				for (x_rel = 0; x_rel < 3; x_rel++)
+				{	
+					y = round(text.position.y + y_rel);
+					x = round(text.position.x + x_rel + i * 4);
+					
+					if (isInsideBorders(display, { x,y }))
+					{
+						if (Text4x3LUT[text.string[i] - '0'][y_rel][x_rel])
+						{
+							display->matrix[y][x] = text.color;
+						}
+					}
+				}
+			}
+			i++;
+		}
+	}
 }
 
 void gameobjects::ObjectCollection::drawObject(DPU* display, Rectangle rectangle)
@@ -413,9 +685,9 @@ void gameobjects::ObjectCollection::drawObject(DPU* display, Rectangle rectangle
 
 	if(rectangle.isActive)
 	{ 
-		for (y=round(rectangle.position.y - rectangle.height/2); y <= round(rectangle.position.y + rectangle.height / 2); y++)
+		for (y=round(rectangle.position.y - rectangle.height/2); y <= round(rectangle.position.y + rectangle.height / 2) - 0.5; y++)
 		{
-			for (x = round(rectangle.position.x - rectangle.length / 2); x <= round(rectangle.position.x + rectangle.length / 2); x++)
+			for (x = round(rectangle.position.x - rectangle.length / 2); x <= round(rectangle.position.x + rectangle.length / 2) - 0.5; x++)
 			{
 				if (isInsideBorders(display, { x,y }))
 				{
@@ -459,17 +731,22 @@ void gameobjects::ObjectCollection::drawObjects(DPU* display)
 {
 	char i;
 
-	for (i = 0; i < sizeof(rectangles) / sizeof(Rectangle); i++)
+	for (i = 0; i < numberOfElementsText; i++)
+	{
+		drawObject(display, texts[i]);
+	}
+
+	for (i = 0; i < numberOfElementRectangle; i++)
 	{
 		drawObject(display, rectangles[i]);
 	}
 
-	for (i = 0; i < sizeof(circles) / sizeof(Circle); i++)
+	for (i = 0; i < numberOfElementsCircle; i++)
 	{
 		drawObject(display, circles[i]);
 	}
 
-	for (i = 0; i < sizeof(triangles) / sizeof(Triangle); i++)
+	for (i = 0; i < numberOfElementsTriangle; i++)
 	{
 		drawObject(display, triangles[i]);
 	}

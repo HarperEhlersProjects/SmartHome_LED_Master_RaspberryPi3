@@ -17,14 +17,18 @@ enum GameBoxState {
 class GameBox
 {
 public:
-
+	GameBoxState state;
 	ObjectCollection objects;
 	float gameboxActors[GAMEBOX_ACTORS_NUMBER];
 
 	GameBox()
 	{
 		objects = ObjectCollection();
+		gameboxActors[0] = 0;
+
 	}
+
+	void CalculateStep();
 
 };
 

@@ -38,6 +38,9 @@ int main(int argc, char** argv)
     {   
 		//vEventHandlerCheckEvents();
 		settings.upSync();
+
+		system.gamebox.CalculateStep();
+
 		modeManager.vFrameCalculate();
 		transmitter.vRGB2PacketSerial();
 		//while(15ms);

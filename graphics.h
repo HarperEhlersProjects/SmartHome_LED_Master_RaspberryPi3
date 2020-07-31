@@ -64,8 +64,8 @@ public:
 		allocateMatrix();
 	}
 
+	void resetMatrix(void);
 	void allocateMatrix(void);
-
 };
 
 class GraphicsTB
@@ -116,9 +116,30 @@ namespace gameobjects
 {
 	enum ObjectType
 	{
+		OTypeText,
 		OTypeRectangle,
 		OTypeCircle,
 		OTypeTriangle
+	};
+
+	class Text
+	{
+	public:
+
+		tsPosition position;
+		char string[50];
+
+		tsRGB color;
+
+		char idnumber;
+
+		bool isActive = true;
+
+		Text()
+		{
+		}
+
+		Text(tsPosition position, char* string, tsRGB color);
 	};
 
 	class Rectangle
@@ -162,6 +183,7 @@ namespace gameobjects
 		{
 			this->position = position;
 			this->radius = radius;
+			this->color = color;
 
 			this->isActive = true;
 		}
@@ -184,6 +206,7 @@ namespace gameobjects
 		{
 			this->position = position;
 			this->baseLength = baseLength;
+			this->color = color;
 
 			this->isActive = true;
 		}
@@ -197,22 +220,45 @@ namespace gameobjects
 	class ObjectCollection
 	{
 	public:
+
+		Text* texts;
 		Rectangle* rectangles;
 		Circle* circles;
 		Triangle* triangles;
 
+		int numberOfElementsText;
+		int numberOfElementRectangle;
+		int numberOfElementsCircle;
+		int numberOfElementsTriangle;
+
 		ObjectCollection()
 		{
-		}
+			texts = nullptr;
+			rectangles = nullptr;
+			circles = nullptr;
+			triangles = nullptr;
 
+			numberOfElementsText = 0;
+			numberOfElementRectangle = 0;
+			numberOfElementsCircle = 0;
+			numberOfElementsTriangle = 0;
+		}
+		
+		tsObjectID addObject(Text text);
 		tsObjectID addObject(Rectangle rectangle);
 		tsObjectID addObject(Circle circle);
 		tsObjectID addObject(Triangle triangle);
 
 		void setPosition(tsObjectID id,tsPosition position);
+		tsPosition getPosition(tsObjectID id);
 		void setColor(tsObjectID id,tsRGB color);
-		void deactivate(tsObjectID);
-		void activate(tsObjectID);
+		void deactivate(tsObjectID object);
+		void activate(tsObjectID object);
+
+		bool checkCollision(Rectangle rectangle1, Rectangle rectangle2);
+		bool checkCollision(Circle circle1, Circle circle2);
+		bool checkCollision(Rectangle rectangle, Circle circle);
+		bool checkCollision(tsObjectID object1, tsObjectID object2);
 
 		void removeObject(tsObjectID id);
 		int getIndex(tsObjectID id);
@@ -220,6 +266,7 @@ namespace gameobjects
 		
 		void drawObjects(DPU* display);
 
+		void drawObject(DPU* display, Text text);
 		void drawObject(DPU* display, Rectangle rectangle);
 		void drawObject(DPU* display, Circle circle);
 		void drawObject(DPU* display, Triangle triangle);
