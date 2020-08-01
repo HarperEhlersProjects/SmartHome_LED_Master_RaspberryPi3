@@ -218,9 +218,12 @@ gameobjects::Text::Text(tsPosition position, char* string, tsRGB color)
 		this->string[i] = string[i];
 		i++;
 	}
+	this->stringLength = i;
 
 	this->isActive = true;
 	this->position = position;
+	this->velocity = { 0,0 };
+	this->acceleration = { 0,0 };
 	this->color = color;
 }
 
@@ -480,6 +483,156 @@ tsPosition gameobjects::ObjectCollection::getPosition(tsObjectID id)
 	}
 }
 
+void gameobjects::ObjectCollection::setVelocity(tsObjectID id, tsVelocity velocity)
+{
+	int index = getIndex(id);
+
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeText:
+			texts[index].velocity = velocity;
+			break;
+		case OTypeRectangle:
+			rectangles[index].velocity = velocity;
+			break;
+		case OTypeCircle:
+			circles[index].velocity = velocity;
+			break;
+		case OTypeTriangle:
+			triangles[index].velocity = velocity;
+			break;
+		}
+	}
+}
+tsVelocity gameobjects::ObjectCollection::getVelocity(tsObjectID id)
+{
+	int index = getIndex(id);
+
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeText:
+			return texts[index].velocity;
+			break;
+		case OTypeRectangle:
+			return rectangles[index].velocity;
+			break;
+		case OTypeCircle:
+			return circles[index].velocity;
+			break;
+		case OTypeTriangle:
+			return triangles[index].velocity;
+			break;
+		}
+	}
+}
+void gameobjects::ObjectCollection::setAcceleration(tsObjectID id, tsAcceleration acceleration)
+{
+	int index = getIndex(id);
+
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeText:
+			texts[index].acceleration = acceleration;
+			break;
+		case OTypeRectangle:
+			rectangles[index].acceleration = acceleration;
+			break;
+		case OTypeCircle:
+			circles[index].acceleration = acceleration;
+			break;
+		case OTypeTriangle:
+			triangles[index].acceleration = acceleration;
+			break;
+		}
+	}
+}
+tsAcceleration gameobjects::ObjectCollection::getAcceleration(tsObjectID id)
+{
+	int index = getIndex(id);
+
+	if (index != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeText:
+			return texts[index].acceleration;
+			break;
+		case OTypeRectangle:
+			return rectangles[index].acceleration;
+			break;
+		case OTypeCircle:
+			return circles[index].acceleration;
+			break;
+		case OTypeTriangle:
+			return triangles[index].acceleration;
+			break;
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::motionStep(tsObjectID id)
+{
+	int i = getIndex(id);
+
+	if (i != -1)
+	{
+		switch (id.type)
+		{
+		case OTypeText:
+			texts[i].position = { texts[i].position.x + texts[i].velocity.x + 0.5 * texts[i].acceleration.x, texts[i].position.y + texts[i].velocity.y + 0.5 * texts[i].acceleration.y };
+			texts[i].velocity = { texts[i].velocity.x + texts[i].acceleration.x, texts[i].velocity.y + texts[i].acceleration.y };
+			break;
+		case OTypeRectangle:
+			rectangles[i].position = { rectangles[i].position.x + rectangles[i].velocity.x + 0.5 * rectangles[i].acceleration.x, rectangles[i].position.y + rectangles[i].velocity.y + 0.5 * rectangles[i].acceleration.y };
+			rectangles[i].velocity = { rectangles[i].velocity.x + rectangles[i].acceleration.x, rectangles[i].velocity.y + rectangles[i].acceleration.y };
+			break;
+		case OTypeCircle:
+			circles[i].position = { circles[i].position.x + circles[i].velocity.x + 0.5 * circles[i].acceleration.x, circles[i].position.y + circles[i].velocity.y + 0.5 * circles[i].acceleration.y };
+			circles[i].velocity = { circles[i].velocity.x + circles[i].acceleration.x, circles[i].velocity.y + circles[i].acceleration.y };
+			break;
+		case OTypeTriangle:
+			triangles[i].position = { triangles[i].position.x + triangles[i].velocity.x + 0.5 * triangles[i].acceleration.x, triangles[i].position.y + triangles[i].velocity.y + 0.5 * triangles[i].acceleration.y };
+			triangles[i].velocity = { triangles[i].velocity.x + triangles[i].acceleration.x, triangles[i].velocity.y + triangles[i].acceleration.y };
+			break;
+		}
+	}
+}
+
+void gameobjects::ObjectCollection::motionStep()
+{
+	char i;
+
+	for (i = 0; i < numberOfElementsText; i++)
+	{
+		texts[i].position = { texts[i].position.x + texts[i].velocity.x + 0.5 * texts[i].acceleration.x, texts[i].position.y + texts[i].velocity.y + 0.5 * texts[i].acceleration.y };
+		texts[i].velocity = { texts[i].velocity.x + texts[i].acceleration.x, texts[i].velocity.y + texts[i].acceleration.y };
+	}
+
+	for (i = 0; i < numberOfElementRectangle; i++)
+	{
+		rectangles[i].position = { rectangles[i].position.x + rectangles[i].velocity.x + 0.5 * rectangles[i].acceleration.x, rectangles[i].position.y + rectangles[i].velocity.y + 0.5 * rectangles[i].acceleration.y };
+		rectangles[i].velocity = { rectangles[i].velocity.x + rectangles[i].acceleration.x, rectangles[i].velocity.y + rectangles[i].acceleration.y };
+	}
+
+	for (i = 0; i < numberOfElementsCircle; i++)
+	{
+		circles[i].position = { circles[i].position.x + circles[i].velocity.x + 0.5 * circles[i].acceleration.x, circles[i].position.y + circles[i].velocity.y + 0.5 * circles[i].acceleration.y };
+		circles[i].velocity = { circles[i].velocity.x + circles[i].acceleration.x, circles[i].velocity.y + circles[i].acceleration.y };
+	}
+
+	for (i = 0; i < numberOfElementsTriangle; i++)
+	{
+		triangles[i].position = { triangles[i].position.x + triangles[i].velocity.x + 0.5 * triangles[i].acceleration.x, triangles[i].position.y + triangles[i].velocity.y + 0.5 * triangles[i].acceleration.y };
+		triangles[i].velocity = { triangles[i].velocity.x + triangles[i].acceleration.x, triangles[i].velocity.y + triangles[i].acceleration.y };
+	}
+}
+
 void gameobjects::ObjectCollection::setColor(tsObjectID id, tsRGB color)
 {
 	int index = getIndex(id);
@@ -615,6 +768,9 @@ bool gameobjects::ObjectCollection::checkCollision(tsObjectID object1, tsObjectI
 	case OTypeRectangle:
 		switch (object2.type)
 		{
+		case OTypeText:
+			return checkCollision(rectangles[index1], Rectangle({ texts[index2].position.x + 4 * texts[index2].stringLength/2,texts[index2].position.y },4,4*texts[index2].stringLength,{0,0,0}));
+			break;
 		case OTypeRectangle:
 			return checkCollision(rectangles[index1], rectangles[index2]);
 		break;

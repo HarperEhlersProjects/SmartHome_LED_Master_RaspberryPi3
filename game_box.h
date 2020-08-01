@@ -5,30 +5,50 @@
 
 using namespace gameobjects;
 
-#define GAMEBOX_ACTORS_NUMBER 10
+#define GAMEBOX_FLOATS_NUMBER 20
+#define GAMEBOX_OBJECT_ID_NUMBER 20
+#define GAMEBOX_BOOLS_NUMBER 20
 
 
 enum GameBoxState {
-
-	mainmenu
+	GBStateInit,
+	GBStateMainmenu,
+	GBStatePong
 	
 };
 
 class GameBox
 {
 public:
-	GameBoxState state;
+	GameBoxState state, nextState;
+	bool initialAttempt;
 	ObjectCollection objects;
-	float gameboxActors[GAMEBOX_ACTORS_NUMBER];
+
+
+
+	tsObjectID objectIDs[GAMEBOX_OBJECT_ID_NUMBER];
+	float floats[GAMEBOX_FLOATS_NUMBER];
+	bool bools[GAMEBOX_BOOLS_NUMBER];
 
 	GameBox()
 	{
+		state = GBStateInit;
+		nextState = GBStateMainmenu;
 		objects = ObjectCollection();
-		gameboxActors[0] = 0;
+		resetGameBox();
 
 	}
 
-	void CalculateStep();
+	void calculateStep();
+	void returnToMainMenu();
+
+private:
+	void resetGameBox(void);
+
+	void mainMenu(void);
+
+	//Declare new Gamemethods here
+	void pong(void);
 
 };
 

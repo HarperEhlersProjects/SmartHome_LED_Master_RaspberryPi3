@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		//vEventHandlerCheckEvents();
 		settings.upSync();
 
-		system.gamebox.CalculateStep();
+		system.gamebox.calculateStep();
 
 		modeManager.vFrameCalculate();
 		transmitter.vRGB2PacketSerial();

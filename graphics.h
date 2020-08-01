@@ -46,6 +46,16 @@ typedef struct {
 	float y;
 } tsPosition;
 
+typedef struct {
+	float x;
+	float y;
+} tsVelocity;
+
+typedef struct {
+	float x;
+	float y;
+} tsAcceleration;
+
 class DPU
 {
 public:
@@ -116,6 +126,7 @@ namespace gameobjects
 {
 	enum ObjectType
 	{
+		OTypeNone,
 		OTypeText,
 		OTypeRectangle,
 		OTypeCircle,
@@ -127,7 +138,10 @@ namespace gameobjects
 	public:
 
 		tsPosition position;
+		tsVelocity velocity;
+		tsAcceleration acceleration;
 		char string[50];
+		char stringLength;
 
 		tsRGB color;
 
@@ -146,6 +160,8 @@ namespace gameobjects
 	{
 	public:
 		tsPosition position;
+		tsVelocity velocity;
+		tsAcceleration acceleration;
 		float height;
 		float length;
 
@@ -158,6 +174,8 @@ namespace gameobjects
 		Rectangle(tsPosition position,char height,char length, tsRGB color)
 		{
 			this->position = position;
+			this->velocity = { 0,0 };
+			this->acceleration = { 0,0 };
 			this->height = height;
 			this->length = length;
 
@@ -171,6 +189,8 @@ namespace gameobjects
 	{
 	public:
 		tsPosition position;
+		tsVelocity velocity;
+		tsAcceleration acceleration;
 		float radius;
 
 		tsRGB color;
@@ -182,6 +202,8 @@ namespace gameobjects
 		Circle(tsPosition position, char radius, tsRGB color)
 		{
 			this->position = position;
+			this->velocity = { 0,0 };
+			this->acceleration = { 0,0 };
 			this->radius = radius;
 			this->color = color;
 
@@ -194,6 +216,8 @@ namespace gameobjects
 	{
 	public:
 		tsPosition position;
+		tsVelocity velocity;
+		tsAcceleration acceleration;
 		float baseLength;
 
 		tsRGB color;
@@ -205,6 +229,8 @@ namespace gameobjects
 		Triangle(tsPosition position, char baseLength, tsRGB color)
 		{
 			this->position = position;
+			this->velocity = { 0,0 };
+			this->acceleration = { 0,0 };
 			this->baseLength = baseLength;
 			this->color = color;
 
@@ -251,6 +277,12 @@ namespace gameobjects
 
 		void setPosition(tsObjectID id,tsPosition position);
 		tsPosition getPosition(tsObjectID id);
+		void setVelocity(tsObjectID id, tsVelocity velocity);
+		tsVelocity getVelocity(tsObjectID id);
+		void setAcceleration(tsObjectID id, tsAcceleration acceleration);
+		tsAcceleration getAcceleration(tsObjectID id);
+		void motionStep(tsObjectID id);
+		void motionStep(void);
 		void setColor(tsObjectID id,tsRGB color);
 		void deactivate(tsObjectID object);
 		void activate(tsObjectID object);
