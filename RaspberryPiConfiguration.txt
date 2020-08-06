@@ -16,3 +16,9 @@ stty -F /dev/ttyAMA0 4000000
 
 sudo raspi-config -> interface options -> serial -> No -> Yes -> Finish
 reboot
+
+sudo apt-get update
+sudo apt-get install libsdl2-dev
+reboot
+
+//compile with `sdl-config --cflags --libs`
