@@ -21,4 +21,4 @@ sudo apt-get update
 sudo apt-get install libsdl2-dev
 reboot
 
-//compile with `sdl-config --cflags --libs`
+//compile with `usr/bin/sdl2-config --cflags --libs`
