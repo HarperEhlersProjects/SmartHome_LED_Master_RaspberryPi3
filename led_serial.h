@@ -1,21 +1,35 @@
+/*
+The led_serial module provides a Transmitter which is capable of serializing rgb data of the virtual led arrays of a given system 
+and transmitting them by using uart with a maximum of a given framerate.
+*/
+
 #ifndef LED_SERIAL_H
 #define LED_SERIAL_H
 
 #include "makros.h"
 #include "system.h"
 
+
+/*
+Maps rgb data of virtual led arrays of a given system to physical led arrays and serializing the rgb data of physical led array efficiently in one step.
+After serialized data is transmitted by using the uart controller of raspberry pi 3.
+*/
 class Transmitter
 {
 public:
-	char uiLEDSerialBuffer[LED_SERIAL_DATA_SIZE];
-	int iPort;
-	VirtualSLA* virtualSLAs;
-	SLA* SLAs;
 
-	Transmitter(VirtualSLA* virtualSLAs, SLA* SLAs);
+	Transmitter(System* system);
 
-	void vSerialTransmit(void);
+	void vSerialTransmit(void);		//Transmits serialized and packed data in uiLEDSerialBuffer using uart
 	void vRGB2PacketSerial(void);
+
+private:
+
+	char uiLEDSerialBuffer[LED_SERIAL_DATA_SIZE];	//buffer of serialized and packed rgb data.
+	int iPort;										//filestream which is linked to serial uart output.
+
+	System* system;
+
 	void vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVirtualLED, char uiSLAType);
 };
 
