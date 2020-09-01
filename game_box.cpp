@@ -1,106 +1,11 @@
 #include "game_box.h"
-#include "SDL/SDL.h"
 
+#include <iostream>
 
-//#define MAX_CONTROLLERS 4
-//
-//class JoypadController {
-//public:
-//	JoypadController() : is_connected(false), gamepad(0), instance_id(-1), haptic(0) {}
-//
-//	int processEvent(const SDL_Event& event);
-//private:
-//	SDL_GameController* gamepad;
-//	SDL_Haptic* haptic;
-//	SDL_JoystickID instance_id;
-//	bool is_connected;
-//
-//	static JoypadController ms_controllers[MAX_CONTROLLERS];
-//	static int GetControllerIndex(SDL_JoystickID instance);
-//
-//	void Open(int device);
-//	void Close();
-//
-//};
-//
-//// Opens the joystick controller
-//void JoypadController::Open(int device)
-//{
-//	gamepad = SDL_GameControllerOpen(device);
-//	SDL_Joystick* j = SDL_GameControllerGetJoystick(gamepad);
-//	instance_id = SDL_JoystickInstanceID(j);
-//	is_connected = true;
-//	if (SDL_JoystickIsHaptic(j)) {
-//		haptic = SDL_HapticOpenFromJoystick(j);
-//		if (SDL_HapticRumbleSupported(haptic)) {
-//			if (SDL_HapticRumbleInit(haptic) != 0) {
-//				SDL_HapticClose(haptic);
-//				haptic = 0;
-//			}
-//		}
-//		else {
-//			SDL_HapticClose(haptic);
-//			haptic = 0;
-//		}
-//	}
-//}
-//
-//void JoypadController::Close()
-//{
-//	if (is_connected) {
-//		is_connected = false;
-//		if (haptic) {
-//			SDL_HapticClose(haptic);
-//			haptic = 0;
-//		}
-//		SDL_GameControllerClose(gamepad);
-//		gamepad = 0;
-//	}
-//}
-//
-//int JoypadController::GetControllerIndex(SDL_JoystickID instance)
-//{
-//	for (int i = 0; i < MAX_CONTROLLERS; ++i)
-//	{
-//		if (ms_controllers[i].is_connected && ms_controllers[i].instance_id == instance) {
-//			return i;
-//		}
-//	}
-//	return -1;
-//}
-//
-//int JoypadController::processEvent(const SDL_Event& event)
-//{
-//	switch (event.type) {
-//	case SDL_CONTROLLERAXISMOTION: {
-//		// handle axis motion
-//		break;
-//	}
-//	case SDL_CONTROLLERBUTTONDOWN:
-//	case SDL_CONTROLLERBUTTONUP: {
-//		// handle button up/down
-//		break;
-//	}
-//	case SDL_CONTROLLERDEVICEADDED: {
-//		if (event.cdevice.which < MAX_CONTROLLERS) {
-//			JoypadController& jc = ms_controllers[event.cdevice.which];
-//			jc.Open(event.cdevice.which);
-//		}
-//		break;
-//	}
-//	case SDL_CONTROLLERDEVICEREMOVED: {
-//		int cIndex = GetControllerIndex(event.cdevice.which);
-//		if (cIndex < 0) return 0; // unknown controller?
-//		JoypadController& jc = ms_controllers[cIndex];
-//		jc.Close();
-//		break;
-//	}
-//	}
-//	return 0;
-//}
 
 void GameBox::calculateStep()
 {
+	gamepads.updateControllers();
 
 	if (nextState != state)
 	{

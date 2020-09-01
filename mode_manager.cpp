@@ -202,5 +202,4 @@ void ModeManager::vMode5(VirtualSLA* vSLA)
 	system->gamebox.objects.drawObjects(&vSLA->display);
 	serializeDPUMatrix(vSLA);
 	vSLA->display.resetMatrix();
-
 }

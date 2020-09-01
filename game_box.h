@@ -2,6 +2,7 @@
 #define GAME_BOX_H
 
 #include "graphics.h"
+#include "gamepad.h"
 
 using namespace gameobjects;
 
@@ -18,23 +19,6 @@ enum GameBoxState {
 	
 };
 
-typedef struct {
-	bool SELECT;
-	bool START;
-	
-	bool A;
-	bool B;
-	bool X;
-	bool Y;
-
-	bool UP;
-	bool DOWN;
-	bool LEFT;
-	bool RIGHT;
-
-	bool L;
-	bool R;
-}PlayerInput;
 
 class GameBox
 {
@@ -42,7 +26,8 @@ public:
 	GameBoxState state, nextState;
 	bool initialAttempt;
 	ObjectCollection objects;
-	PlayerInput playerInputs[2];
+	GamePads gamepads;
+
 
 	tsObjectID objectIDs[GAMEBOX_OBJECT_ID_NUMBER];
 	float floats[GAMEBOX_FLOATS_NUMBER];
@@ -54,6 +39,7 @@ public:
 		state = GBStateInit;
 		nextState = GBStatePong;
 		objects = ObjectCollection();
+		gamepads = GamePads();
 		resetGameBox();
 
 	}
