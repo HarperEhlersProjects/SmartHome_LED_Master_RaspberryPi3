@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 #include <cstdio>
+#include <cstdint>
+
 
 #include "rapidjson/document.h"
 #include "rapidjson/prettywriter.h"
@@ -22,10 +24,10 @@ Settings::Settings(System* system)
 	upSync();
 }
 
-
+//Write current settings into configuration file
 void Settings::downSync()
 {
-	char i, j;
+	uint8_t i, j;
 
 	ifstream config_file(SETTINGS_CONFIG_FILENAME);
 	if (!config_file.is_open())
@@ -51,7 +53,7 @@ void Settings::downSync()
 			modeParameter.SetArray();
 			for (j = 0; j < MODE_PARAMETER_NUMBER; j++)
 			{
-				modeParameter.PushBack(val.SetDouble(system->virtualSLAs[i].mode.Parameter[j]), allocator);
+				modeParameter.PushBack(val.SetDouble(system->virtualSLAs[i].mode.parameter[j]), allocator);
 			}
 
 			segments.SetArray();
@@ -69,10 +71,10 @@ void Settings::downSync()
 
 			obj.SetObject();
 			obj.AddMember("length", val.SetInt(system->virtualSLAs[i].length), allocator);
-			obj.AddMember("mode", val.SetInt(system->virtualSLAs[i].mode.Number), allocator);
+			obj.AddMember("mode", val.SetInt(system->virtualSLAs[i].mode.number), allocator);
 			obj.AddMember("modeParameter", modeParameter, allocator);
 			obj.AddMember("segments", segments, allocator);
-			obj.AddMember("gammaEnable", val.SetBool(system->virtualSLAs[i].graphics.gammaEnable), allocator);
+			obj.AddMember("gammaEnable", val.SetBool(system->virtualSLAs[i].framebuffer.gammaEnable), allocator);
 
 			virtualSLAs.PushBack(obj, allocator);
 		}
@@ -96,9 +98,10 @@ void Settings::downSync()
 	config_file.close();
 }
 
+//Read settings from configuration file and write them into current settings
 void Settings::upSync()
 {
-	char i, j;
+	uint8_t i, j;
 
 	ifstream config_file(SETTINGS_CONFIG_FILENAME);
 	if (config_file.is_open())
@@ -118,9 +121,9 @@ void Settings::upSync()
 
 				for (j = 0; j < MODE_PARAMETER_NUMBER; j++)
 				{
-					system->virtualSLAs[i].mode.Parameter[j] = config_json["virtualSLAs"][i]["modeParameter"][j].GetDouble();
+					system->virtualSLAs[i].mode.parameter[j] = config_json["virtualSLAs"][i]["modeParameter"][j].GetDouble();
 				}
-				system->virtualSLAs[i].mode.Number = config_json["virtualSLAs"][i]["mode"].GetInt();
+				system->virtualSLAs[i].mode.number = config_json["virtualSLAs"][i]["mode"].GetInt();
 
 				for (j = 0; j < VIRTUAL_SLA_SEGMENTS_NUMBER; j++)
 				{
@@ -132,7 +135,7 @@ void Settings::upSync()
 				}
 
 				system->virtualSLAs[i].length = config_json["virtualSLAs"][i]["length"].GetInt();
-				system->virtualSLAs[i].graphics.gammaEnable = config_json["virtualSLAs"][i]["gammaEnable"].GetBool();
+				system->virtualSLAs[i].framebuffer.gammaEnable = config_json["virtualSLAs"][i]["gammaEnable"].GetBool();
 			}
 
 

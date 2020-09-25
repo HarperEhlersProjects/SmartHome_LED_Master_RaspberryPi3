@@ -1,22 +1,23 @@
 #ifndef GAME_BOX_H
 #define GAME_BOX_H
 
-#include "graphics.h"
-#include "gamepad.h"
+#pragma once
 
-using namespace gameobjects;
+#include "gamepad.h"
+#include "game_objects.h"
+
 
 #define GAMEBOX_FLOATS_NUMBER 20
 #define GAMEBOX_OBJECT_ID_NUMBER 20
 #define GAMEBOX_BOOLS_NUMBER 20
 #define GAMEBOX_INTEGERS_NUMBER 20
 
+
 enum GameBoxState {
 	GBStateInit,
 	GBStateMainmenu,
 	GBStatePong,
 	GBStateBricks
-	
 };
 
 

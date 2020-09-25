@@ -1,7 +1,7 @@
 #include "led_serial.h"
 
 
-#include "graphics.h"
+#include "framebuffer.h"
 #include "system.h"
 
 #include <stdio.h>
@@ -74,7 +74,7 @@ void Transmitter::vSerialTransmit()
                 iCount = 0;
                 while(iCount < LED_SERIAL_DATA_SIZE)
                 {   
-					//Write data to uart filestream and count written bytes
+					//Write data to uart filestream and count written bytes.
                     iRet = write(iPort, &(uiLEDSerialBuffer[iCount]), LED_SERIAL_DATA_SIZE-iCount);
                     if(iRet != -1)
                     {
@@ -106,32 +106,38 @@ void Transmitter::vRGB2PacketSerial(void)
 	long i, uiLEDOffset, uiLED, uiVirtualLED, uiVirtualSLA, uiSegmentCounter;
 	char uiSLAMask;
 	
+	//Iterate through all virtual pixel array objects
 	for(uiVirtualSLA=0;uiVirtualSLA < VIRTUAL_SLA_NUMBER;uiVirtualSLA++)
 	{
+		//Iterate through all segments of current pixel array object
 		for(uiSegmentCounter=0;uiSegmentCounter < VIRTUAL_SLA_SEGMENTS_NUMBER;uiSegmentCounter++)
 		{
+			//When current segment has a configured destination physical pixel array
 			if(system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].uiDestSLA != VIRTUAL_SLA_DEST_NONE)
 			{
+				//Calculate the corresponding mask of the destination physical pixel array object
 				uiSLAMask = 1 << system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].uiDestSLA;
+				//Whether the mapping direction is inverted or not
 				if(system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].bSLAInverted)
 				{	
+					//Iterating through every pixel of the current segment and copying it to the designated pixel of destination physical pixel array
 					for(uiLEDOffset=0;uiLEDOffset < system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].length;uiLEDOffset++)
 					{
 						uiVirtualLED = system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstSourceLED + uiLEDOffset;
-						uiLED = system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstDestLED - uiLEDOffset;
+						uiLED = system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstDestLED - uiLEDOffset;	//Inverted direction
 						
 						vSetPixel(uiSLAMask,uiLED,uiVirtualSLA,uiVirtualLED, system->SLAs[system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].uiDestSLA].colorType);
 					}
 				}
 				else
 				{
+					//Iterating through every pixel of the current segment and copying it to the designated pixel of destination physical pixel array
 					for(uiLEDOffset=0;uiLEDOffset < system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].length;uiLEDOffset++)
 					{
 						uiVirtualLED = system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstSourceLED + uiLEDOffset;
-						uiLED = system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstDestLED + uiLEDOffset;
+						uiLED = system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].firstDestLED + uiLEDOffset;	//Not inverted direction
 					
 						vSetPixel(uiSLAMask,uiLED,uiVirtualSLA,uiVirtualLED, system->SLAs[system->virtualSLAs[uiVirtualSLA].segments[uiSegmentCounter].uiDestSLA].colorType);
-						
 					}
 				}
 			}
@@ -139,16 +145,27 @@ void Transmitter::vRGB2PacketSerial(void)
 	}
 }
 
+
+/*
+Write a pixel for a specified physical pixel array according to a specific format.
+In the following schematic is described which Bit refers to which physical LED-Array, which LED, which color and which Bit of this 8 Bit coded color.
+																	First LED of all physical LED-Arrays														|Second LED of all physical LED-Arrays
+Color and Bit-Index from LSB					->		  Red 0    Red 1    ...    Red 7   Green 0   Green 1   ...   Green 7   Blue 0   Blue 1    ...	 Blue 7	| Red 0		...
+Bytes of buffer with MSB------LSB devided by |	->		--------|--------|  ...  |--------|--------|--------|  ...  |--------|--------|--------|  ...  |--------|--------|	...
+Physical LED-Array No.							->		76543210	""      ...      ""       ""       ""      ...      ""       ""       ""	  ...	   ""	|	""		...
+*/
 void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long uiVirtualLED,char uiSLAType)
 {
 	char i;
 	
+	//Iterating through 8 Bits of each color intensity of current pixel
 	for(i=0;i<8;i++)
 	{
+		//Set the corresponding bits for every color in the serial buffer according to the value of the current bits.
 		switch(uiSLAType)
 		{
 			case SETTINGS_SLATYPE_RGB:
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -157,7 +174,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -166,7 +183,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -176,7 +193,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 				}
 			break;
 			case SETTINGS_SLATYPE_GBR:
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -185,7 +202,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -194,7 +211,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -204,7 +221,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 				}
 			break;
 			case SETTINGS_SLATYPE_BRG:
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -213,7 +230,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -222,7 +239,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -232,7 +249,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 				}
 			break;
 			case SETTINGS_SLATYPE_BGR:
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -241,7 +258,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -250,7 +267,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -260,7 +277,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 				}
 			break;
 			case SETTINGS_SLATYPE_GRB:
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -269,7 +286,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -278,7 +295,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}
@@ -288,7 +305,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 				}
 			break;
 			case SETTINGS_SLATYPE_RBG:
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiRed & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + i] |= uiSLAMask;
 				}
@@ -297,7 +314,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + i] &= ~uiSLAMask;
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiBlue & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] |= uiSLAMask;
 				}
@@ -306,7 +323,7 @@ void Transmitter::vSetPixel(char uiSLAMask, long uiLED, long uiVirtualSLA, long 
 					uiLEDSerialBuffer[uiLED * 24 + 8 + i] &= ~uiSLAMask;        
 				}
 
-				if((system->virtualSLAs[uiVirtualSLA].graphics.frameBuffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
+				if((system->virtualSLAs[uiVirtualSLA].framebuffer.buffer[uiVirtualLED].uiGreen & (0x80 >> i)) > 0)
 				{
 					uiLEDSerialBuffer[uiLED * 24 + 16 + i] |= uiSLAMask;
 				}

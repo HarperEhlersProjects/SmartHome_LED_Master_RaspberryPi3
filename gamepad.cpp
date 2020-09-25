@@ -9,6 +9,7 @@ void GamePads::openControllers(void)
         if (SDL_IsGameController(i) && j<4) 
         {
             controllers[j] = SDL_GameControllerOpen(i);
+            j++;
         }
 
         numberConectedJoysticks++;

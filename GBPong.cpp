@@ -11,7 +11,7 @@ void GameBox::pong()
 	//Initialise game
 	if (initialAttempt)
 	{
-		ball = objects.addObject(Rectangle({ 7,7 }, 1, 1, {10,10,10}));
+		ball = objects.addObject(Rectangle({ 7,7 }, 2, 2, {10,10,10}));
 		wallS = objects.addObject(Rectangle({8,15 }, 1, 20, { 0,10,0 }));
 		wallN = objects.addObject(Rectangle({ 8,0}, 1, 20, { 0,10,0 }));
 		wallE = objects.addObject(Rectangle({ 20,8}, 40, 1, { 0,0,0 }));
@@ -28,7 +28,7 @@ void GameBox::pong()
 	else
 	{
 		objects.setVelocity(player1, {0,((int)gamepads.inputs[0].DOWN) * 0.2 - ((int)gamepads.inputs[0].UP) * 0.2 });
-		objects.setVelocity(player2, { 0,((int)gamepads.inputs[0].DOWN) * 0.2 - ((int)gamepads.inputs[0].UP) * 0.2 });
+		objects.setVelocity(player2, { 0,((int)gamepads.inputs[1].DOWN) * 0.2 - ((int)gamepads.inputs[1].UP) * 0.2 });
 
 		objects.motionStep();
 

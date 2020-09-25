@@ -1,23 +1,7 @@
 #include "mode_manager.h"
 
-
-void ModeManager::serializeDPUMatrix(VirtualSLA* vSLA)
-{
-	int x = vSLA->display.resolution.x, y = vSLA->display.resolution.y;
-
-	for (x = 0; x < vSLA->display.resolution.x; x++)
-	{	
-		for (y = 0; y < vSLA->display.resolution.y; y+=2)
-		{
-			vSLA->graphics.frameBuffer[y * vSLA->display.resolution.x + (vSLA->display.resolution.x - 1) - x] = vSLA->display.matrix[y][x];
-		}
-
-		for (y = 1; y < vSLA->display.resolution.y; y += 2)
-		{
-			vSLA->graphics.frameBuffer[y * vSLA->display.resolution.x + x] = vSLA->display.matrix[y][x];;
-		}
-	}
-}
+#include "display.h"
+#include "color.h"
 
 void ModeManager::vFrameCalculate()
 {
@@ -27,9 +11,9 @@ void ModeManager::vFrameCalculate()
 	{
 		VirtualSLA* currentVirtualSLA = &(system->virtualSLAs[uiCounterSLA]);
 
-		currentVirtualSLA->graphics.vResetAllPixel();
+		currentVirtualSLA->framebuffer.vResetAllPixel();
 
-		switch(currentVirtualSLA->mode.Number)
+		switch(currentVirtualSLA->mode.number)
         {
 			case 0:ModeManager::vMode0(currentVirtualSLA);//LED off
             break;
@@ -52,22 +36,21 @@ void ModeManager::vMode0(VirtualSLA* vSLA)
 }
 
 
-/*
+/* 
 parameter 0-2: RGB: 0-255
 */
 void ModeManager::vMode1(VirtualSLA* vSLA)
 {
 	tsHSV tsColorHSV;
-	tsRGB tsColorRGB;
     long uiCounter;
 	
-	tsColorHSV.uiHuel = vSLA->mode.Parameter[0];
-	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
-	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
+	tsColorHSV.uiHuel = vSLA->mode.parameter[0];
+	tsColorHSV.udSaturation = vSLA->mode.parameter[1];
+	tsColorHSV.udBrightness = vSLA->mode.parameter[2];
 	
     for(uiCounter=0;uiCounter< vSLA->length;uiCounter++)
     {
-		vSLA->graphics.vSetPixel(uiCounter,tsColorHSV);
+		vSLA->framebuffer.vSetPixel(uiCounter,tsColorHSV);
     }
 }
 
@@ -79,38 +62,37 @@ parameter 4: snake veloity: 0-255
 void ModeManager::vMode2(VirtualSLA* vSLA)
 {
 	tsHSV tsColorHSV;
-    tsRGB tsColorRGB;
     long uiCounter;
     long uiTopBoundary,uiBottomBoundary;
 
-	tsColorHSV.uiHuel = vSLA->mode.Parameter[0];
-	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
-	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
+	tsColorHSV.uiHuel = vSLA->mode.parameter[0];
+	tsColorHSV.udSaturation = vSLA->mode.parameter[1];
+	tsColorHSV.udBrightness = vSLA->mode.parameter[2];
 
-	vSLA->mode.Actors[1]++;
+	vSLA->mode.actors[1]++;
 
-    if(vSLA->mode.Actors[1] > 255- vSLA->mode.Parameter[4])
+    if(vSLA->mode.actors[1] > 255- vSLA->mode.parameter[4])
     {
-		vSLA->mode.Actors[0]++;
+		vSLA->mode.actors[0]++;
 
-        if(vSLA->mode.Actors[0] >= vSLA->length + vSLA->mode.Parameter[4])
+        if(vSLA->mode.actors[0] >= vSLA->length + vSLA->mode.parameter[4])
         {
-			vSLA->mode.Actors[0] = 0;
+			vSLA->mode.actors[0] = 0;
         }
 
-		vSLA->mode.Actors[1] = 0;
+		vSLA->mode.actors[1] = 0;
     }
 
-    if(vSLA->mode.Actors[0] - vSLA->mode.Parameter[3] < 0)  //cut if its too long for SLA
+    if(vSLA->mode.actors[0] - vSLA->mode.parameter[3] < 0)  //cut if its too long for SLA
     {
         uiBottomBoundary = 0;
     }
     else
     {
-        uiBottomBoundary = vSLA->mode.Actors[0] - vSLA->mode.Parameter[3];
+        uiBottomBoundary = vSLA->mode.actors[0] - vSLA->mode.parameter[3];
     }
 
-    uiTopBoundary = vSLA->mode.Actors[0];
+    uiTopBoundary = vSLA->mode.actors[0];
 
     if(uiTopBoundary >= vSLA->length)
     {
@@ -120,7 +102,7 @@ void ModeManager::vMode2(VirtualSLA* vSLA)
 
     for(uiCounter = uiBottomBoundary;uiCounter < uiTopBoundary;uiCounter++)
     {
-		vSLA->graphics.vSetPixel(uiCounter,tsColorHSV);
+		vSLA->framebuffer.vSetPixel(uiCounter,tsColorHSV);
     }
 }
 
@@ -132,31 +114,30 @@ parameter 4: expanding velocity: 0-255
 void ModeManager::vMode3(VirtualSLA* vSLA)
 {
 	tsHSV tsColorHSV;
-    tsRGB tsColorRGB;
 
-	tsColorHSV.uiHuel = vSLA->mode.Parameter[0];
-	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
-	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
+	tsColorHSV.uiHuel = vSLA->mode.parameter[0];
+	tsColorHSV.udSaturation = vSLA->mode.parameter[1];
+	tsColorHSV.udBrightness = vSLA->mode.parameter[2];
 	
-    if(vSLA->mode.Actors[0] > vSLA->length/2)
+    if(vSLA->mode.actors[0] > vSLA->length/2)
     {   
-		vSLA->mode.Actors[1] = 0;
+		vSLA->mode.actors[1] = 0;
     }
-    else if(vSLA->mode.Actors[0] < vSLA->mode.Parameter[3])
+    else if(vSLA->mode.actors[0] < vSLA->mode.parameter[3])
     {
-		vSLA->mode.Actors[1] = 1;
+		vSLA->mode.actors[1] = 1;
     }
 
-    if(vSLA->mode.Actors[1] == 1)
+    if(vSLA->mode.actors[1] == 1)
     {
-		vSLA->mode.Actors[0] += vSLA->mode.Parameter[4];
+		vSLA->mode.actors[0] += vSLA->mode.parameter[4];
     }
     else
     {
-		vSLA->mode.Actors[0] -= vSLA->mode.Parameter[3];
+		vSLA->mode.actors[0] -= vSLA->mode.parameter[3];
     }
 
-	vSLA->graphics.vSetPixelFromTo(vSLA->mode.Actors[0], vSLA->length -1- vSLA->mode.Actors[0],tsColorHSV);
+	vSLA->framebuffer.vSetPixelFromTo(vSLA->mode.actors[0], vSLA->length -1- vSLA->mode.actors[0],tsColorHSV);
 
 }
 
@@ -164,34 +145,33 @@ void ModeManager::vMode3(VirtualSLA* vSLA)
 void ModeManager::vMode4(VirtualSLA* vSLA)
 {
 	tsHSV tsColorHSV;
-	tsRGB tsColorRGB;
     long uiCounter;
 	
 	for(uiCounter=0;uiCounter< vSLA->length;uiCounter++)
     {
 	
 	tsColorHSV.uiHuel = 360*uiCounter/ vSLA->length;
-	tsColorHSV.udSaturation = vSLA->mode.Parameter[1];
-	tsColorHSV.udBrightness = vSLA->mode.Parameter[2];
+	tsColorHSV.udSaturation = vSLA->mode.parameter[1];
+	tsColorHSV.udBrightness = vSLA->mode.parameter[2];
 		
-		if(uiCounter + vSLA->mode.Actors[1] >= vSLA->length)
+		if(uiCounter + vSLA->mode.actors[1] >= vSLA->length)
 		{
-			vSLA->graphics.vSetPixel(uiCounter + vSLA->mode.Actors[1] - vSLA->length,tsColorHSV);
+			vSLA->framebuffer.vSetPixel(uiCounter + vSLA->mode.actors[1] - vSLA->length,tsColorHSV);
 		}
 		else
 		{
-			vSLA->graphics.vSetPixel(uiCounter + vSLA->mode.Actors[1],tsColorHSV);
+			vSLA->framebuffer.vSetPixel(uiCounter + vSLA->mode.actors[1],tsColorHSV);
 		}
 
     }
 		
-	if(vSLA->mode.Actors[1] >= vSLA->length)
+	if(vSLA->mode.actors[1] >= vSLA->length)
 	{
-		vSLA->mode.Actors[1] = 0;
+		vSLA->mode.actors[1] = 0;
 	}
 	else
 	{	
-		vSLA->mode.Actors[1] += vSLA->mode.Parameter[3];
+		vSLA->mode.actors[1] += vSLA->mode.parameter[3];
 	}
 }
 
@@ -200,6 +180,6 @@ void ModeManager::vMode4(VirtualSLA* vSLA)
 void ModeManager::vMode5(VirtualSLA* vSLA)
 {
 	system->gamebox.objects.drawObjects(&vSLA->display);
-	serializeDPUMatrix(vSLA);
+	vSLA->serializeDPUMatrix();
 	vSLA->display.resetMatrix();
 }

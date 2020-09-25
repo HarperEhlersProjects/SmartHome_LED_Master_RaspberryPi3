@@ -4,9 +4,15 @@ The settings module contains every setting that can be changed by the user. Watc
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#pragma once
+
+#include <cstdint>
+
 #include "makros.h"
 #include "graphics.h"
 #include "game_box.h"
+
+
 
 /*
 uiDestSLA: unsigned integer that defines the physical SLA on which the pixel segment will be mapped.
@@ -17,7 +23,7 @@ firstDestLED : unsigned integer that defines the led number on the physical SLA 
 */
 typedef struct {
 	int uiDestSLA;
-	char bSLAInverted;
+	uint8_t bSLAInverted;
 
 	long length;
 	long firstSourceLED;
@@ -34,35 +40,42 @@ uiParameter: array of unsiged integer which defines the behavior of associated e
 uiModeParameter: array of unsigned integer which defines the parameter values of a mode that has been triggered by the event handler.
 */
 typedef struct{
-	char bIsActive;
-	char bEnabled;
-	char uiPriority;
+	uint8_t bIsActive;
+	uint8_t bEnabled;
+	uint8_t uiPriority;
 	double uiParameter[EVENT_HANDLER_PARAMETER_NUMBER];
 	double uiModeParameter[MODE_PARAMETER_NUMBER];
 }tsEventHandler;
 
-
+/*
+Structure that contains all information about the activated mode.
+number: integer value which identifies the current mode.
+parameter: array of doubles which define the current behavior of the activated mode.
+actors: array of doubles which define the current state of the activated mode.
+*/
 typedef struct {
-	char Number;								//Active mode
-	double Parameter[MODE_PARAMETER_NUMBER];	//Parameters of activated mode
-	double Actors[MODE_ACTOR_NUMBER];
+	uint8_t number;								//Active mode
+	double parameter[MODE_PARAMETER_NUMBER];	//Parameters of activated mode
+	double actors[MODE_ACTOR_NUMBER];
 }tsMode;
 
+
+/*
+The SLA class contains every information about one physical led array.
+*/
 class SLA
 {
 public:
-	char state;		//state of physical SLA: active or inactive
-	char colorType;	//type of physical SLA. e.g. RGB or GBR
+	uint8_t state;		//state of physical SLA: active or inactive
+	uint8_t colorType;	//type of physical SLA. e.g. RGB or GBR
 	long length;	//length of physical SLAs
 
-	SLA()
-	{
-		state = SLA_DEACTIVE;
-		colorType = SETTINGS_SLATYPE_RGB;
-		length = SLA_LENGTH_MAX;
-	}
+	SLA(): state(SLA_DEACTIVE),colorType(SETTINGS_SLATYPE_RGB),length(SLA_LENGTH_MAX){}
 };
 
+/*
+The VirtualSLA class contains the configuration of one virtual led array.
+*/
 class VirtualSLA
 {
 public:
@@ -72,37 +85,52 @@ public:
 
 	tsSegment segments[VIRTUAL_SLA_SEGMENTS_NUMBER];
 
-	GraphicsTB graphics;
+	FrameBuffer framebuffer;	//Containing frame buffer and configuration of gamma correction.
 
-	DPU display;
+	DPU display;	//Additional display unit which extends the serial framebuffer with an rgb matrix for using the virtual sla as display (i.e. gamebox).
 
-	VirtualSLA()
+	VirtualSLA() :length(0)
 	{
 		char i;
 
-		length = 0;
-		mode.Number = MODES_MODE_BLANK;
-
+		mode.number = MODES_MODE_BLANK;
 		for(i = i; i < MODE_PARAMETER_NUMBER; i++)
 		{
-			mode.Parameter[i] = 0;
+			mode.parameter[i] = 0;
 		}
-
 		for (i = i; i < MODE_ACTOR_NUMBER; i++)
 		{
-			mode.Actors[i] = 0;
+			mode.actors[i] = 0;
 		}
 
 		for (i=0;i<VIRTUAL_SLA_SEGMENTS_NUMBER;i++)
 		{
-			segments[i] = { VIRTUAL_SLA_DEST_NONE,FALSE,0,0,0};
+			segments[i] = {VIRTUAL_SLA_DEST_NONE,FALSE,0,0,0};
 		}
-
-		graphics = GraphicsTB();
 	}
 
+	void serializeDPUMatrix(void)
+	{
+		int x, y;
+
+		for (x = 0; x < this->display.resolution.x; x++)
+		{
+			for (y = 0; y < this->display.resolution.y; y += 2)
+			{
+				this->framebuffer.buffer[y * this->display.resolution.x + (this->display.resolution.x - 1) - x] = this->display.matrix[y][x];
+			}
+
+			for (y = 1; y < this->display.resolution.y; y += 2)
+			{
+				this->framebuffer.buffer[y * this->display.resolution.x + x] = this->display.matrix[y][x];;
+			}
+		}
+	}
 };
 
+/*
+The System contains every information about a configuration of virtual LED arrays, physical led arrays and a gamebox.
+*/
 class System
 {
 public:
@@ -112,24 +140,7 @@ public:
 
 	GameBox gamebox;
 
-	System()
-	{
-		char i;
-
-		SLALengthMax = SLA_LENGTH_MAX;
-
-		for (i = 0; i < SLA_NUMBER; i++)
-		{
-			virtualSLAs[i] = VirtualSLA();
-		}
-
-		for (i = 0; i < SLA_NUMBER; i++)
-		{
-			SLAs[i] = SLA();
-		}
-
-		gamebox = GameBox();
-	}
+	System() : SLALengthMax(SLA_LENGTH_MAX){};
 };
 
 #endif /* SYSTEM_H */
