@@ -11,7 +11,7 @@ sudo usermod -a -G dialout user
 
 sudo nano /boot/cmdline.txt -> Remove: console=serial0,115200
 
-//Keine Ahnugn warum das hier zusätzlich nötig ist
+//???
 stty -F /dev/ttyAMA0 4000000 
 
 sudo raspi-config -> interface options -> serial -> No -> Yes -> Finish
