@@ -2,11 +2,14 @@
 
 #include <iostream>
 
+using namespace gameobjects;
 
 void GameBox::calculateStep()
 {
+	//Update controller inputs
 	gamepads.updateControllers();
 
+	//In case of state switching reset the objectcollection and signal the initial attempt of next state.
 	if (nextState != state)
 	{
 		resetGameBox();
@@ -15,6 +18,7 @@ void GameBox::calculateStep()
 
 	state = nextState;
 
+	//Multiplex the current state of game box.
 	switch (state)
 	{
 	case GBStateMainmenu:
@@ -22,16 +26,19 @@ void GameBox::calculateStep()
 		break;
 	case GBStatePong:
 		pong();
+		break;
 	}
 
 	initialAttempt = false;
 }
 
+//Change the next state to main menu.
 void GameBox::returnToMainMenu()
 {
-		nextState = GBStateMainmenu;
+	nextState = GBStateMainmenu;
 }
 
+//Clear the whole memory of game objects and variables.
 void GameBox::resetGameBox()
 {
 	char i;
@@ -41,11 +48,6 @@ void GameBox::resetGameBox()
 	for (i=0;i<GAMEBOX_FLOATS_NUMBER;i++)
 	{
 		floats[i] = 0;
-	}
-
-	for (i = 0; i < GAMEBOX_OBJECT_ID_NUMBER; i++)
-	{
-		objectIDs[i] = {0,OTypeNone};
 	}
 
 	for (i = 0; i < GAMEBOX_BOOLS_NUMBER; i++)
@@ -61,113 +63,133 @@ void GameBox::resetGameBox()
 
 void GameBox::mainMenu()
 {
-	/*   REFERENCE GAME VARIABLES TO GAMEBOX VARIABLE SPACE    */
-	tsObjectID &title = objectIDs[0], &underline = objectIDs[1], &rightBorder = objectIDs[2] ,&pongText = objectIDs[3],&bricksText = objectIDs[4];
-	int &timer = integers[0],&currentSelection = integers[1];
+	/*   Allocate memory and refer pointers to game variables    */
+	objects.texts.resize(3);
+	objects.rectangles.resize(2);
+
+	Text &title = objects.texts[0], &pongText = objects.texts[1], &bricksText = objects.texts[2];
+	Rectangle &underline = objects.rectangles[0], &rightBorder = objects.rectangles[1];
+	int &currentSelection = integers[0];
+	bool &buttonUP = bools[0], &buttonDOWN = bools[1];
 
 	/*   GAME BEHAVIOR   */
 
 	//Initialise game
 	if (initialAttempt)
 	{
-		title = objects.addObject(Text({ 0,0 }, "MENU", { 10,10,10 }));
-		underline = objects.addObject(Rectangle({ 8,4 }, 1, 16,{0,20,0}));
-		rightBorder = objects.addObject(Rectangle({ 12,8 }, 16, 1, { 0,0,0 }));
-		objects.deactivate(rightBorder);
+		//Background
+		title = Text({ 0,0 }, "MENU", { 10,10,10 });
+		underline = Rectangle({ 8,4 }, 1, 16,{0,20,0});
 
-		pongText = objects.addObject(Text({ 0,6 }, "PONG", {5,15,0}));
-		bricksText = objects.addObject(Text({ 0,11 }, "BRICKS", { 5,15,0 }));
+		//Invisible wall for animation event
+		rightBorder = Rectangle({ 12,8 }, 16, 1, { 0,0,0 });
+		rightBorder.deactivate();
 
-		objects.setVelocity(pongText,{-0.05,0});
-		objects.setVelocity(bricksText, { -0.05,0 });
+		//Gametexts
+		pongText = Text({ 0,6 }, "PONG", {5,15,0});
+		bricksText = Text({ 0,11 }, "BRICKS", {5,15,0 });
 
+		//Velocity in case of selection
+		pongText.setVelocity({ -0.05,0 });
+		bricksText.setVelocity({ -0.05,0 });
+
+		//Variables for checking rising edges
+		buttonUP = false;
+		buttonDOWN = true;
+
+		//Selected game
 		currentSelection = 1;
-		timer = 0;
 	}	
 	//Common behavior
 	else
 	{
+		//Check for rising edge of DOWN button and change selection downwards
+		if ((gamepads.inputs[0].DOWN || gamepads.inputs[1].DOWN) && !buttonDOWN)
+		{
+			buttonDOWN = true;
+			switch (currentSelection)
+			{
+			case 0:
+				pongText.setPosition({ 0,6 });
+				pongText.setColor({ 5,15,0 });
+				currentSelection = 1;
+				break;
+			case 1:
+				bricksText.setPosition({ 0,11 });
+				bricksText.setColor({ 5,15,0 });
+				currentSelection = 0;
+				break;
+			default:
+				break;
+			}
+		}
+		else if(!(gamepads.inputs[0].DOWN || gamepads.inputs[1].DOWN))
+		{
+			buttonDOWN = false;
+		}
+
+		//Check for rising edge of UP button and change selection upwards
+		if ((gamepads.inputs[0].UP || gamepads.inputs[1].UP) && !buttonUP)
+		{
+			buttonUP = true;
+			switch (currentSelection)
+			{
+			case 0:
+				pongText.setPosition({ 0,6 });
+				pongText.setColor({ 5,15,0 });
+				currentSelection = 1;
+				break;
+			case 1:
+				bricksText.setPosition({ 0,11 });
+				bricksText.setColor({ 5,15,0 });
+				currentSelection = 0;
+				break;
+			default:
+				break;
+			}
+		}
+		else if(!(gamepads.inputs[0].UP || gamepads.inputs[1].UP))
+		{
+			buttonUP = false;
+		}
+
+		//Start selected game when A is pushed
+		if (gamepads.inputs[0].A || gamepads.inputs[1].A)
+		{
+			switch (currentSelection)
+			{
+			case 0:
+				nextState = GBStatePong;
+				break;
+			case 1:
+
+				break;
+			default:
+				break;
+			}
+		}
+
+		//Animation of selected game text
 		switch(currentSelection)
 		{
 			case 0:
-				objects.setColor(pongText, {15,5,0});
-				objects.motionStep(pongText);
+				pongText.setColor({ 15,5,0 });
+				pongText.move();
 
-				if (!objects.checkCollision(rightBorder, pongText))
+				if (!objects.checkCollision(pongText, rightBorder))
 				{
-					objects.setPosition(pongText, { 5,6 });
-				}
-			case 1:
-				objects.setColor(bricksText, { 15,5,0 });
-				objects.motionStep(bricksText);
-
-				if (!objects.checkCollision(rightBorder, bricksText))
-				{
-					objects.setPosition(bricksText, { 5,11 });
+					pongText.setPosition({ 5,6 });
 				}
 			break;
+			case 1:
+				bricksText.setColor({ 15,5,0 });
+				bricksText.move();
 
+				if (!objects.checkCollision(bricksText,rightBorder))
+				{
+					bricksText.setPosition({ 5,11 });
+				}
+			break;
 		}
-
-
-
-
-
-
-
-
 	}
-
 }
-
-
-	//if (!Actors[0])
-	//{
-	//	id1 = objects.addObject(Rectangle({ 10,10 }, 4, 5, { 15,0,10 }));
-	//	id2 = objects.addObject(Rectangle({ 8,8 }, 3, 3, { 5,20,0 }));
-	//	//id2 = objects.addObject(Circle({ 4,4 }, 3,{ 10,5,0}));
-	//	//id4 = objects.addObject(Text({ 0,0 },"P1",{ 15,5,1 }));
-	//	//id5 = objects.addObject(Text({ 9,0 }, "P2", { 5,15,1 }));
-
-	//	id6 = objects.addObject(Text({ 0,0 }, "COLL", { 0,0,0 }));
-
-	//	Actors[0] = 1;
-	//    Actors[1] = 1;
-	//	Actors[2] = 1;
-
-	//}
-
-	//if (objects.checkCollision(id1, id2))
-	//{
-	//	objects.setColor(id6, { 30,0,0 });
-
-
-
-	//}
-	//else
-	//{
-	//	objects.setColor(id6, { 0,30,0 });
-	//}
-
-	//objects.setPosition(id1, { objects.getPosition(id1).x + Actors[1]/5,objects.getPosition(id1).y});
-	//objects.setPosition(id2, { objects.getPosition(id2).x,objects.getPosition(id2).y + Actors[2] / 3.25 });
-
-
-	//if (objects.getPosition(id1).x > 18)
-	//{
-	//	Actors[1] = -1;
-	//}
-	//else if(objects.getPosition(id1).x < -5)
-	//{
-	//	Actors[1] = 1;
-	//}
-
-	//if (objects.getPosition(id2).y > 18)
-	//{
-	//	Actors[2] = -1;
-	//}
-	//else if (objects.getPosition(id2).y < -5)
-	//{
-	//	Actors[2] = 1;
-	//}
-

@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <cstdint>
 
+using namespace gameobjects;
+
 //Definitions for 4x3 letters LUT
 #define TEXT_0 {{false,true,false},{true,false,true},{true,false,true},{false,true,false}}
 #define TEXT_1 {{true,true,false},{false,true,false},{false,true,false},{true,true,true}}
@@ -56,597 +58,186 @@ const bool Text4x3LUT[43][4][3] = { TEXT_0,TEXT_1,TEXT_2,TEXT_3,TEXT_4,TEXT_5,TE
 									TEXT_U,TEXT_V,TEXT_W,TEXT_X,TEXT_Y,TEXT_Z };
 
 
-Text::Text(tsPosition position, char* string, tsRGB color)
+
+void GameObject::setPosition(tsPosition position)
 {
-	char i = 0;
-
-	while (string[i] != '\0' && i < 50)
-	{
-		this->string[i] = string[i];
-		i++;
-	}
-	this->stringLength = i;
-
-	this->isActive = true;
 	this->position = position;
-	this->velocity = { 0,0 };
-	this->acceleration = { 0,0 };
+}
+tsPosition GameObject::getPosition(void)
+{
+	return this->position;
+}
+
+void GameObject::setVelocity(tsVelocity velocity)
+{
+	this->velocity = velocity;
+}
+tsVelocity GameObject::getVelocity(void)
+{
+	return this->velocity;
+}
+
+void GameObject::setAcceleration(tsAcceleration acceleration)
+{
+	this->acceleration = acceleration;
+}
+tsAcceleration GameObject::getAcceleration(void)
+{
+	return this->acceleration;
+}
+
+void GameObject::setColor(tsRGB color)
+{
 	this->color = color;
 }
-
-int ObjectCollection::getIndex(tsObjectID id)
+tsRGB GameObject::getColor(void)
 {
-	char i, size;
-
-	switch (id.type)
-	{
-	case OTypeText:
-
-		size = numberOfElementsText;
-		i = 0;
-		while (i < size)
-		{
-			if (id.id == texts[i].idnumber)
-			{
-				return i;
-			}
-			i++;
-		}
-		return -1;
-		break;
-	case OTypeRectangle:
-
-		size = numberOfElementRectangle;
-		i = 0;
-		while (i < size)
-		{
-			if (id.id == rectangles[i].idnumber)
-			{
-				return i;
-			}
-			i++;
-		}
-		return -1;
-		break;
-	case OTypeCircle:
-
-		size = numberOfElementsCircle;
-		i = 0;
-		while (i < size)
-		{
-			if (id.id == circles[i].idnumber)
-			{
-				return i;
-			}
-			i++;
-		}
-		return -1;
-		break;
-	case OTypeTriangle:
-
-		size = numberOfElementsTriangle;
-		i = 0;
-		while (i < size)
-		{
-			if (id.id == triangles[i].idnumber)
-			{
-				return i;
-			}
-			i++;
-		}
-		return -1;
-		break;
-	}
-
-	return -1;
+	return this->color;
 }
 
-
-tsObjectID ObjectCollection::addObject(Text text)
+void GameObject::activate(void)
 {
-	char newIndex = numberOfElementsText;
-	int lowestAvailableID = 0;
-
-	while (getIndex({ lowestAvailableID , OTypeText }) != -1)
-	{
-		lowestAvailableID++;
-	}
-
-	this->texts = (Text*)realloc(this->texts, sizeof(Text) * (newIndex + 1));
-	numberOfElementsText++;
-	text.idnumber = lowestAvailableID;
-	texts[newIndex] = text;
-
-	return { lowestAvailableID,OTypeText };
+	this->is_active = true;
 }
 
-tsObjectID ObjectCollection::addObject(Rectangle rectangle)
+void GameObject::deactivate(void)
 {
-	char newIndex = numberOfElementRectangle;
-	int lowestAvailableID = 0;
-
-	while (getIndex({ lowestAvailableID , OTypeRectangle }) != -1)
-	{
-		lowestAvailableID++;
-	}
-
-	this->rectangles = (Rectangle*)realloc(this->rectangles, sizeof(Rectangle) * (newIndex + 1));
-	numberOfElementRectangle++;
-	rectangle.idnumber = lowestAvailableID;
-	rectangles[newIndex] = rectangle;
-
-	return { lowestAvailableID,OTypeRectangle };
+	this->is_active = false;
 }
 
-tsObjectID ObjectCollection::addObject(Circle circle)
+bool GameObject::isActive(void)
 {
-	char newIndex = numberOfElementsCircle;
-	int lowestAvailableID = 0;
-
-	while (getIndex({ lowestAvailableID , OTypeCircle }) != -1)
-	{
-		lowestAvailableID++;
-	}
-
-	this->circles = (Circle*)realloc(this->circles, sizeof(Circle) * (newIndex + 1));
-	numberOfElementsCircle++;
-	circle.idnumber = lowestAvailableID;
-	circles[newIndex] = circle;
-
-	return { lowestAvailableID,OTypeCircle };
+	return this->is_active;
 }
 
-tsObjectID ObjectCollection::addObject(Triangle triangle)
+//Calculate kinetics of the object for one timestep.
+void GameObject::move()
 {
-	char newIndex = numberOfElementsTriangle;
-	int lowestAvailableID = 0;
-
-	while (getIndex({ lowestAvailableID , OTypeTriangle }) != -1)
-	{
-		lowestAvailableID++;
-	}
-
-	this->triangles = (Triangle*)realloc(this->triangles, sizeof(Triangle) * (newIndex + 1));
-	numberOfElementsTriangle++;
-	triangle.idnumber = lowestAvailableID;
-	triangles[newIndex] = triangle;
-
-	return { lowestAvailableID,OTypeTriangle };
+	this->position = { this->position.x + this->velocity.x + 0.5 * this->acceleration.x, this->position.y + this->velocity.y + 0.5 * this->acceleration.y };
+	this->velocity = { this->velocity.x + this->acceleration.x, this->velocity.y + this->acceleration.y };
 }
 
-void ObjectCollection::removeObject(tsObjectID id)
-{
-	char size;
-	int index = getIndex(id);
-
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			size = numberOfElementsText;
-
-			texts[index] = texts[size - 1];
-			texts = (Text*)realloc(texts, sizeof(Text) * (size - 1));
-			numberOfElementsText--;
-			break;
-		case OTypeRectangle:
-			size = numberOfElementRectangle;
-
-			rectangles[index] = rectangles[size - 1];
-			rectangles = (Rectangle*)realloc(rectangles, sizeof(Rectangle) * (size - 1));
-			numberOfElementRectangle--;
-			break;
-		case OTypeCircle:
-
-			size = numberOfElementsCircle;
-
-			circles[index] = circles[size - 1];
-			circles = (Circle*)realloc(circles, sizeof(Circle) * (size - 1));
-			numberOfElementsCircle--;
-			break;
-		case OTypeTriangle:
-
-			size = numberOfElementsTriangle;
-
-			triangles[index] = triangles[size - 1];
-			triangles = (Triangle*)realloc(triangles, sizeof(Triangle) * (size - 1));
-			break;
-		}
-	}
-}
-
-void ObjectCollection::setPosition(tsObjectID id, tsPosition position)
-{
-	int index = getIndex(id);
-
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			texts[index].position = position;
-			break;
-		case OTypeRectangle:
-			rectangles[index].position = position;
-			break;
-		case OTypeCircle:
-			circles[index].position = position;
-			break;
-		case OTypeTriangle:
-			triangles[index].position = position;
-			break;
-		}
-	}
-}
-
-tsPosition ObjectCollection::getPosition(tsObjectID id)
-{
-	int index = getIndex(id);
-
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			return texts[index].position;
-			break;
-		case OTypeRectangle:
-			return rectangles[index].position;
-			break;
-		case OTypeCircle:
-			return circles[index].position;
-			break;
-		case OTypeTriangle:
-			return triangles[index].position;
-			break;
-		}
-	}
-}
-
-void ObjectCollection::setVelocity(tsObjectID id, tsVelocity velocity)
-{
-	int index = getIndex(id);
-
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			texts[index].velocity = velocity;
-			break;
-		case OTypeRectangle:
-			rectangles[index].velocity = velocity;
-			break;
-		case OTypeCircle:
-			circles[index].velocity = velocity;
-			break;
-		case OTypeTriangle:
-			triangles[index].velocity = velocity;
-			break;
-		}
-	}
-}
-tsVelocity ObjectCollection::getVelocity(tsObjectID id)
-{
-	int index = getIndex(id);
-
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			return texts[index].velocity;
-			break;
-		case OTypeRectangle:
-			return rectangles[index].velocity;
-			break;
-		case OTypeCircle:
-			return circles[index].velocity;
-			break;
-		case OTypeTriangle:
-			return triangles[index].velocity;
-			break;
-		}
-	}
-}
-void ObjectCollection::setAcceleration(tsObjectID id, tsAcceleration acceleration)
-{
-	int index = getIndex(id);
-
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			texts[index].acceleration = acceleration;
-			break;
-		case OTypeRectangle:
-			rectangles[index].acceleration = acceleration;
-			break;
-		case OTypeCircle:
-			circles[index].acceleration = acceleration;
-			break;
-		case OTypeTriangle:
-			triangles[index].acceleration = acceleration;
-			break;
-		}
-	}
-}
-tsAcceleration ObjectCollection::getAcceleration(tsObjectID id)
-{
-	int index = getIndex(id);
-
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			return texts[index].acceleration;
-			break;
-		case OTypeRectangle:
-			return rectangles[index].acceleration;
-			break;
-		case OTypeCircle:
-			return circles[index].acceleration;
-			break;
-		case OTypeTriangle:
-			return triangles[index].acceleration;
-			break;
-		}
-	}
-}
-
-void ObjectCollection::motionStep(tsObjectID id)
-{
-	int i = getIndex(id);
-
-	if (i != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			texts[i].position = { texts[i].position.x + texts[i].velocity.x + 0.5 * texts[i].acceleration.x, texts[i].position.y + texts[i].velocity.y + 0.5 * texts[i].acceleration.y };
-			texts[i].velocity = { texts[i].velocity.x + texts[i].acceleration.x, texts[i].velocity.y + texts[i].acceleration.y };
-			break;
-		case OTypeRectangle:
-			rectangles[i].position = { rectangles[i].position.x + rectangles[i].velocity.x + 0.5 * rectangles[i].acceleration.x, rectangles[i].position.y + rectangles[i].velocity.y + 0.5 * rectangles[i].acceleration.y };
-			rectangles[i].velocity = { rectangles[i].velocity.x + rectangles[i].acceleration.x, rectangles[i].velocity.y + rectangles[i].acceleration.y };
-			break;
-		case OTypeCircle:
-			circles[i].position = { circles[i].position.x + circles[i].velocity.x + 0.5 * circles[i].acceleration.x, circles[i].position.y + circles[i].velocity.y + 0.5 * circles[i].acceleration.y };
-			circles[i].velocity = { circles[i].velocity.x + circles[i].acceleration.x, circles[i].velocity.y + circles[i].acceleration.y };
-			break;
-		case OTypeTriangle:
-			triangles[i].position = { triangles[i].position.x + triangles[i].velocity.x + 0.5 * triangles[i].acceleration.x, triangles[i].position.y + triangles[i].velocity.y + 0.5 * triangles[i].acceleration.y };
-			triangles[i].velocity = { triangles[i].velocity.x + triangles[i].acceleration.x, triangles[i].velocity.y + triangles[i].acceleration.y };
-			break;
-		}
-	}
-}
-
-void ObjectCollection::motionStep()
+//Calculate the kinetics of all objects for one timestep.
+void ObjectCollection::move()
 {
 	char i;
 
-	for (i = 0; i < numberOfElementsText; i++)
+	for (i = 0; i < texts.size(); i++)
 	{
-		texts[i].position = { texts[i].position.x + texts[i].velocity.x + 0.5 * texts[i].acceleration.x, texts[i].position.y + texts[i].velocity.y + 0.5 * texts[i].acceleration.y };
-		texts[i].velocity = { texts[i].velocity.x + texts[i].acceleration.x, texts[i].velocity.y + texts[i].acceleration.y };
+		texts[i].move();
 	}
 
-	for (i = 0; i < numberOfElementRectangle; i++)
+	for (i = 0; i < rectangles.size(); i++)
 	{
-		rectangles[i].position = { rectangles[i].position.x + rectangles[i].velocity.x + 0.5 * rectangles[i].acceleration.x, rectangles[i].position.y + rectangles[i].velocity.y + 0.5 * rectangles[i].acceleration.y };
-		rectangles[i].velocity = { rectangles[i].velocity.x + rectangles[i].acceleration.x, rectangles[i].velocity.y + rectangles[i].acceleration.y };
+		rectangles[i].move();
 	}
 
-	for (i = 0; i < numberOfElementsCircle; i++)
+	for (i = 0; i < circles.size(); i++)
 	{
-		circles[i].position = { circles[i].position.x + circles[i].velocity.x + 0.5 * circles[i].acceleration.x, circles[i].position.y + circles[i].velocity.y + 0.5 * circles[i].acceleration.y };
-		circles[i].velocity = { circles[i].velocity.x + circles[i].acceleration.x, circles[i].velocity.y + circles[i].acceleration.y };
+		circles[i].move();
 	}
 
-	for (i = 0; i < numberOfElementsTriangle; i++)
+	for (i = 0; i < triangles.size(); i++)
 	{
-		triangles[i].position = { triangles[i].position.x + triangles[i].velocity.x + 0.5 * triangles[i].acceleration.x, triangles[i].position.y + triangles[i].velocity.y + 0.5 * triangles[i].acceleration.y };
-		triangles[i].velocity = { triangles[i].velocity.x + triangles[i].acceleration.x, triangles[i].velocity.y + triangles[i].acceleration.y };
+		triangles[i].move();
 	}
 }
 
-void ObjectCollection::setColor(tsObjectID id, tsRGB color)
-{
-	int index = getIndex(id);
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			texts[index].color = color;
-			break;
-		case OTypeRectangle:
-			rectangles[index].color = color;
-			break;
-		case OTypeCircle:
-			circles[index].color = color;
-			break;
-		case OTypeTriangle:
-			triangles[index].color = color;
-			break;
-		}
-	}
-}
-
-void ObjectCollection::deactivate(tsObjectID id)
-{
-	int index = getIndex(id);
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			texts[index].isActive = false;
-			break;
-		case OTypeRectangle:
-			rectangles[index].isActive = false;
-			break;
-		case OTypeCircle:
-			circles[index].isActive = false;
-			break;
-		case OTypeTriangle:
-			triangles[index].isActive = false;
-			break;
-		}
-	}
-}
-
-void ObjectCollection::activate(tsObjectID id)
-{
-	int index = getIndex(id);
-	if (index != -1)
-	{
-		switch (id.type)
-		{
-		case OTypeText:
-			texts[index].isActive = true;
-			break;
-		case OTypeRectangle:
-			rectangles[index].isActive = true;
-			break;
-		case OTypeCircle:
-			circles[index].isActive = true;
-			break;
-		case OTypeTriangle:
-			triangles[index].isActive = true;
-			break;
-		}
-	}
-}
-
+//Deallocate memory for game objects
 void ObjectCollection::resetObjectCollection()
 {
-	if (numberOfElementsText > 0)
-	{
-		free(texts);
-		numberOfElementsText = 0;
-	}
-	if (numberOfElementRectangle > 0)
-	{
-		free(rectangles);
-		numberOfElementRectangle = 0;
-	}
-	if (numberOfElementsCircle > 0)
-	{
-		free(circles);
-		numberOfElementsCircle = 0;
-	}
-	if (numberOfElementsTriangle > 0)
-	{
-		free(triangles);
-		numberOfElementsTriangle = 0;
-	}
-
-
-
+	texts.clear();
+	texts.shrink_to_fit();
+	rectangles.clear();
+	rectangles.shrink_to_fit();
+	circles.clear();
+	circles.shrink_to_fit();
+	triangles.clear();
+	triangles.shrink_to_fit();
 }
+
 
 bool ObjectCollection::checkCollision(Rectangle rectangle1, Rectangle rectangle2)
 {
-	return ((fabs(rectangle1.position.x - rectangle2.position.x) <= (rectangle1.length + rectangle2.length) / 2) && (fabs(rectangle1.position.y - rectangle2.position.y) <= (rectangle1.height + rectangle2.height) / 2));
+	return ((fabs(rectangle1.getPosition().x - rectangle2.getPosition().x) <= (rectangle1.length + rectangle2.length) / 2) && (fabs(rectangle1.getPosition().y - rectangle2.getPosition().y) <= (rectangle1.height + rectangle2.height) / 2));
 }
 
 bool ObjectCollection::checkCollision(Circle circle1, Circle circle2)
 {
-	return (sqrt((circle1.position.x - circle2.position.x) * (circle1.position.x - circle2.position.x) + (circle1.position.y - circle2.position.y) * (circle1.position.y - circle2.position.y)) <= (circle1.radius + circle2.radius));
+	return (sqrt((circle1.getPosition().x - circle2.getPosition().x) * (circle1.getPosition().x - circle2.getPosition().x) + (circle1.getPosition().y - circle2.getPosition().y) * (circle1.getPosition().y - circle2.getPosition().y)) <= (circle1.radius + circle2.radius));
 }
 
+//Check collision of a rectangle and a circle
 bool ObjectCollection::checkCollision(Rectangle rectangle, Circle circle)
 {
-	float XLeft = rectangle.position.x - rectangle.length / 2, XRight = rectangle.position.x + rectangle.length / 2, YTop = rectangle.position.y - rectangle.height / 2, YBot = rectangle.position.y + rectangle.height / 2;
-	float XLeftEdit = XLeft - circle.position.x, XRightEdit = XRight - circle.position.x, YTOPEdit = YTop - circle.position.y, YBotEdit = YBot - circle.position.y;
+	float XLeft = rectangle.getPosition().x - rectangle.length / 2, XRight = rectangle.getPosition().x + rectangle.length / 2, YTop = rectangle.getPosition().y - rectangle.height / 2, YBot = rectangle.getPosition().y + rectangle.height / 2;
+	float XLeftEdit = XLeft - circle.getPosition().x, XRightEdit = XRight - circle.getPosition().x, YTOPEdit = YTop - circle.getPosition().y, YBotEdit = YBot - circle.getPosition().y;
 	float XLeftEditSquare = XLeftEdit * XLeftEdit, XRightEditSquare = XRightEdit * XRightEdit, YTOPEditSquare = YTOPEdit * YTOPEdit, YBotEditSquare = YBotEdit * YBotEdit;
 
-	bool CircleIsVerticalyInbetween = (circle.position.y >= YTop && circle.position.y <= YBot), CircleIsHorizontalyInbetween = (circle.position.x >= XLeft && circle.position.x <= XRight);
+	bool CircleIsVerticalyInbetween = (circle.getPosition().y >= YTop && circle.getPosition().y <= YBot), CircleIsHorizontalyInbetween = (circle.getPosition().x >= XLeft && circle.getPosition().x <= XRight);
 
 	return (CircleIsHorizontalyInbetween <= XRight && CircleIsVerticalyInbetween) ||
 		(sqrt(XLeftEditSquare + YTOPEditSquare) <= circle.radius) ||
 		(sqrt(XRightEditSquare + YTOPEditSquare) <= circle.radius) ||
 		(sqrt(XLeftEditSquare + YBotEditSquare) <= circle.radius) ||
 		(sqrt(XRightEditSquare + YBotEditSquare) <= circle.radius) ||
-		(CircleIsHorizontalyInbetween && rectangle.position.y >= circle.position.y && fabs(YTOPEdit) <= circle.radius) ||
-		(CircleIsHorizontalyInbetween && rectangle.position.y <= circle.position.y && fabs(YBotEdit) <= circle.radius) ||
-		(CircleIsVerticalyInbetween && rectangle.position.x >= circle.position.x && fabs(XLeftEdit) <= circle.radius) ||
-		(CircleIsVerticalyInbetween && rectangle.position.x <= circle.position.x && fabs(XRightEdit) <= circle.radius);
+		(CircleIsHorizontalyInbetween && rectangle.getPosition().y >= circle.getPosition().y && fabs(YTOPEdit) <= circle.radius) ||
+		(CircleIsHorizontalyInbetween && rectangle.getPosition().y <= circle.getPosition().y && fabs(YBotEdit) <= circle.radius) ||
+		(CircleIsVerticalyInbetween && rectangle.getPosition().x >= circle.getPosition().x && fabs(XLeftEdit) <= circle.radius) ||
+		(CircleIsVerticalyInbetween && rectangle.getPosition().x <= circle.getPosition().x && fabs(XRightEdit) <= circle.radius);
 }
 
-bool ObjectCollection::checkCollision(tsObjectID object1, tsObjectID object2)
+//Check collision of a circle and a rectangle
+bool ObjectCollection::checkCollision(Circle circle, Rectangle rectangle)
 {
-	int index1 = getIndex(object1), index2 = getIndex(object2);
+	float XLeft = rectangle.getPosition().x - rectangle.length / 2, XRight = rectangle.getPosition().x + rectangle.length / 2, YTop = rectangle.getPosition().y - rectangle.height / 2, YBot = rectangle.getPosition().y + rectangle.height / 2;
+	float XLeftEdit = XLeft - circle.getPosition().x, XRightEdit = XRight - circle.getPosition().x, YTOPEdit = YTop - circle.getPosition().y, YBotEdit = YBot - circle.getPosition().y;
+	float XLeftEditSquare = XLeftEdit * XLeftEdit, XRightEditSquare = XRightEdit * XRightEdit, YTOPEditSquare = YTOPEdit * YTOPEdit, YBotEditSquare = YBotEdit * YBotEdit;
 
+	bool CircleIsVerticalyInbetween = (circle.getPosition().y >= YTop && circle.getPosition().y <= YBot), CircleIsHorizontalyInbetween = (circle.getPosition().x >= XLeft && circle.getPosition().x <= XRight);
 
-	switch (object1.type)
-	{
-	case OTypeRectangle:
-		switch (object2.type)
-		{
-		case OTypeText:
-			return checkCollision(rectangles[index1], Rectangle({ texts[index2].position.x + 4 * texts[index2].stringLength / 2,texts[index2].position.y }, 4, 4 * texts[index2].stringLength, { 0,0,0 }));
-			break;
-		case OTypeRectangle:
-			return checkCollision(rectangles[index1], rectangles[index2]);
-			break;
-		case OTypeCircle:
-			return checkCollision(rectangles[index1], circles[index2]);
-			break;
-		default:
-			break;
-		}
-		break;
-	case OTypeCircle:
-		switch (object2.type)
-		{
-		case OTypeCircle:
-			return checkCollision(circles[index1], circles[index2]);
-			break;
-		case OTypeRectangle:
-			return checkCollision(rectangles[index2], circles[index1]);
-			break;
-		default:
-			break;
-		}
-
-	default:
-		break;
-	}
-
-	return false;
+	return (CircleIsHorizontalyInbetween <= XRight && CircleIsVerticalyInbetween) ||
+		(sqrt(XLeftEditSquare + YTOPEditSquare) <= circle.radius) ||
+		(sqrt(XRightEditSquare + YTOPEditSquare) <= circle.radius) ||
+		(sqrt(XLeftEditSquare + YBotEditSquare) <= circle.radius) ||
+		(sqrt(XRightEditSquare + YBotEditSquare) <= circle.radius) ||
+		(CircleIsHorizontalyInbetween && rectangle.getPosition().y >= circle.getPosition().y && fabs(YTOPEdit) <= circle.radius) ||
+		(CircleIsHorizontalyInbetween && rectangle.getPosition().y <= circle.getPosition().y && fabs(YBotEdit) <= circle.radius) ||
+		(CircleIsVerticalyInbetween && rectangle.getPosition().x >= circle.getPosition().x && fabs(XLeftEdit) <= circle.radius) ||
+		(CircleIsVerticalyInbetween && rectangle.getPosition().x <= circle.getPosition().x && fabs(XRightEdit) <= circle.radius);
 }
 
-bool ObjectCollection::isInsideBorders(DPU* display, tsPosition coord)
+bool ObjectCollection::checkCollision(Text text, Rectangle rectangle)
 {
-	return (coord.x >= 0 && coord.x < display->resolution.x&& coord.y >= 0 && coord.y < display->resolution.y);
+	checkCollision(Rectangle({ text.getPosition().x + 4 * text.string.length() / 2,text.getPosition().y }, 4, 4 * text.string.length(), { 0,0,0 }),rectangle);
 }
 
-void ObjectCollection::drawObject(DPU* display, Text text)
+bool ObjectCollection::checkCollision(Rectangle rectangle, Text text)
+{
+	checkCollision(Rectangle({ text.getPosition().x + 4 * text.string.length() / 2,text.getPosition().y }, 4, 4 * text.string.length(), { 0,0,0 }), rectangle);
+}
+
+//Draw a text into a specified display matrix.
+void Text::draw(DPU* display)
 {
 	int i = 0, x_rel, y_rel, x, y;
 
-	if (text.isActive)
+	if (this->isActive())
 	{
-		while (text.string[i] != '\0' && i < 50)
+		while (this->string[i] != '\0' && i < 50)
 		{
 			for (y_rel = 0; y_rel < 4; y_rel++)
 			{
 				for (x_rel = 0; x_rel < 3; x_rel++)
 				{
-					y = round(text.position.y + y_rel);
-					x = round(text.position.x + x_rel + i * 4);
+					y = round(this->getPosition().y + y_rel);
+					x = round(this->getPosition().x + x_rel + i * 4);
 
-					if (isInsideBorders(display, { x,y }))
+					if (display->isInsideBorders({ x,y }))
 					{
-						if (Text4x3LUT[text.string[i] - '0'][y_rel][x_rel])
+						if (Text4x3LUT[this->string[i] - '0'][y_rel][x_rel])
 						{
-							display->matrix[y][x] = text.color;
+							display->matrix[y][x] = this->getColor();
 						}
 					}
 				}
@@ -656,40 +247,42 @@ void ObjectCollection::drawObject(DPU* display, Text text)
 	}
 }
 
-void ObjectCollection::drawObject(DPU* display, Rectangle rectangle)
+//Draw a rectangle into a specified display matrix.
+void Rectangle::draw(DPU* display)
 {
 	int x, y;
 
-	if (rectangle.isActive)
+	if (this->isActive())
 	{
-		for (y = round(rectangle.position.y - rectangle.height / 2); y <= round(rectangle.position.y + rectangle.height / 2) - 0.5; y++)
+		for (y = round(this->getPosition().y - this->height / 2); y <= round(this->getPosition().y + this->height / 2) - 0.5; y++)
 		{
-			for (x = round(rectangle.position.x - rectangle.length / 2); x <= round(rectangle.position.x + rectangle.length / 2) - 0.5; x++)
+			for (x = round(this->getPosition().x - this->length / 2); x <= round(this->getPosition().x + this->length / 2) - 0.5; x++)
 			{
-				if (isInsideBorders(display, { x,y }))
+				if (display->isInsideBorders({ x,y }))
 				{
-					display->matrix[y][x] = rectangle.color;
+					display->matrix[y][x] = this->getColor();
 				}
 			}
 		}
 	}
 }
 
-void ObjectCollection::drawObject(DPU* display, Circle circle)
+//Draw a circle into a specified display matrix.
+void Circle::draw(DPU* display)
 {
 	int x, y;
 
-	if (circle.isActive)
+	if (this->isActive())
 	{
-		for (y = round(circle.position.y - circle.radius); y <= round(circle.position.y + circle.radius); y++)
+		for (y = round(this->getPosition().y - this->radius); y <= round(this->getPosition().y + this->radius); y++)
 		{
-			for (x = round(circle.position.x - circle.radius); x <= round(circle.position.x + circle.radius); x++)
+			for (x = round(this->getPosition().x - this->radius); x <= round(this->getPosition().x + this->radius); x++)
 			{
-				if (isInsideBorders(display, { x,y }))
+				if (display->isInsideBorders({ x,y }))
 				{
-					if (sqrt((circle.position.x - x) * (circle.position.x - x) + (circle.position.y - y) * (circle.position.y - y)) <= circle.radius)
+					if (sqrt((this->getPosition().x - x) * (this->getPosition().x - x) + (this->getPosition().y - y) * (this->getPosition().y - y)) <= this->radius)
 					{
-						display->matrix[y][x] = circle.color;
+						display->matrix[y][x] = this->getColor();
 					}
 				}
 			}
@@ -697,34 +290,33 @@ void ObjectCollection::drawObject(DPU* display, Circle circle)
 	}
 }
 
-void ObjectCollection::drawObject(DPU* display, Triangle triangle)
+void Triangle::draw(DPU* display)
 {
-	int x, y;
-
 
 }
+
 
 void ObjectCollection::drawObjects(DPU* display)
 {
 	char i;
 
-	for (i = 0; i < numberOfElementsText; i++)
+	for (i = 0; i < texts.size(); i++)
 	{
-		drawObject(display, texts[i]);
+		texts[i].draw(display);
 	}
 
-	for (i = 0; i < numberOfElementRectangle; i++)
+	for (i = 0; i < rectangles.size(); i++)
 	{
-		drawObject(display, rectangles[i]);
+		rectangles[i].draw(display);
 	}
 
-	for (i = 0; i < numberOfElementsCircle; i++)
+	for (i = 0; i < circles.size(); i++)
 	{
-		drawObject(display, circles[i]);
+		circles[i].draw(display);
 	}
 
-	for (i = 0; i < numberOfElementsTriangle; i++)
+	for (i = 0; i < triangles.size(); i++)
 	{
-		drawObject(display, triangles[i]);
+		triangles[i].draw(display);
 	}
 }

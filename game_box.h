@@ -6,6 +6,7 @@
 #include "gamepad.h"
 #include "game_objects.h"
 
+using namespace gameobjects;
 
 #define GAMEBOX_FLOATS_NUMBER 20
 #define GAMEBOX_OBJECT_ID_NUMBER 20
@@ -26,11 +27,10 @@ class GameBox
 public:
 	GameBoxState state, nextState;
 	bool initialAttempt;
-	ObjectCollection objects;
+
 	GamePads gamepads;
 
-
-	tsObjectID objectIDs[GAMEBOX_OBJECT_ID_NUMBER];
+	ObjectCollection objects;
 	float floats[GAMEBOX_FLOATS_NUMBER];
 	bool bools[GAMEBOX_BOOLS_NUMBER];
 	int integers[GAMEBOX_INTEGERS_NUMBER];
@@ -38,11 +38,10 @@ public:
 	GameBox()
 	{
 		state = GBStateInit;
-		nextState = GBStatePong;
+		nextState = GBStateMainmenu;
 		objects = ObjectCollection();
 		gamepads = GamePads();
 		resetGameBox();
-
 	}
 
 	void InitGamepads(void);

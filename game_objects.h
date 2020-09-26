@@ -5,6 +5,8 @@
 
 #include "color.h"
 #include "display.h"
+#include <vector>
+#include <string>
 
 typedef struct {
 	float x;
@@ -21,180 +23,135 @@ enum ObjectType
 	OTypeTriangle
 };
 
-class Text
+namespace gameobjects
 {
-public:
-
-	tsPosition position;
-	tsVelocity velocity;
-	tsAcceleration acceleration;
-	char string[50];
-	char stringLength;
-
-	tsRGB color;
-
-	char idnumber;
-
-	bool isActive = true;
-
-	Text()
+	class GameObject
 	{
-	}
+	public:
 
-	Text(tsPosition position, char* string, tsRGB color);
-};
+		GameObject() :
+			position({ 0,0 }), velocity({ 0,0 }), acceleration({ 0,0 }), color({ 0,0,0 }), is_active(true) {}
 
-class Rectangle
-{
-public:
-	tsPosition position;
-	tsVelocity velocity;
-	tsAcceleration acceleration;
-	float height;
-	float length;
+		GameObject(tsPosition position, tsRGB color) :
+			position(position), velocity({ 0,0 }), acceleration({ 0,0 }), color(color), is_active(true) {}
 
-	tsRGB color;
 
-	bool isActive;
+		void setPosition(tsPosition position);
+		tsPosition getPosition(void);
 
-	char idnumber;
+		void setVelocity(tsVelocity velocity);
+		tsVelocity getVelocity(void);
 
-	Rectangle(tsPosition position, char height, char length, tsRGB color)
+		void setAcceleration(tsAcceleration acceleration);
+		tsAcceleration getAcceleration(void);
+
+		void setColor(tsRGB color);
+		tsRGB getColor(void);
+
+		void activate(void);
+		void deactivate(void);
+		bool isActive(void);
+
+		void move(void);
+
+		virtual void draw(DPU *display) = 0;
+
+	private:
+		tsPosition position;
+		tsVelocity velocity;
+		tsAcceleration acceleration;
+
+		tsRGB color;
+
+		bool is_active = true;
+		bool removed = false;
+	};
+
+	//Textobject which is defined by gameobjects properties and a string.
+	class Text : virtual public GameObject
 	{
-		this->position = position;
-		this->velocity = { 0,0 };
-		this->acceleration = { 0,0 };
-		this->height = height;
-		this->length = length;
+	public:
 
-		this->color = color;
+		std::string string;
 
-		this->isActive = true;
-	}
-};
+		Text() {}
 
-class Circle
-{
-public:
-	tsPosition position;
-	tsVelocity velocity;
-	tsAcceleration acceleration;
-	float radius;
+		Text(tsPosition position, std::string string, tsRGB color) :
+			string(string), GameObject(position, color) {}
 
-	tsRGB color;
+		void draw(DPU *display) override;
+	};
 
-	bool isActive;
-
-	char idnumber;
-
-	Circle(tsPosition position, char radius, tsRGB color)
+	//Rectangle which is defined by gameobjects properties, height and length.
+	class Rectangle : public GameObject
 	{
-		this->position = position;
-		this->velocity = { 0,0 };
-		this->acceleration = { 0,0 };
-		this->radius = radius;
-		this->color = color;
+	public:
+		float height;
+		float length;
 
-		this->isActive = true;
-	}
-};
+		Rectangle() {};
 
+		Rectangle(tsPosition position, char height, char length, tsRGB color) :
+			height(height), length(length), GameObject(position, color) {}
 
-class Triangle
-{
-public:
-	tsPosition position;
-	tsVelocity velocity;
-	tsAcceleration acceleration;
-	float baseLength;
+		void draw(DPU *display) override;
+	};
 
-	tsRGB color;
-
-	bool isActive;
-
-	int idnumber;
-
-	Triangle(tsPosition position, char baseLength, tsRGB color)
+	//Circle which is defined by gameobjects properties and radius
+	class Circle : public GameObject
 	{
-		this->position = position;
-		this->velocity = { 0,0 };
-		this->acceleration = { 0,0 };
-		this->baseLength = baseLength;
-		this->color = color;
+	public:
 
-		this->isActive = true;
-	}
-};
+		float radius;
 
-typedef struct {
-	int id;
-	ObjectType type;
-}tsObjectID;
+		Circle(tsPosition position, char radius, tsRGB color) :
+			radius(radius), GameObject(position, color) {}
 
-class ObjectCollection
-{
-public:
+		void draw(DPU *display) override;
+	};
 
-	Text* texts;
-	Rectangle* rectangles;
-	Circle* circles;
-	Triangle* triangles;
-
-	int numberOfElementsText;
-	int numberOfElementRectangle;
-	int numberOfElementsCircle;
-	int numberOfElementsTriangle;
-
-	ObjectCollection()
+	//Triangle which is defined by a baseLength and angulars of 45°,45° and 90°.
+	class Triangle : public GameObject
 	{
-		texts = nullptr;
-		rectangles = nullptr;
-		circles = nullptr;
-		triangles = nullptr;
+	public:
 
-		numberOfElementsText = 0;
-		numberOfElementRectangle = 0;
-		numberOfElementsCircle = 0;
-		numberOfElementsTriangle = 0;
-	}
+		float baseLength;
 
-	tsObjectID addObject(Text text);
-	tsObjectID addObject(Rectangle rectangle);
-	tsObjectID addObject(Circle circle);
-	tsObjectID addObject(Triangle triangle);
+		Triangle(tsPosition position, char baseLength, tsRGB color) :
+			baseLength(baseLength), GameObject(position, color) {}
 
-	void setPosition(tsObjectID id, tsPosition position);
-	tsPosition getPosition(tsObjectID id);
-	void setVelocity(tsObjectID id, tsVelocity velocity);
-	tsVelocity getVelocity(tsObjectID id);
-	void setAcceleration(tsObjectID id, tsAcceleration acceleration);
-	tsAcceleration getAcceleration(tsObjectID id);
-	void motionStep(tsObjectID id);
-	void motionStep(void);
-	void setColor(tsObjectID id, tsRGB color);
-	void deactivate(tsObjectID object);
-	void activate(tsObjectID object);
-
-	bool checkCollision(Rectangle rectangle1, Rectangle rectangle2);
-	bool checkCollision(Circle circle1, Circle circle2);
-	bool checkCollision(Rectangle rectangle, Circle circle);
-	bool checkCollision(tsObjectID object1, tsObjectID object2);
-
-	void removeObject(tsObjectID id);
-	int getIndex(tsObjectID id);
-	void resetObjectCollection();
-
-	void drawObjects(DPU* display);
-
-	void drawObject(DPU* display, Text text);
-	void drawObject(DPU* display, Rectangle rectangle);
-	void drawObject(DPU* display, Circle circle);
-	void drawObject(DPU* display, Triangle triangle);
-
-	bool isInsideBorders(DPU* display, tsPosition coord);
-};
+		void draw(DPU* display) override;
+	};
 
 
+	class ObjectCollection
+	{
+	public:
+
+		std::vector<Text> texts;
+		std::vector<Rectangle> rectangles;
+		std::vector<Circle> circles;
+		std::vector<Triangle> triangles;
+
+		//std::vector<GameObject> objects;
+
+		ObjectCollection(){}
+
+		void move(void);
+
+		bool checkCollision(Rectangle rectangle1, Rectangle rectangle2);
+		bool checkCollision(Circle circle1, Circle circle2);
+		bool checkCollision(Rectangle rectangle, Circle circle);
+		bool checkCollision(Circle circle, Rectangle rectangle);
+		bool checkCollision(Text text, Rectangle rectangle);
+		bool checkCollision(Rectangle rectangle, Text text);
+
+		void resetObjectCollection();
+
+		void drawObjects(DPU* display);
+	};
+
+}
 
 
 

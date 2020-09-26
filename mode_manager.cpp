@@ -3,6 +3,8 @@
 #include "display.h"
 #include "color.h"
 
+
+
 void ModeManager::vFrameCalculate()
 {
 	char uiCounterSLA;

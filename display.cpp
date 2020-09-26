@@ -26,3 +26,9 @@ void DPU::resetMatrix()
 		}
 	}
 }
+
+//Whether a point is inside the display or not
+bool DPU::isInsideBorders(tsCoord coord)
+{
+	return (coord.x >= 0 && coord.x < this->resolution.x&& coord.y >= 0 && coord.y < this->resolution.y);
+}

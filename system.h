@@ -9,7 +9,7 @@ The settings module contains every setting that can be changed by the user. Watc
 #include <cstdint>
 
 #include "makros.h"
-#include "graphics.h"
+#include "framebuffer.h"
 #include "game_box.h"
 
 
@@ -94,11 +94,11 @@ public:
 		char i;
 
 		mode.number = MODES_MODE_BLANK;
-		for(i = i; i < MODE_PARAMETER_NUMBER; i++)
+		for(i = 0; i < MODE_PARAMETER_NUMBER; i++)
 		{
 			mode.parameter[i] = 0;
 		}
-		for (i = i; i < MODE_ACTOR_NUMBER; i++)
+		for (i = 0; i < MODE_ACTOR_NUMBER; i++)
 		{
 			mode.actors[i] = 0;
 		}

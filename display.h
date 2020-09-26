@@ -10,7 +10,7 @@
 typedef struct {
 	uint8_t x;
 	uint8_t y;
-} tsResolution;
+} tsResolution,tsCoord;
 
 
 class DPU
@@ -43,6 +43,8 @@ public:
 
 	void resetMatrix(void);
 	void allocateMatrix(void);
+
+	bool isInsideBorders(tsCoord coord);
 };
 
 
