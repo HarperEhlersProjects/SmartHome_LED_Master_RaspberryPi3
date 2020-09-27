@@ -11,7 +11,7 @@ public:
 
 	Rectangle ball, wallS, wallN, wallE, wallW , player1, player2;
 
-	GBPong();
+	GBPong(GamePads* gamepads);
 
 	void calculateStep(void);
 };

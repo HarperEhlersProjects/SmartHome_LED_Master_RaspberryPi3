@@ -11,9 +11,10 @@ class GameBox
 public:
 	Game* game;
 	GameType state;
+	GamePads gamepads;
 
 	GameBox() :
-		game(nullptr), state(GTypeMainmenu) {}
+		game(nullptr), state(GTypeMainmenu), gamepads(GamePads()) {}
 
 	void calculateStep();
 	void returnToMainMenu();

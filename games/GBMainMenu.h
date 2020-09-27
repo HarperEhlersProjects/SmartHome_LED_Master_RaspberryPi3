@@ -14,7 +14,7 @@ public:
 	bool buttonUP, buttonDOWN;
 	int currentSelection;
 
-	GBMainMenu();
+	GBMainMenu(GamePads* gamepads);
 	void calculateStep(void);
 };
 

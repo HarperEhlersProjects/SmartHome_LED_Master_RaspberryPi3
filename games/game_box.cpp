@@ -12,13 +12,13 @@ void GameBox::calculateStep()
 		switch (state)
 		{
 		case GTypePong:
-			game = new GBPong();
+			game = new GBPong(&gamepads);
 			break;
 		case GTypeSnake:
-			game = new GBSnake();
+			game = new GBSnake(&gamepads);
 			break;
 		default:
-			game = new GBMainMenu();
+			game = new GBMainMenu(&gamepads);
 		}
 	}
 	else
@@ -30,7 +30,7 @@ void GameBox::calculateStep()
 		else
 		{
 			//Update controller inputs
-			game->gamepads.updateControllers();
+			game->gamepads->updateControllers();
 			//Calculate one time step of the game
 			game->calculateStep();
 		}

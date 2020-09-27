@@ -2,9 +2,10 @@
 
 
 
-GBPong::GBPong()
+GBPong::GBPong(GamePads* gamepads)
 {
 	nextState = GTypePong;
+	this->gamepads = gamepads;
 
 	ball = Rectangle({ 7,7 }, 2, 2, { 10,10,10 });
 	wallS = Rectangle({ 8,15 }, 1, 20, { 0,10,0 });
@@ -27,14 +28,14 @@ GBPong::GBPong()
 
 void GBPong::calculateStep(void)
 {
-	if (gamepads.inputs[0].SELECT || gamepads.inputs[1].SELECT)
+	if (gamepads->inputs[0].SELECT || gamepads->inputs[1].SELECT)
 	{
 		returnToMainMenu();
 	}
 
 	//Initial velocity of ball
-	player1.setVelocity({ 0,((int)gamepads.inputs[0].DOWN) * 0.2 - ((int)gamepads.inputs[0].UP) * 0.2 });
-	player2.setVelocity({ 0,((int)gamepads.inputs[1].DOWN) * 0.2 - ((int)gamepads.inputs[1].UP) * 0.2 });
+	player1.setVelocity({ 0,((int)gamepads->inputs[0].DOWN) * 0.2 - ((int)gamepads->inputs[0].UP) * 0.2 });
+	player2.setVelocity({ 0,((int)gamepads->inputs[1].DOWN) * 0.2 - ((int)gamepads->inputs[1].UP) * 0.2 });
 
 	//calculate one time step
 	move();

@@ -20,12 +20,12 @@ class Game
 {
 public:
 
-	Game() : nextState(GTypeNone), gamepads(GamePads()) {}
-	Game(GameType nextState) : nextState(nextState), gamepads(GamePads()) {}
+	Game() : nextState(GTypeNone) {}
+	Game(GameType nextState) : nextState(nextState) {}
 
 	virtual ~Game() {}
 
-	GamePads gamepads;
+	GamePads* gamepads;
 	GameType nextState;
 
 	void move(void);

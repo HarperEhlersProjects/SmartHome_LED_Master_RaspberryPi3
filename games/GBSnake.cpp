@@ -3,9 +3,10 @@
 #include <cstdint>
 #include <time.h>
 
-GBSnake::GBSnake()
+GBSnake::GBSnake(GamePads* gamepads)
 {
 	nextState = GTypeSnake;
+	this->gamepads = gamepads;
 
 	srand((unsigned)time(NULL));
 
@@ -50,14 +51,14 @@ GBSnake::GBSnake()
 void GBSnake::calculateStep(void)
 {
 	//Return to main menu when SELECT is pushed
-	if (gamepads.inputs[0].SELECT || gamepads.inputs[1].SELECT)
+	if (gamepads->inputs[0].SELECT || gamepads->inputs[1].SELECT)
 	{
 		returnToMainMenu();
 	}
 
 
 	//Check for rising edge of LEFT button and turn left
-	if ((gamepads.inputs[0].LEFT || gamepads.inputs[1].LEFT) && !buttonLeft)
+	if ((gamepads->inputs[0].LEFT || gamepads->inputs[1].LEFT) && !buttonLeft)
 	{
 		buttonLeft = true;
 		switch (dir)
@@ -72,13 +73,13 @@ void GBSnake::calculateStep(void)
 			break;
 		}
 	}
-	else if (!(gamepads.inputs[0].LEFT || gamepads.inputs[1].LEFT))
+	else if (!(gamepads->inputs[0].LEFT || gamepads->inputs[1].LEFT))
 	{
 		buttonLeft = false;
 	}
 
 	//Check for rising edge of RIGHT button and turn right
-	if ((gamepads.inputs[0].RIGHT || gamepads.inputs[1].RIGHT) && !buttonRight)
+	if ((gamepads->inputs[0].RIGHT || gamepads->inputs[1].RIGHT) && !buttonRight)
 	{
 		buttonRight = true;
 		switch (dir)
@@ -93,7 +94,7 @@ void GBSnake::calculateStep(void)
 			break;
 		}
 	}
-	else if (!(gamepads.inputs[0].RIGHT || gamepads.inputs[1].RIGHT))
+	else if (!(gamepads->inputs[0].RIGHT || gamepads->inputs[1].RIGHT))
 	{
 		buttonRight = false;
 	}

@@ -27,7 +27,7 @@ public:
 	Direction dir;
 	int timer;
 
-	GBSnake();
+	GBSnake(GamePads* gamepads);
 	void calculateStep(void);
 };
 

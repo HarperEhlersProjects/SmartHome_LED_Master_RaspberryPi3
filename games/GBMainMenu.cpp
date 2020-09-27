@@ -1,8 +1,9 @@
 #include "GBMainMenu.h"
 
-GBMainMenu::GBMainMenu()
+GBMainMenu::GBMainMenu(GamePads* gamepads)
 {
 	nextState = GTypeMainmenu;
+	this->gamepads = gamepads;
 
 	//Background
 	title = Text({ 0,0 }, "MENU", { 10,10,10 });
@@ -39,7 +40,7 @@ void GBMainMenu::calculateStep(void)
 	//Common behavior
 
 //Check for rising edge of DOWN button and change selection downwards
-	if ((gamepads.inputs[0].DOWN || gamepads.inputs[1].DOWN) && !buttonDOWN)
+	if ((gamepads->inputs[0].DOWN || gamepads->inputs[1].DOWN) && !buttonDOWN)
 	{
 		buttonDOWN = true;
 		switch (currentSelection)
@@ -58,13 +59,13 @@ void GBMainMenu::calculateStep(void)
 			break;
 		}
 	}
-	else if (!(gamepads.inputs[0].DOWN || gamepads.inputs[1].DOWN))
+	else if (!(gamepads->inputs[0].DOWN || gamepads->inputs[1].DOWN))
 	{
 		buttonDOWN = false;
 	}
 
 	//Check for rising edge of UP button and change selection upwards
-	if ((gamepads.inputs[0].UP || gamepads.inputs[1].UP) && !buttonUP)
+	if ((gamepads->inputs[0].UP || gamepads->inputs[1].UP) && !buttonUP)
 	{
 		buttonUP = true;
 		switch (currentSelection)
@@ -83,13 +84,13 @@ void GBMainMenu::calculateStep(void)
 			break;
 		}
 	}
-	else if (!(gamepads.inputs[0].UP || gamepads.inputs[1].UP))
+	else if (!(gamepads->inputs[0].UP || gamepads->inputs[1].UP))
 	{
 		buttonUP = false;
 	}
 
 	//Start selected game when A is pushed
-	if (gamepads.inputs[0].A || gamepads.inputs[1].A)
+	if (gamepads->inputs[0].A || gamepads->inputs[1].A)
 	{
 		switch (currentSelection)
 		{
