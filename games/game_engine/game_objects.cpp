@@ -1,12 +1,10 @@
 #include "game_objects.h"
 
-#include "color.h"
-
 #include <math.h>
 #include <stdlib.h>
 #include <cstdint>
 
-using namespace gameobjects;
+
 
 //Definitions for 4x3 letters LUT
 #define TEXT_0 {{false,true,false},{true,false,true},{true,false,true},{false,true,false}}
@@ -58,6 +56,12 @@ const bool Text4x3LUT[43][4][3] = { TEXT_0,TEXT_1,TEXT_2,TEXT_3,TEXT_4,TEXT_5,TE
 									TEXT_U,TEXT_V,TEXT_W,TEXT_X,TEXT_Y,TEXT_Z };
 
 
+using namespace game_objects;
+
+ObjectType GameObject::getType(void)
+{
+	return this->type;
+}
 
 void GameObject::setPosition(tsPosition position)
 {
@@ -115,106 +119,6 @@ void GameObject::move()
 {
 	this->position = { this->position.x + this->velocity.x + 0.5 * this->acceleration.x, this->position.y + this->velocity.y + 0.5 * this->acceleration.y };
 	this->velocity = { this->velocity.x + this->acceleration.x, this->velocity.y + this->acceleration.y };
-}
-
-//Calculate the kinetics of all objects for one timestep.
-void ObjectCollection::move()
-{
-	char i;
-
-	for (i = 0; i < texts.size(); i++)
-	{
-		texts[i].move();
-	}
-
-	for (i = 0; i < rectangles.size(); i++)
-	{
-		rectangles[i].move();
-	}
-
-	for (i = 0; i < circles.size(); i++)
-	{
-		circles[i].move();
-	}
-
-	for (i = 0; i < triangles.size(); i++)
-	{
-		triangles[i].move();
-	}
-}
-
-//Deallocate memory for game objects
-void ObjectCollection::resetObjectCollection()
-{
-	texts.clear();
-	texts.shrink_to_fit();
-	rectangles.clear();
-	rectangles.shrink_to_fit();
-	circles.clear();
-	circles.shrink_to_fit();
-	triangles.clear();
-	triangles.shrink_to_fit();
-}
-
-
-bool ObjectCollection::checkCollision(Rectangle rectangle1, Rectangle rectangle2)
-{
-	return ((fabs(rectangle1.getPosition().x - rectangle2.getPosition().x) <= (rectangle1.length + rectangle2.length) / 2) && (fabs(rectangle1.getPosition().y - rectangle2.getPosition().y) <= (rectangle1.height + rectangle2.height) / 2));
-}
-
-bool ObjectCollection::checkCollision(Circle circle1, Circle circle2)
-{
-	return (sqrt((circle1.getPosition().x - circle2.getPosition().x) * (circle1.getPosition().x - circle2.getPosition().x) + (circle1.getPosition().y - circle2.getPosition().y) * (circle1.getPosition().y - circle2.getPosition().y)) <= (circle1.radius + circle2.radius));
-}
-
-//Check collision of a rectangle and a circle
-bool ObjectCollection::checkCollision(Rectangle rectangle, Circle circle)
-{
-	float XLeft = rectangle.getPosition().x - rectangle.length / 2, XRight = rectangle.getPosition().x + rectangle.length / 2, YTop = rectangle.getPosition().y - rectangle.height / 2, YBot = rectangle.getPosition().y + rectangle.height / 2;
-	float XLeftEdit = XLeft - circle.getPosition().x, XRightEdit = XRight - circle.getPosition().x, YTOPEdit = YTop - circle.getPosition().y, YBotEdit = YBot - circle.getPosition().y;
-	float XLeftEditSquare = XLeftEdit * XLeftEdit, XRightEditSquare = XRightEdit * XRightEdit, YTOPEditSquare = YTOPEdit * YTOPEdit, YBotEditSquare = YBotEdit * YBotEdit;
-
-	bool CircleIsVerticalyInbetween = (circle.getPosition().y >= YTop && circle.getPosition().y <= YBot), CircleIsHorizontalyInbetween = (circle.getPosition().x >= XLeft && circle.getPosition().x <= XRight);
-
-	return (CircleIsHorizontalyInbetween <= XRight && CircleIsVerticalyInbetween) ||
-		(sqrt(XLeftEditSquare + YTOPEditSquare) <= circle.radius) ||
-		(sqrt(XRightEditSquare + YTOPEditSquare) <= circle.radius) ||
-		(sqrt(XLeftEditSquare + YBotEditSquare) <= circle.radius) ||
-		(sqrt(XRightEditSquare + YBotEditSquare) <= circle.radius) ||
-		(CircleIsHorizontalyInbetween && rectangle.getPosition().y >= circle.getPosition().y && fabs(YTOPEdit) <= circle.radius) ||
-		(CircleIsHorizontalyInbetween && rectangle.getPosition().y <= circle.getPosition().y && fabs(YBotEdit) <= circle.radius) ||
-		(CircleIsVerticalyInbetween && rectangle.getPosition().x >= circle.getPosition().x && fabs(XLeftEdit) <= circle.radius) ||
-		(CircleIsVerticalyInbetween && rectangle.getPosition().x <= circle.getPosition().x && fabs(XRightEdit) <= circle.radius);
-}
-
-//Check collision of a circle and a rectangle
-bool ObjectCollection::checkCollision(Circle circle, Rectangle rectangle)
-{
-	float XLeft = rectangle.getPosition().x - rectangle.length / 2, XRight = rectangle.getPosition().x + rectangle.length / 2, YTop = rectangle.getPosition().y - rectangle.height / 2, YBot = rectangle.getPosition().y + rectangle.height / 2;
-	float XLeftEdit = XLeft - circle.getPosition().x, XRightEdit = XRight - circle.getPosition().x, YTOPEdit = YTop - circle.getPosition().y, YBotEdit = YBot - circle.getPosition().y;
-	float XLeftEditSquare = XLeftEdit * XLeftEdit, XRightEditSquare = XRightEdit * XRightEdit, YTOPEditSquare = YTOPEdit * YTOPEdit, YBotEditSquare = YBotEdit * YBotEdit;
-
-	bool CircleIsVerticalyInbetween = (circle.getPosition().y >= YTop && circle.getPosition().y <= YBot), CircleIsHorizontalyInbetween = (circle.getPosition().x >= XLeft && circle.getPosition().x <= XRight);
-
-	return (CircleIsHorizontalyInbetween <= XRight && CircleIsVerticalyInbetween) ||
-		(sqrt(XLeftEditSquare + YTOPEditSquare) <= circle.radius) ||
-		(sqrt(XRightEditSquare + YTOPEditSquare) <= circle.radius) ||
-		(sqrt(XLeftEditSquare + YBotEditSquare) <= circle.radius) ||
-		(sqrt(XRightEditSquare + YBotEditSquare) <= circle.radius) ||
-		(CircleIsHorizontalyInbetween && rectangle.getPosition().y >= circle.getPosition().y && fabs(YTOPEdit) <= circle.radius) ||
-		(CircleIsHorizontalyInbetween && rectangle.getPosition().y <= circle.getPosition().y && fabs(YBotEdit) <= circle.radius) ||
-		(CircleIsVerticalyInbetween && rectangle.getPosition().x >= circle.getPosition().x && fabs(XLeftEdit) <= circle.radius) ||
-		(CircleIsVerticalyInbetween && rectangle.getPosition().x <= circle.getPosition().x && fabs(XRightEdit) <= circle.radius);
-}
-
-bool ObjectCollection::checkCollision(Text text, Rectangle rectangle)
-{
-	checkCollision(Rectangle({ text.getPosition().x + 4 * text.string.length() / 2,text.getPosition().y }, 4, 4 * text.string.length(), { 0,0,0 }),rectangle);
-}
-
-bool ObjectCollection::checkCollision(Rectangle rectangle, Text text)
-{
-	checkCollision(Rectangle({ text.getPosition().x + 4 * text.string.length() / 2,text.getPosition().y }, 4, 4 * text.string.length(), { 0,0,0 }), rectangle);
 }
 
 //Draw a text into a specified display matrix.
@@ -293,30 +197,4 @@ void Circle::draw(DPU* display)
 void Triangle::draw(DPU* display)
 {
 
-}
-
-
-void ObjectCollection::drawObjects(DPU* display)
-{
-	char i;
-
-	for (i = 0; i < texts.size(); i++)
-	{
-		texts[i].draw(display);
-	}
-
-	for (i = 0; i < rectangles.size(); i++)
-	{
-		rectangles[i].draw(display);
-	}
-
-	for (i = 0; i < circles.size(); i++)
-	{
-		circles[i].draw(display);
-	}
-
-	for (i = 0; i < triangles.size(); i++)
-	{
-		triangles[i].draw(display);
-	}
 }

@@ -1,6 +1,8 @@
 #ifndef GAMEPAD_H
 #define GAMEPAD_H
 
+#pragma once
+
 #include "SDL/SDL.h"
 
 typedef struct {

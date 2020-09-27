@@ -10,7 +10,7 @@ The settings module contains every setting that can be changed by the user. Watc
 
 #include "makros.h"
 #include "framebuffer.h"
-#include "game_box.h"
+#include "games/game_box.h"
 
 
 

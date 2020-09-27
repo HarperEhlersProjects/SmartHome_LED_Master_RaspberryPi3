@@ -9,8 +9,6 @@
 #include <fcntl.h>
 #include <termios.h>
 
-
-
 Transmitter::Transmitter(System* system)
 {
     int iUART0_filestream = -1, uiCount;

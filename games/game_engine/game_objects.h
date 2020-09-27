@@ -1,12 +1,14 @@
 #ifndef GAME_OBJECTS_H
 #define GAME_OBJECTS_H
-
 #pragma once
 
-#include "color.h"
-#include "display.h"
+#include "gamepad.h"
+
+#include "../../color.h"
+#include "../../display.h"
 #include <vector>
 #include <string>
+#include <cstdint>
 
 typedef struct {
 	float x;
@@ -23,18 +25,19 @@ enum ObjectType
 	OTypeTriangle
 };
 
-namespace gameobjects
+namespace game_objects
 {
 	class GameObject
 	{
 	public:
 
 		GameObject() :
-			position({ 0,0 }), velocity({ 0,0 }), acceleration({ 0,0 }), color({ 0,0,0 }), is_active(true) {}
+			type(OTypeNone), position({ 0,0 }), velocity({ 0,0 }), acceleration({ 0,0 }), color({ 0,0,0 }), is_active(false) {}
 
-		GameObject(tsPosition position, tsRGB color) :
-			position(position), velocity({ 0,0 }), acceleration({ 0,0 }), color(color), is_active(true) {}
+		GameObject(ObjectType type, bool is_active, tsPosition position, tsRGB color) :
+			type(type), is_active(is_active), position(position), velocity({ 0,0 }), acceleration({ 0,0 }), color(color) {}
 
+		ObjectType getType(void);
 
 		void setPosition(tsPosition position);
 		tsPosition getPosition(void);
@@ -48,22 +51,26 @@ namespace gameobjects
 		void setColor(tsRGB color);
 		tsRGB getColor(void);
 
+		//Change visibility and interactability of object
 		void activate(void);
 		void deactivate(void);
 		bool isActive(void);
 
+		//Calculate the kinetics of one time step
 		void move(void);
 
 		virtual void draw(DPU *display) = 0;
 
 	private:
+		ObjectType type;
+
 		tsPosition position;
 		tsVelocity velocity;
 		tsAcceleration acceleration;
 
 		tsRGB color;
 
-		bool is_active = true;
+		bool is_active;
 		bool removed = false;
 	};
 
@@ -74,10 +81,11 @@ namespace gameobjects
 
 		std::string string;
 
-		Text() {}
+		Text():
+			GameObject(OTypeText, false, { 0,0 }, {0,0,0}) {}
 
 		Text(tsPosition position, std::string string, tsRGB color) :
-			string(string), GameObject(position, color) {}
+			string(string), GameObject(OTypeText, true, position, color) {}
 
 		void draw(DPU *display) override;
 	};
@@ -89,10 +97,11 @@ namespace gameobjects
 		float height;
 		float length;
 
-		Rectangle() {};
+		Rectangle() :
+			GameObject(OTypeRectangle, false, { 0,0 }, { 0,0,0 }) {}
 
 		Rectangle(tsPosition position, char height, char length, tsRGB color) :
-			height(height), length(length), GameObject(position, color) {}
+			height(height), length(length), GameObject(OTypeRectangle, true, position, color) {}
 
 		void draw(DPU *display) override;
 	};
@@ -104,8 +113,11 @@ namespace gameobjects
 
 		float radius;
 
+		Circle() :
+			GameObject(OTypeCircle, false, { 0,0 }, { 0,0,0 }) {}
+
 		Circle(tsPosition position, char radius, tsRGB color) :
-			radius(radius), GameObject(position, color) {}
+			radius(radius), GameObject(OTypeCircle, true, position, color) {}
 
 		void draw(DPU *display) override;
 	};
@@ -117,44 +129,15 @@ namespace gameobjects
 
 		float baseLength;
 
+		Triangle() : 
+			GameObject(OTypeTriangle, false, { 0,0 }, { 0,0,0 }) {}
+
 		Triangle(tsPosition position, char baseLength, tsRGB color) :
-			baseLength(baseLength), GameObject(position, color) {}
+			baseLength(baseLength), GameObject(OTypeTriangle, true, position, color) {}
 
 		void draw(DPU* display) override;
 	};
 
-
-	class ObjectCollection
-	{
-	public:
-
-		std::vector<Text> texts;
-		std::vector<Rectangle> rectangles;
-		std::vector<Circle> circles;
-		std::vector<Triangle> triangles;
-
-		//std::vector<GameObject> objects;
-
-		ObjectCollection(){}
-
-		void move(void);
-
-		bool checkCollision(Rectangle rectangle1, Rectangle rectangle2);
-		bool checkCollision(Circle circle1, Circle circle2);
-		bool checkCollision(Rectangle rectangle, Circle circle);
-		bool checkCollision(Circle circle, Rectangle rectangle);
-		bool checkCollision(Text text, Rectangle rectangle);
-		bool checkCollision(Rectangle rectangle, Text text);
-
-		void resetObjectCollection();
-
-		void drawObjects(DPU* display);
-	};
-
 }
-
-
-
-
 
 #endif // !GAME_OBJECTS_H
