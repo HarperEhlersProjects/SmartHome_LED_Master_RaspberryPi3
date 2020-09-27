@@ -8,7 +8,7 @@
 class GBMainMenu : public Game
 {
 public:
-	Text title, pongText, bricksText;
+	Text title, pongText, snakeText;
 	Rectangle underline, rightBorder;
 
 	bool buttonUP, buttonDOWN;

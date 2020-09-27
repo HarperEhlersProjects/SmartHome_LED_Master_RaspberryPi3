@@ -1,6 +1,7 @@
 #include "game_box.h"
 #include "GBMainMenu.h"
 #include "GBPong.h"
+#include "GBSnake.h"
 
 void GameBox::calculateStep()
 {
@@ -12,6 +13,9 @@ void GameBox::calculateStep()
 		{
 		case GTypePong:
 			game = new GBPong();
+			break;
+		case GTypeSnake:
+			game = new GBSnake();
 			break;
 		default:
 			game = new GBMainMenu();

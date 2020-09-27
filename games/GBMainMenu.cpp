@@ -14,24 +14,24 @@ GBMainMenu::GBMainMenu()
 
 	//Gametexts
 	pongText = Text({ 0,6 }, "PONG", {5,15,0});
-	bricksText = Text({ 0,11 }, "BRICKS", {5,15,0 });
+	snakeText = Text({ 0,11 }, "SNAKE", {5,15,0 });
 
 	//Velocity in case of selection
 	pongText.setVelocity({ -0.05,0 });
-	bricksText.setVelocity({ -0.05,0 });
+	snakeText.setVelocity({ -0.05,0 });
 
 	//Variables for checking rising edges
 	buttonUP = false;
 	buttonDOWN = true;
 
 	//Selected game
-	currentSelection = 1;
+	currentSelection = 0;
 
 	registerObject(&title);
 	registerObject(&underline);
 	registerObject(&rightBorder);
 	registerObject(&pongText);
-	registerObject(&bricksText);
+	registerObject(&snakeText);
 }
 
 void GBMainMenu::calculateStep(void)
@@ -50,8 +50,8 @@ void GBMainMenu::calculateStep(void)
 			currentSelection = 1;
 			break;
 		case 1:
-			bricksText.setPosition({ 0,11 });
-			bricksText.setColor({ 5,15,0 });
+			snakeText.setPosition({ 0,11 });
+			snakeText.setColor({ 5,15,0 });
 			currentSelection = 0;
 			break;
 		default:
@@ -75,8 +75,8 @@ void GBMainMenu::calculateStep(void)
 			currentSelection = 1;
 			break;
 		case 1:
-			bricksText.setPosition({ 0,11 });
-			bricksText.setColor({ 5,15,0 });
+			snakeText.setPosition({ 0,11 });
+			snakeText.setColor({ 5,15,0 });
 			currentSelection = 0;
 			break;
 		default:
@@ -97,7 +97,7 @@ void GBMainMenu::calculateStep(void)
 			nextState = GTypePong;
 			break;
 		case 1:
-
+			nextState = GTypeSnake;
 			break;
 		default:
 			break;
@@ -117,12 +117,12 @@ void GBMainMenu::calculateStep(void)
 		}
 		break;
 	case 1:
-		bricksText.setColor({ 15,5,0 });
-		bricksText.move();
+		snakeText.setColor({ 15,5,0 });
+		snakeText.move();
 
-		if (!checkCollision(bricksText, rightBorder))
+		if (!checkCollision(snakeText, rightBorder))
 		{
-			bricksText.setPosition({ 5,11 });
+			snakeText.setPosition({ 5,11 });
 		}
 		break;
 	}
