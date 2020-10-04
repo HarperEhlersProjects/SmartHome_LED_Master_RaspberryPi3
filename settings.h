@@ -13,7 +13,7 @@ public:
 	Settings(System* system);
 
 	void downSync();
-	void upSync();
+	void Sync();
 };
 
 

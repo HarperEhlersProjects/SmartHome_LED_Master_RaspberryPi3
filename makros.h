@@ -7,11 +7,11 @@ Makros are used for basic settings that does not change on the run or default va
 #define MAKROS_H
 
 #define SETTINGS_CONFIG_DIRECTORY "~/LED_Station/"
-#define SETTINGS_CONFIG_FILENAME "/home/pi/config.json"
+#define SETTINGS_CONFIG_FILENAME "/home/pi/ledstation/data/config.json"
 
-#define VIRTUAL_SLA_NUMBER 10
-#define VIRTUAL_SLA_LENGTH_MAX 600
-#define VIRTUAL_SLA_SEGMENTS_NUMBER 3
+#define VIRTUAL_SLA_NUMBER 1
+#define VIRTUAL_SLA_LENGTH_MAX 256
+#define VIRTUAL_SLA_SEGMENTS_NUMBER 1
 #define VIRTUAL_SLA_DEST_NONE -1
 
 #define LED_BIT_COUNT 24

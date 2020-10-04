@@ -90,6 +90,10 @@ tsAcceleration GameObject::getAcceleration(void)
 	return this->acceleration;
 }
 
+void GameObject::setColor(tsHSV color)
+{
+	setColor(tsHSV2RGB(color));
+}
 void GameObject::setColor(tsRGB color)
 {
 	this->color = color;

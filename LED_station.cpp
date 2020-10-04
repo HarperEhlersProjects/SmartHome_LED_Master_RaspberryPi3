@@ -19,12 +19,11 @@ int main(int argc, char** argv)
 	ModeManager modeManager(&system);
 	Transmitter transmitter(&system);
 
-	settings.downSync();
 	
-    while(1)
+    while(true)
     {   
 		//vEventHandlerCheckEvents();
-		settings.upSync();
+		settings.Sync();
 
 		system.gamebox.calculateStep();
 

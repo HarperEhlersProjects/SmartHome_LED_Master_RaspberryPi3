@@ -7,6 +7,7 @@ The settings module contains every setting that can be changed by the user. Watc
 #pragma once
 
 #include <cstdint>
+#include <vector>
 
 #include "makros.h"
 #include "framebuffer.h"
@@ -79,53 +80,24 @@ The VirtualSLA class contains the configuration of one virtual led array.
 class VirtualSLA
 {
 public:
-	long length;	//length of virtual SLA
-
 	tsMode mode;
 
-	tsSegment segments[VIRTUAL_SLA_SEGMENTS_NUMBER];
+	std::vector<tsSegment> segments;
 
 	FrameBuffer framebuffer;	//Containing frame buffer and configuration of gamma correction.
 
 	DPU display;	//Additional display unit which extends the serial framebuffer with an rgb matrix for using the virtual sla as display (i.e. gamebox).
 
-	VirtualSLA() :length(0)
-	{
-		char i;
+	VirtualSLA();
 
-		mode.number = MODES_MODE_BLANK;
-		for(i = 0; i < MODE_PARAMETER_NUMBER; i++)
-		{
-			mode.parameter[i] = 0;
-		}
-		for (i = 0; i < MODE_ACTOR_NUMBER; i++)
-		{
-			mode.actors[i] = 0;
-		}
+	void serializeDPUMatrix(void);
 
-		for (i=0;i<VIRTUAL_SLA_SEGMENTS_NUMBER;i++)
-		{
-			segments[i] = {VIRTUAL_SLA_DEST_NONE,FALSE,0,0,0};
-		}
-	}
+	void setFrameBufferSize(long size);
+	void setNumberOfSegments(long number);
 
-	void serializeDPUMatrix(void)
-	{
-		int x, y;
-
-		for (x = 0; x < this->display.resolution.x; x++)
-		{
-			for (y = 0; y < this->display.resolution.y; y += 2)
-			{
-				this->framebuffer.buffer[y * this->display.resolution.x + (this->display.resolution.x - 1) - x] = this->display.matrix[y][x];
-			}
-
-			for (y = 1; y < this->display.resolution.y; y += 2)
-			{
-				this->framebuffer.buffer[y * this->display.resolution.x + x] = this->display.matrix[y][x];;
-			}
-		}
-	}
+	long getFrameBufferSize(void);
+private:
+	long numberOfSegments = 0;
 };
 
 /*
@@ -135,12 +107,17 @@ class System
 {
 public:
 	long SLALengthMax;
-	VirtualSLA virtualSLAs[VIRTUAL_SLA_NUMBER];
+
+	std::vector<VirtualSLA*> virtualSLAs;
 	SLA SLAs[SLA_NUMBER];
 
-	GameBox gamebox;
+	GameBox gamebox = GameBox();
 
-	System() : SLALengthMax(SLA_LENGTH_MAX){};
+	System();
+	void setNumberOfvSLAs(long number);
+
+private:
+	long numberOfvSLAs = 0;
 };
 
 #endif /* SYSTEM_H */

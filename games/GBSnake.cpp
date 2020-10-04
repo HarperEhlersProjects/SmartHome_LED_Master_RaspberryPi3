@@ -19,17 +19,17 @@ GBSnake::GBSnake(GamePads* gamepads)
 	//	}
 	//}
 
-	fruit = Rectangle({ 7,7 }, 1, 1, { 10,0,0 });
+	fruit = Rectangle({ 7,7 }, 1, 1, { 80,0,0 });
 	registerObject(&fruit);
 
 	//Initialize snake
 	snake.reserve(16*16);
-	snake.push_back(Rectangle({ 5,0 }, 1, 1, { 0,10,10 }));
-	snake.push_back(Rectangle({ 4,0 }, 1, 1, { 0,10,0 }));
-	snake.push_back(Rectangle({ 3,0 }, 1, 1, { 0,10,0 }));
-	snake.push_back(Rectangle({ 2,0 }, 1, 1, { 0,10,0 }));
-	snake.push_back(Rectangle({ 1,0 }, 1, 1, { 0,10,0 }));
-	snake.push_back(Rectangle({ 0,0 }, 1, 1, { 0,10,0 }));
+	snake.push_back(Rectangle({ 5,0 }, 1, 1, { 0,70,70 }));
+	snake.push_back(Rectangle({ 4,0 }, 1, 1, { 0,80,0 }));
+	snake.push_back(Rectangle({ 3,0 }, 1, 1, { 0,80,0 }));
+	snake.push_back(Rectangle({ 2,0 }, 1, 1, { 0,80,0 }));
+	snake.push_back(Rectangle({ 1,0 }, 1, 1, { 0,80,0 }));
+	snake.push_back(Rectangle({ 0,0 }, 1, 1, { 0,80,0 }));
 
 	//Register snake
 	for (uint16_t i = 0; i < snake.size(); i++)
@@ -129,7 +129,7 @@ void GBSnake::calculateStep(void)
 		if (head.x == fruit.getPosition().x && head.y == fruit.getPosition().y)
 		{
 			//Add one element to snake
-			snake.push_back(Rectangle(temp, 1, 1, { 0,10,0 }));
+			snake.push_back(Rectangle(temp, 1, 1, { 0,80,0 }));
 			registerObject(&snake[snake.size() - 1]);
 
 			//Search for new available random position for fruit

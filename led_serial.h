@@ -33,8 +33,8 @@ private:
 		Bytes of buffer with MSB------LSB devided by |	->		--------|--------|  ...  |--------|--------|--------|  ...  |--------|--------|--------|  ...  |--------|--------|	...
 		Physical LED-Array No.							->		76543210	""      ...      ""       ""       ""      ...      ""       ""       ""	  ...	   ""	|	""		...
 	*/
-	char uiLEDSerialBuffer[LED_SERIAL_DATA_SIZE];	//buffer of serialized and packed rgb data.
-	int iPort;										//filestream which is linked to serial uart output.
+	char uiLEDSerialBuffer[LED_SERIAL_DATA_SIZE] = {0};	//buffer of serialized and packed rgb data.
+	int iPort;											//filestream which is linked to serial uart output.
 
 	System* system;
 

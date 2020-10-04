@@ -28,16 +28,50 @@ const char puiGraphicsGamma8CorrectionLUT[] = {
 */
 
 
+FrameBuffer::FrameBuffer()
+{
+	setSize(0);
+
+	gamma8Value = { SETTINGS_GAMMA8_RED_DEFAULT ,SETTINGS_GAMMA8_GREEN_DEFAULT ,SETTINGS_GAMMA8_BLUE_DEFAULT };
+	vGenerateGamma8LUT();
+	gammaEnable = true;
+}
+
+FrameBuffer::FrameBuffer(long size)
+{
+	setSize(size);
+
+	gamma8Value = { SETTINGS_GAMMA8_RED_DEFAULT ,SETTINGS_GAMMA8_GREEN_DEFAULT ,SETTINGS_GAMMA8_BLUE_DEFAULT };
+	vGenerateGamma8LUT();
+	gammaEnable = true;
+}
+
+void FrameBuffer::setSize(long size)
+{
+	if (size != this->size())
+	{
+		this->buffer.resize(size, { 0,0,0 });
+	}
+}
+
+long FrameBuffer::size(void)
+{
+	return this->buffer.size();
+}
+
 //Set pixel in the framebuffer with a specified color in rgb format
 void FrameBuffer::vSetPixel(long uiLED,tsRGB tsColorRGB)    
 {
-	if (gammaEnable)
+	if (uiLED < buffer.size())
 	{
-		buffer[uiLED] = tsGamma8Correction(tsColorRGB);
-	}
-	else
-	{
-		buffer[uiLED] = tsColorRGB;
+		if (gammaEnable)
+		{
+			buffer[uiLED] = tsGamma8Correction(tsColorRGB);
+		}
+		else
+		{
+			buffer[uiLED] = tsColorRGB;
+		}
 	}
 }
 
@@ -45,7 +79,18 @@ void FrameBuffer::vSetPixel(long uiLED,tsRGB tsColorRGB)
 void FrameBuffer::vSetPixel(long uiLED, tsHSV tsColorHSV)
 {
 	vSetPixel(uiLED, tsHSV2RGB(tsColorHSV));
+}
 
+tsRGB FrameBuffer::getPixel(long uiLED)
+{
+	if (uiLED < this->buffer.size())
+	{
+		return this->buffer[uiLED];
+	}
+	else
+	{
+		return {0,0,0};
+	}
 }
 
 //Set all pixels in the framebuffer between two indices with a specified color in rgb format
@@ -88,7 +133,7 @@ tsRGB FrameBuffer::tsGamma8Correction(tsRGB tsColorRGB)
 //Apply gamma correction to the whole framebuffer
 void FrameBuffer::applyGammaCorrection()
 {
-	for (uint16_t i = 0; i < GRAPHICS_DATA_SIZE; i++)
+	for (uint16_t i = 0; i < this->buffer.size(); i++)
 	{
 		buffer[i] = tsGamma8Correction(buffer[i]);
 	}
@@ -97,7 +142,7 @@ void FrameBuffer::applyGammaCorrection()
 //Reset framebuffer
 void FrameBuffer::vResetAllPixel(void)
 {
-	vSetPixelFromTo(0, VIRTUAL_SLA_LENGTH_MAX - 1, tsRGB {0,0,0});
+	vSetPixelFromTo(0, buffer.size() - 1, tsRGB {0,0,0});
 }
 
 

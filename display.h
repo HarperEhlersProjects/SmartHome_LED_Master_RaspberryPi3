@@ -19,27 +19,10 @@ public:
 	tsRGB** matrix;
 	tsResolution resolution;
 
-	DPU()
-	{
-		this->resolution = { 16,16 };
-		allocateMatrix();
-	}
+	DPU();
+	DPU(tsResolution resolution);
 
-	DPU(tsResolution resolution)
-	{
-		this->resolution = resolution;
-		allocateMatrix();
-	}
-
-	~DPU()
-	{
-		for (uint8_t i = 0; i < this->resolution.y; i++)
-		{
-			delete matrix[i];
-		}
-
-		delete matrix;
-	}
+	~DPU();
 
 	void resetMatrix(void);
 	void allocateMatrix(void);

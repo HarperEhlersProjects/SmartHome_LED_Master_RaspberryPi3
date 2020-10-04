@@ -48,6 +48,7 @@ namespace game_objects
 		void setAcceleration(tsAcceleration acceleration);
 		tsAcceleration getAcceleration(void);
 
+		void setColor(tsHSV color);
 		void setColor(tsRGB color);
 		tsRGB getColor(void);
 

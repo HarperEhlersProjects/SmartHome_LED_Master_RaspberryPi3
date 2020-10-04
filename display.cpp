@@ -2,6 +2,29 @@
 
 #include <cstdlib>
 
+
+DPU::DPU()
+{
+	this->resolution = { 16,16 };
+	allocateMatrix();
+}
+
+DPU::DPU(tsResolution resolution)
+{
+	this->resolution = resolution;
+	allocateMatrix();
+}
+
+DPU::~DPU()
+{
+	for (uint8_t i = 0; i < this->resolution.y; i++)
+	{
+		free(matrix[i]);
+	}
+
+	free(matrix);
+}
+
 //Allocating memory for display matrix
 void DPU::allocateMatrix()
 {
@@ -9,7 +32,7 @@ void DPU::allocateMatrix()
 
 	for (uint8_t i = 0; i < this->resolution.y; i++)
 	{
-		matrix[i] = (tsRGB*)malloc(this->resolution.y * sizeof(tsRGB));
+		this->matrix[i] = (tsRGB*)malloc(this->resolution.y * sizeof(tsRGB));
 	}
 }
 
@@ -22,7 +45,7 @@ void DPU::resetMatrix()
 	{
 		for (x = 0; x < this->resolution.x; x++)
 		{
-			matrix[y][x] = { 0, 0, 0 };
+			this->matrix[y][x] = { 0, 0, 0 };
 		}
 	}
 }
@@ -30,5 +53,5 @@ void DPU::resetMatrix()
 //Whether a point is inside the display or not
 bool DPU::isInsideBorders(tsCoord coord)
 {
-	return (coord.x >= 0 && coord.x < this->resolution.x&& coord.y >= 0 && coord.y < this->resolution.y);
+	return (coord.x >= 0 && coord.x < this->resolution.x && coord.y >= 0 && coord.y < this->resolution.y);
 }

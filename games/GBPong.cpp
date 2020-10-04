@@ -7,13 +7,13 @@ GBPong::GBPong(GamePads* gamepads)
 	nextState = GTypePong;
 	this->gamepads = gamepads;
 
-	ball = Rectangle({ 7,7 }, 2, 2, { 10,10,10 });
-	wallS = Rectangle({ 8,15 }, 1, 20, { 0,10,0 });
-	wallN = Rectangle({ 8,0 }, 1, 20, { 0,10,0 });
+	ball = Rectangle({ 7,7 }, 2, 2, { 80,80,80 });
+	wallS = Rectangle({ 8,15 }, 1, 20, { 0,90,0 });
+	wallN = Rectangle({ 8,0 }, 1, 20, { 0,90,0 });
 	wallE = Rectangle({ 20,8 }, 40, 1, { 0,0,0 });
 	wallW = Rectangle({ -5,8 }, 40, 1, { 0,0,0 });
-	player1 = Rectangle({ 0,8 }, 3, 1, { 10,0,0 });
-	player2 = Rectangle({ 15,8 }, 3, 1, { 0,0,10 });
+	player1 = Rectangle({ 0,8 }, 3, 1, { 80,0,0 });
+	player2 = Rectangle({ 15,8 }, 3, 1, { 0,0,80 });
 
 	registerObject(&ball);
 	registerObject(&wallS);

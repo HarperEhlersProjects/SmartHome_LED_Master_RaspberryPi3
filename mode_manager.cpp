@@ -9,9 +9,9 @@ void ModeManager::vFrameCalculate()
 {
 	char uiCounterSLA;
 	
-	for(uiCounterSLA=0;uiCounterSLA < VIRTUAL_SLA_NUMBER;uiCounterSLA++)
+	for(uiCounterSLA=0;uiCounterSLA < this->system->virtualSLAs.size();uiCounterSLA++)
 	{
-		VirtualSLA* currentVirtualSLA = &(system->virtualSLAs[uiCounterSLA]);
+		VirtualSLA* currentVirtualSLA = (system->virtualSLAs[uiCounterSLA]);
 
 		currentVirtualSLA->framebuffer.vResetAllPixel();
 
@@ -50,7 +50,7 @@ void ModeManager::vMode1(VirtualSLA* vSLA)
 	tsColorHSV.udSaturation = vSLA->mode.parameter[1];
 	tsColorHSV.udBrightness = vSLA->mode.parameter[2];
 	
-    for(uiCounter=0;uiCounter< vSLA->length;uiCounter++)
+    for(uiCounter=0;uiCounter< vSLA->framebuffer.size();uiCounter++)
     {
 		vSLA->framebuffer.vSetPixel(uiCounter,tsColorHSV);
     }
@@ -77,7 +77,7 @@ void ModeManager::vMode2(VirtualSLA* vSLA)
     {
 		vSLA->mode.actors[0]++;
 
-        if(vSLA->mode.actors[0] >= vSLA->length + vSLA->mode.parameter[4])
+        if(vSLA->mode.actors[0] >= vSLA->framebuffer.size() + vSLA->mode.parameter[4])
         {
 			vSLA->mode.actors[0] = 0;
         }
@@ -96,9 +96,9 @@ void ModeManager::vMode2(VirtualSLA* vSLA)
 
     uiTopBoundary = vSLA->mode.actors[0];
 
-    if(uiTopBoundary >= vSLA->length)
+    if(uiTopBoundary >= vSLA->framebuffer.size())
     {
-        uiTopBoundary = vSLA->length;
+        uiTopBoundary = vSLA->framebuffer.size();
 
     }
 
@@ -121,7 +121,7 @@ void ModeManager::vMode3(VirtualSLA* vSLA)
 	tsColorHSV.udSaturation = vSLA->mode.parameter[1];
 	tsColorHSV.udBrightness = vSLA->mode.parameter[2];
 	
-    if(vSLA->mode.actors[0] > vSLA->length/2)
+    if(vSLA->mode.actors[0] > vSLA->framebuffer.size() /2)
     {   
 		vSLA->mode.actors[1] = 0;
     }
@@ -139,7 +139,7 @@ void ModeManager::vMode3(VirtualSLA* vSLA)
 		vSLA->mode.actors[0] -= vSLA->mode.parameter[3];
     }
 
-	vSLA->framebuffer.vSetPixelFromTo(vSLA->mode.actors[0], vSLA->length -1- vSLA->mode.actors[0],tsColorHSV);
+	vSLA->framebuffer.vSetPixelFromTo(vSLA->mode.actors[0], vSLA->framebuffer.size() -1- vSLA->mode.actors[0],tsColorHSV);
 
 }
 
@@ -149,16 +149,16 @@ void ModeManager::vMode4(VirtualSLA* vSLA)
 	tsHSV tsColorHSV;
     long uiCounter;
 	
-	for(uiCounter=0;uiCounter< vSLA->length;uiCounter++)
+	for(uiCounter=0;uiCounter< vSLA->framebuffer.size();uiCounter++)
     {
 	
-	tsColorHSV.uiHuel = 360*uiCounter/ vSLA->length;
+	tsColorHSV.uiHuel = 360*uiCounter/ vSLA->framebuffer.size();
 	tsColorHSV.udSaturation = vSLA->mode.parameter[1];
 	tsColorHSV.udBrightness = vSLA->mode.parameter[2];
 		
-		if(uiCounter + vSLA->mode.actors[1] >= vSLA->length)
+		if(uiCounter + vSLA->mode.actors[1] >= vSLA->framebuffer.size())
 		{
-			vSLA->framebuffer.vSetPixel(uiCounter + vSLA->mode.actors[1] - vSLA->length,tsColorHSV);
+			vSLA->framebuffer.vSetPixel(uiCounter + vSLA->mode.actors[1] - vSLA->framebuffer.size(),tsColorHSV);
 		}
 		else
 		{
@@ -167,7 +167,7 @@ void ModeManager::vMode4(VirtualSLA* vSLA)
 
     }
 		
-	if(vSLA->mode.actors[1] >= vSLA->length)
+	if(vSLA->mode.actors[1] >= vSLA->framebuffer.size())
 	{
 		vSLA->mode.actors[1] = 0;
 	}

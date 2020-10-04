@@ -6,16 +6,16 @@ GBMainMenu::GBMainMenu(GamePads* gamepads)
 	this->gamepads = gamepads;
 
 	//Background
-	title = Text({ 0,0 }, "MENU", { 10,10,10 });
-	underline = Rectangle({ 8,4 }, 1, 16,{0,20,0});
+	title = Text({ 0,0 }, "MENU", tsRGB { 80,80,80 });
+	underline = Rectangle({ 8,4 }, 1, 16, tsRGB {0,10,80});
 
 	//Invisible wall for animation event
 	rightBorder = Rectangle({ 12,8 }, 16, 1, { 0,0,0 });
 	rightBorder.deactivate();
 
 	//Gametexts
-	pongText = Text({ 0,6 }, "PONG", {5,15,0});
-	snakeText = Text({ 0,11 }, "SNAKE", {5,15,0 });
+	pongText = Text({ 0,6 }, "PONG", tsRGB {30,110,0});
+	snakeText = Text({ 0,11 }, "SNAKE", tsRGB {30,110,0 });
 
 	//Velocity in case of selection
 	pongText.setVelocity({ -0.05,0 });
@@ -38,7 +38,7 @@ GBMainMenu::GBMainMenu(GamePads* gamepads)
 void GBMainMenu::calculateStep(void)
 {
 	//Common behavior
-
+	
 //Check for rising edge of DOWN button and change selection downwards
 	if ((gamepads->inputs[0].DOWN || gamepads->inputs[1].DOWN) && !buttonDOWN)
 	{
@@ -47,12 +47,12 @@ void GBMainMenu::calculateStep(void)
 		{
 		case 0:
 			pongText.setPosition({ 0,6 });
-			pongText.setColor({ 5,15,0 });
+			pongText.setColor(tsRGB{ 30,110,0 });
 			currentSelection = 1;
 			break;
 		case 1:
 			snakeText.setPosition({ 0,11 });
-			snakeText.setColor({ 5,15,0 });
+			snakeText.setColor(tsRGB{ 30,110,0 });
 			currentSelection = 0;
 			break;
 		default:
@@ -72,12 +72,12 @@ void GBMainMenu::calculateStep(void)
 		{
 		case 0:
 			pongText.setPosition({ 0,6 });
-			pongText.setColor({ 5,15,0 });
+			pongText.setColor(tsRGB{ 30,110,0 });
 			currentSelection = 1;
 			break;
 		case 1:
 			snakeText.setPosition({ 0,11 });
-			snakeText.setColor({ 5,15,0 });
+			snakeText.setColor(tsRGB{ 30,110,0 });
 			currentSelection = 0;
 			break;
 		default:
@@ -109,7 +109,7 @@ void GBMainMenu::calculateStep(void)
 	switch (currentSelection)
 	{
 	case 0:
-		pongText.setColor({ 15,5,0 });
+		pongText.setColor(tsRGB{ 110,30,0 });
 		pongText.move();
 
 		if (!checkCollision(pongText, rightBorder))
@@ -118,7 +118,7 @@ void GBMainMenu::calculateStep(void)
 		}
 		break;
 	case 1:
-		snakeText.setColor({ 15,5,0 });
+		snakeText.setColor(tsRGB{ 110,30,0 });
 		snakeText.move();
 
 		if (!checkCollision(snakeText, rightBorder))
