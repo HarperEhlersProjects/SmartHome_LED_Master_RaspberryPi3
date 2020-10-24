@@ -13,7 +13,7 @@ The settings module contains every setting that can be changed by the user. Watc
 #include "framebuffer.h"
 #include "games/game_box.h"
 
-
+#define FRAME_PERIOD_MS 25	//Toggle framerate to 40 fps
 
 /*
 uiDestSLA: unsigned integer that defines the physical SLA on which the pixel segment will be mapped.
